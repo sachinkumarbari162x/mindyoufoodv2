@@ -11,7 +11,10 @@
 # substituting. That is the exact bug this script exists to prevent.
 set -euo pipefail
 [ $# -eq 1 ] || { echo "usage: $0 'plaintext-password'" >&2; exit 1; }
-cd ~/khadija_dietician/khadijaDietican_v2.0.0
+# Resolve the project root from this script's own location. The
+# clone path is not ours to assume -- it was hardcoded here and
+# broke the moment the deployment repo was cloned anywhere else.
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 RAW=$(sudo docker run --rm caddy:2-alpine caddy hash-password --plaintext "$1" 2>/dev/null)
 case "$RAW" in
