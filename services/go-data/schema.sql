@@ -372,6 +372,21 @@ CREATE TABLE IF NOT EXISTS crm.knowledge (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+/* CREATE TABLE IF NOT EXISTS does NOTHING to a table that already
+   exists, columns included. A database created before `audience`
+   was added therefore still has none -- and the index below is on
+   it. Deploying against the practice's existing Supabase database
+   failed here, on a loop, with:
+
+       [go-data] schema: apply: ERROR: column "audience" does not
+       exist (SQLSTATE 42703)
+
+   Migration 0003 adds this column too, and that is not redundant:
+   schema.sql runs FIRST, so it must be able to run against a
+   database older than itself. Any future column that an index or
+   constraint in this file depends on needs the same guard. */
+ALTER TABLE crm.knowledge ADD COLUMN IF NOT EXISTS audience text NOT NULL DEFAULT 'desk';
+
 CREATE UNIQUE INDEX IF NOT EXISTS knowledge_intent_active
   ON crm.knowledge (audience, intent) WHERE active;
 
