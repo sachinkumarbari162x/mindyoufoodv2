@@ -244,6 +244,25 @@ async function resolveFile(pathname, req) {
       }
     }
     if (stat.isDirectory()) {
+      /* A DIRECTORY ASKED FOR WITHOUT A TRAILING SLASH MUST REDIRECT
+         TO ONE. Serving its index.html in place looks identical in a
+         terminal -- both are 200 with the same bytes -- and is broken
+         in a browser, because relative URLs resolve against the
+         directory of the current path. At /crm the base is /, so the
+         page's own `./assets/crm.css` is fetched as /assets/crm.css
+         and 404s; at /crm/ it is fetched as /crm/assets/crm.css and
+         works. Every stylesheet and every script in the CRM failed
+         this way on the first real sign-in, and the page came up
+         unstyled with a wall of 404s that pointed at the assets
+         rather than at the missing slash.
+
+         The query is carried across so a redirect never silently
+         drops one. */
+      if (!pathname.endsWith("/")) {
+        const url = req?.url || "";
+        const q = url.includes("?") ? url.slice(url.indexOf("?")) : "";
+        return { redirect: pathname + "/" + q };
+      }
       const index = path.join(target, "index.html");
       const indexStat = await fsp.stat(index);
       return { file: index, size: indexStat.size };
