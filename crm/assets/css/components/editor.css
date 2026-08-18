@@ -1,0 +1,135 @@
+/* ============================================================
+   EDITOR — the two forms on the Hours page
+   ------------------------------------------------------------
+   Quiet by design. These are used occasionally and read past
+   constantly, so they sit in a recessed panel rather than
+   competing with the week below them.
+   ============================================================ */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  margin-bottom: .9rem;
+  padding: .9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--sink);
+}
+
+.editor-title {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.editor-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: .5rem;
+}
+
+.editor label {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  font-size: 12px;
+  color: var(--soft);
+}
+
+.editor label.grow {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.editor input[type="time"],
+.editor input[type="date"],
+.editor input[type="text"] {
+  padding: .35rem .5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- the day picker ----
+   Several days at once, because "Tuesdays and Thursdays" is one
+   decision. The checkbox itself is hidden and the label is the
+   target — a 2mm box is a poor thing to aim at. */
+.daypick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.daypick-day {
+  cursor: pointer;
+}
+
+.daypick-day input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.daypick-day span {
+  display: inline-block;
+  padding: .3rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--soft);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.daypick-day input:checked + span {
+  border-color: transparent;
+  background: var(--amber-bright);
+  color: #201a13;
+}
+
+/* The hidden input still takes focus, so the ring has to be drawn
+   on something visible or keyboard users lose their place. */
+.daypick-day input:focus-visible + span {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 2px;
+}
+
+.editor-note {
+  min-height: 1em;
+  color: var(--rust);
+  font-size: 12.5px;
+}
+
+/* ---- removing a band ----
+   Sits inside the chip. Only tinted on hover, so a row of bands
+   does not read as a row of delete buttons. */
+.band-drop {
+  margin-left: .35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  opacity: .55;
+  cursor: pointer;
+}
+
+.band-drop:hover {
+  opacity: 1;
+  color: var(--rust);
+}
+
+.band-drop[disabled] {
+  opacity: .3;
+  cursor: default;
+}

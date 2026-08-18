@@ -1,0 +1,49 @@
+/* ============================================================
+   1 · DESIGN TOKENS
+   ============================================================ */
+/* Light only. The site had a toggle and followed the visitor's
+   operating system; it now has one look for everybody, which is
+   also the one being designed against. The CRM keeps its toggle —
+   that is her tool, read all day, and the choice belongs to her. */
+:root {
+  color-scheme: light;
+
+  --ink: #211A15;          /* near-black espresso   */
+  --ink-soft: #4D4138;     /* muted brown-black     */
+  --brown: #7A6253;        /* warm brown            */
+  --bg: #FBFAF8;           /* off-white canvas      */
+  --bg-deep: #F3F1ED;      /* a shade down          */
+  --paper: #FFFFFF;        /* white card            */
+  --rose: #C68B91;         /* dusty rose accent     */
+  --rose-deep: #A35C66;    /* rose for emphasis     */
+  --rose-wash: #F3DEDF;    /* pale rose fill        */
+  --line: rgba(33, 26, 21, .14);
+  --line-soft: rgba(33, 26, 21, .07);
+
+  --band-bg: #211A15;
+  --band-text: #F4EBDD;
+  --shadow-lg: 0 30px 80px -30px rgba(33, 26, 21, .38);
+  --shadow-md: 0 14px 40px -18px rgba(33, 26, 21, .3);
+
+  /* --- liquid glass (over the light sheet) --- */
+  --glass-tint: rgba(255, 253, 248, .55);
+  --glass-tint-hi: rgba(255, 253, 248, .78);
+
+  /* Fill for the mobile dropdown ONLY. It cannot use --glass-tint-hi:
+     the menu lives inside .nav-glass, which has its own backdrop-filter
+     and is therefore a backdrop ROOT — so the menu's blur samples almost
+     nothing and a .78 tint lets the page read straight through it. This
+     is opaque enough to carry the contrast on its own; the blur below is
+     a bonus where it works, not the thing keeping the links legible. */
+  --menu-fill: rgba(255, 253, 248, .97);
+  --glass-edge: rgba(255, 255, 255, .75);
+  --glass-rim: rgba(33, 26, 21, .1);
+  --glass-text: var(--ink);
+  --glass-text-soft: var(--ink-soft);
+
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Jost", "Segoe UI", system-ui, sans-serif;
+  --maxw: 1200px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+

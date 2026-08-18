@@ -1,0 +1,39 @@
+/* ============================================================
+   CONSULT.HTML — stylesheet manifest for the front-desk page
+
+   Deliberately NOT main.css. This page has no nav, no video hero,
+   no pull-up sheet, no footer and no marquee, so it loads none of
+   those rules — that is the point of giving the desk its own page.
+
+   What it does load: a small reset, the receptionist token layer,
+   and the chat components. Roughly a fifth of the site stylesheet.
+
+   Bundle for production the same way as the site:
+       node scripts/build-css.js
+   ============================================================ */
+
+/* ---- typefaces (self-hosted) ---- */
+@import url("../fonts/fonts.css");
+
+/* ---- the desk ---- */
+@import url("./receptionist/tokens.css");
+@import url("./receptionist/ambient.css");
+@import url("./receptionist/launcher.css");
+@import url("./receptionist/window.css");
+@import url("./receptionist/message.css");
+@import url("./receptionist/composer.css");
+@import url("./receptionist/booking-card.css");
+@import url("./receptionist/country-picker.css");
+@import url("./receptionist/booking-form.css");
+
+/* page.css is an OVERRIDE layer and must come last.
+   It re-anchors the window from "floating widget, bottom-right" to
+   "centred content", and several of those rules tie on specificity
+   with the widget rules in window.css — `.desk-shell[data-open]
+   .rcp-window` and `.rcp[data-open] .rcp-window` are both (0,3,0).
+   On a tie the later rule wins, so importing this first silently
+   lost the centring transform and dropped the window off-screen. */
+@import url("./receptionist/page.css");
+
+/* Last, so what the shared background changed wins the tie. */
+@import url("./receptionist/on-atmosphere.css");

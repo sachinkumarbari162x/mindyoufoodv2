@@ -1,0 +1,62 @@
+/* ============================================================
+   WEEK — her working pattern, one row per day
+   ------------------------------------------------------------
+   Seven rows rather than a calendar grid. The pattern repeats
+   every week, so a month view would draw the same answer four
+   times and invite her to edit one occurrence when she meant
+   the rule.
+   ============================================================ */
+
+.week {
+  display: grid;
+  gap: .35rem;
+}
+
+.day {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  gap: .8rem;
+  align-items: center;
+  padding: .6rem .9rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+  background: var(--raise);
+}
+
+.day-name {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.band-chip {
+  padding: .16rem .5rem;
+  border-radius: var(--edge);
+  background: var(--sage-wash);
+  color: var(--sage);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A closed day is stated, not left blank — an empty row reads as
+   "not set up yet" rather than "deliberately not working". */
+.day.shut .band-chip {
+  background: var(--sink);
+  color: var(--faint);
+}
+
+@media (max-width: 560px) {
+  .day {
+    grid-template-columns: 3.6rem 1fr auto;
+    gap: .5rem;
+  }
+}

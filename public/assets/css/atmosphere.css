@@ -1,0 +1,180 @@
+/* ============================================================
+   ATMOSPHERE — one background, two pages, nothing running
+   ------------------------------------------------------------
+   The front desk and the checkout are the same room. They were
+   two rooms: consult.html painted a pair of crossfading canvases
+   over a near-black stage, and checkout.html had four drifting
+   gradients and then a noise field. Three implementations of
+   "something soft behind a card".
+
+   This is the one, and it is STATIC.
+
+   ---- WHY STATIC IS THE RIGHT ANSWER -------------------------
+   Not a compromise. A moving background on these two pages costs
+   a repaint every frame, forever, on a phone somebody is holding
+   while typing a card number — and the entire benefit is a
+   texture nobody is looking at, because if they are looking at it
+   the page has failed. The canvases were the largest continuous
+   cost in the whole site and they were behind a chat window.
+
+   So: no canvas, no script, no animation, and no elements. Just
+   painted gradients on the body. The browser rasterises it once
+   and never thinks about it again.
+
+   ---- WHAT USES IT -------------------------------------------
+     <body class="atmosphere">   the background
+     .frost                      any surface floating on it
+
+   Linked by consult.html and checkout.html. Anything else that
+   wants the same room links the same file.
+   ============================================================ */
+
+/* ---- the room's own tokens ----------------------------------
+   Anything painted ON the room reads its colour from here rather
+   than hardcoding one, so the room can go from pale to deep in
+   this file alone. The desk's bar and its no-JS fallback both use
+   these — see receptionist/on-atmosphere.css. */
+:root {
+  --room-ground: #1A1512;   /* the floor */
+  --room-ink:    #F6EFE4;   /* text that sits directly on the room */
+  --room-ink-soft: #C9BAA8;
+}
+
+.atmosphere {
+  /* The floor, and what shows behind the safe-area insets on a
+     phone before anything else paints. */
+  background-color: var(--room-ground);
+  color: var(--room-ink);
+
+  /* FOUR FIELDS, PAINTED ONCE.
+
+     A CONTRAST ROOM. The pale version put a near-white card on a
+     near-white ground: the frost had nothing to be frosted
+     against, and the whole point of glass is that you can tell
+     there is something behind it. Deep ground, light card — now
+     the surface reads as floating rather than as a slightly
+     different shade of page.
+
+     Each field is placed so its dense middle is on screen and its
+     edge is not; a gradient whose boundary you can see reads as a
+     disc, and four discs is not atmosphere. */
+  background-image:
+    radial-gradient(70% 58% at 14% 10%,
+      rgba(163, 92, 102, .55) 0%, rgba(163, 92, 102, .22) 40%, transparent 72%),
+    radial-gradient(62% 52% at 90% 16%,
+      rgba(140, 96, 74, .38) 0%, rgba(140, 96, 74, .13) 42%, transparent 74%),
+    radial-gradient(72% 62% at 24% 94%,
+      rgba(198, 139, 145, .32) 0%, rgba(198, 139, 145, .12) 40%, transparent 72%),
+    radial-gradient(88% 72% at 86% 90%,
+      rgba(214, 154, 92, .34) 0%, rgba(214, 154, 92, .12) 44%, transparent 76%);
+
+  /* Held still while the page scrolls. The desk's transcript
+     scrolls inside its own window and the checkout does not
+     scroll at all, so this never fights anything — and a
+     background that slides under a fixed card looks like a bug. */
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================
+   FROST — the surface things sit on
+   ------------------------------------------------------------
+   THE TINT CARRIES THE CONTRAST, NOT THE BLUR. backdrop-filter
+   is unsupported or switched off often enough — older Firefox,
+   reduced-transparency settings, some Android webviews — that a
+   surface relying on it to be legible is a surface that is
+   sometimes unreadable. On a page with a price and a card number
+   on it, that is not a trade worth making.
+
+   So the tint alone holds the text, and the blur is what makes
+   it feel like glass where it exists.
+   ============================================================ */
+
+/* THE TINT IS WARM AND NEARLY OPAQUE, and both of those are
+   because the room is dark now.
+
+   At .82 a near-white tint over a deep ground stops being ivory
+   and becomes grey: the room's darkness mixes straight through
+   and the card reads as dull card stock rather than lit glass.
+   Raising the alpha and warming the white keeps it the colour it
+   is supposed to be, and still lets enough of the room through
+   at the edges to be visibly glass rather than a cut-out. */
+.frost {
+  background: rgba(253, 249, 242, .93);
+  border: 1px solid rgba(255, 255, 255, .75);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, .5) inset,
+    0 40px 90px -30px rgba(0, 0, 0, .55);
+
+  -webkit-backdrop-filter: blur(22px) saturate(118%);
+  backdrop-filter: blur(22px) saturate(118%);
+}
+
+/* No blur available: close the tint up so the contrast is the
+   surface's own. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .frost { background: rgba(253, 249, 242, .985); }
+}
+
+/* ============================================================
+   HANDOVER — the wait between two pages
+   ------------------------------------------------------------
+   Lives here rather than with either page, because it belongs to
+   the moment BETWEEN them and both ends have to look the same.
+   See assets/js/handover.js for when it appears (and when it
+   deliberately does not).
+   ============================================================ */
+
+.handover {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+
+  /* The room shows through. This is a pause, not a new place —
+     the visitor should feel held rather than sent somewhere. */
+  background: rgba(251, 250, 248, .72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.handover.is-up { opacity: 1; }
+
+.handover-inner {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  color: #4D4138;
+}
+
+.handover-mark { display: block; }
+.handover-track { stroke: rgba(33, 26, 21, .12); }
+
+/* ONE ARC, TURNING. The dash is most of the circle's
+   circumference (2πr ≈ 132) left open, so what turns is a short
+   stroke rather than a ring — quieter, and it reads as motion
+   without reading as a progress bar that is lying about progress. */
+.handover-arc {
+  stroke: #A35C66;
+  stroke-dasharray: 30 102;
+  transform-origin: 50% 50%;
+  animation: handover-turn 1.15s linear infinite;
+}
+@keyframes handover-turn { to { transform: rotate(360deg); } }
+
+.handover-word {
+  margin: 0;
+  font-family: "Jost", "Segoe UI", system-ui, sans-serif;
+  font-weight: 300;
+  font-size: .9375rem;
+  letter-spacing: .01em;
+}
+
+/* Still says something is happening, without spinning. */
+@media (prefers-reduced-motion: reduce) {
+  .handover-arc { animation: none; stroke-dasharray: 132 0; opacity: .5; }
+  .handover { transition: none; }
+}

@@ -1,0 +1,186 @@
+/* ============================================================
+   ASSISTANT — the one panel holding a written sentence
+   ------------------------------------------------------------
+   It has to read as HERS and as a summary, not as a chat window.
+   So: no bubbles, no avatar, no typing dots. A paragraph in the
+   reading face, the figures it was drawn from directly beneath
+   it in the interface face, and a plain field for a question.
+
+   The contrast between the two faces is doing the work here —
+   prose is prose, data is data, and the eye can tell which is
+   which before it reads either.
+   ============================================================ */
+
+.assist {
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+
+/* The sentence. Set larger than anything else on the page and in
+   the reading face, because it is the one thing on Overview meant
+   to be read as language rather than scanned. */
+.assist-line {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* ---- the figures underneath ---------------------------------
+   Never hidden, never behind a toggle. The sentence above is a
+   reading of exactly these numbers, so they sit in the same
+   glance and she can check one against the other. */
+.assist-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  padding-top: .2rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.assist-fact {
+  display: flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding-top: .6rem;
+}
+
+.assist-n {
+  font-size: 19px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.assist-lab {
+  font-size: 13px;
+  color: var(--soft);
+}
+
+.assist-note {
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+/* The only figure with a deadline attached, so the only one with
+   colour. Rust rather than a red — this is a hold quietly running
+   out, not an error. */
+.assist-fact.is-urgent .assist-n,
+.assist-fact.is-urgent .assist-lab {
+  color: var(--rust);
+}
+
+/* ---- asking -------------------------------------------------- */
+.assist-ask {
+  display: flex;
+  gap: .5rem;
+  max-width: 40rem;
+}
+
+.assist-ask input {
+  flex: 1;
+  padding: .45rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+}
+
+.assist-ask input:focus-visible {
+  border-color: var(--amber-bright);
+  outline: none;
+}
+
+.assist-answer {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* ---- draft buttons ------------------------------------------- */
+.assist-drafts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .45rem;
+}
+
+.assist-drafts:empty { display: none; }
+
+.assist-drafts-lab {
+  margin-right: .15rem;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+/* ---- the draft itself ----------------------------------------
+   Deliberately set apart from the panel it sits in. This is the
+   only text in the CRM that a model wrote and a client might
+   read, and it should never be mistaken for something already
+   sent — hence the tag, the flat unsent ground, and the fact that
+   the only actions on it are Copy and Dismiss. */
+.draft {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .8rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+  background: var(--sink);
+}
+
+.draft-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .55rem;
+}
+
+.draft-tag {
+  padding: .1rem .4rem;
+  border: 1px solid var(--rust);
+  border-radius: var(--edge);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+
+.draft-note {
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.draft-body {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+  /* Selectable as one block, because copying it by hand is the
+     fallback when the clipboard permission says no. */
+  user-select: text;
+}
+
+.draft-acts {
+  display: flex;
+  gap: .45rem;
+}
+
+.assist-foot {
+  margin: 0;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.assist-foot:empty { display: none; }

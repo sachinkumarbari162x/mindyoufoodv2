@@ -1,0 +1,862 @@
+/* ============================================================
+   CONSULTING ROOM
+   ------------------------------------------------------------
+   The one dark screen in this system, and the only page that is
+   a PLACE rather than a list. A consultation is watched, not
+   read: a bright interface around somebody's face is a lamp
+   pointed at the person you are trying to look at.
+
+   THE DARK IS WARM, not neutral. The brand ink is #1b1610 — a
+   brown-black — and a room built from #000 beside an off-white
+   CRM would read as two different products. Every surface here
+   is derived from that same ink, so the seam between the light
+   masthead and the dark room reads as walking into a room rather
+   than as a rendering fault.
+
+   TYPOGRAPHY. Three faces, each doing one job:
+     serif   the person. They are the reason the screen exists,
+             so their name is the one thing set in Noto Serif.
+     sans    everything operational — labels, controls, states.
+     mono    times and references, where digits must line up.
+   ============================================================ */
+
+#consultation-room {
+  /* Surfaces, warm, from the brand ink outward. */
+  --room-pitch: #14100d;
+  --room-deep: #1a1613;
+  --room-raise: #221d19;
+  --room-edge: #2e2822;
+  --room-line: #3a332c;
+
+  /* Ink on those surfaces. */
+  --room-ink: #f6f3ee;
+  --room-soft: #b3a798;
+  --room-faint: #7d7263;
+
+  --room-amber: #d79a34;
+  --room-sage: #86a56f;
+  --room-rust: #c96b45;
+
+  /* A small scale, used everywhere below rather than ad-hoc sizes. */
+  --room-micro: 10.5px;
+  --room-small: 12.5px;
+  --room-base: 14px;
+}
+
+/* ---- choosing somebody --------------------------------------
+   Before the room exists there is a short list of who is booked.
+   Cards rather than rows: this is a choice made once, not a list
+   scanned repeatedly, so it can afford the space. */
+
+[data-pick] .row {
+  align-items: center;
+  padding: 1rem 1.15rem;
+  transition: border-color .2s, transform .2s;
+}
+
+[data-pick] .row:hover {
+  border-color: var(--amber-bright);
+  transform: translateY(-1px);
+}
+
+[data-pick] .row .who {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -.01em;
+}
+
+[data-pick] .row .when {
+  font-family: var(--font-mono);
+  font-size: var(--room-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--amber);
+}
+
+[data-pick] .row-sub { margin-top: .15rem; font-size: 13px; }
+
+/* ---- the state chip, up in the bar --------------------------- */
+
+.room-state {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .3rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--raise);
+  color: var(--soft);
+  font-size: var(--room-small);
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+
+.room-state .pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex: none;
+}
+
+.room-state[data-state="waiting"] .pip { background: var(--amber-bright); }
+.room-state[data-state="ended"] .pip { background: var(--rust); }
+
+.room-state[data-state="live"] {
+  border-color: color-mix(in srgb, var(--sage) 40%, var(--line));
+  color: var(--sage);
+}
+
+/* A slow breath while the session is live. Not decoration: it is
+   the only thing on a still screen that says the room is running
+   rather than frozen. */
+.room-state[data-state="live"] .pip {
+  background: var(--sage);
+  animation: room-breathe 2.6s ease-in-out infinite;
+}
+
+@keyframes room-breathe {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--sage) 55%, transparent); }
+  50% { opacity: .75; box-shadow: 0 0 0 4px transparent; }
+}
+
+/* ---- the room ------------------------------------------------
+   THE PAGE ITSELF DOES NOT SCROLL. Two things in the workspace
+   layout assume a page that ends somewhere below the fold — a 3rem
+   run-off under main, and a .work tall enough to fill the screen on
+   its own. Both are right for the assessment sheet and wrong here:
+   together they put the room 48px past the bottom of the window,
+   and because the sub-nav is sticky, a page that can scroll even
+   slightly lifts that bar off and drops it over the top of the
+   record panel.
+
+   Released here rather than changed there, because the assessment
+   page shares that stylesheet and genuinely does scroll. */
+#consultation-room main { padding-bottom: 0; }
+#consultation-room .work { min-height: 0; }
+
+/* The provenance line stays — she must always be able to tell
+   whether what she is looking at is real — but not at 86px. That is
+   a management screen's footer, and here every one of those pixels
+   comes off the height of somebody's face. */
+#consultation-room .foot {
+  padding: .45rem 0 .5rem;
+  margin: 0;
+}
+
+.room-wrap[hidden] { display: none; }
+
+/* ONE SCREEN, AND IT FITS. --room-h is measured in JS from where the
+   grid actually sits, so the stage never runs off the bottom and the
+   page itself never scrolls during a call. The fallback keeps the
+   room usable for the moment before the script has measured, and if
+   the script never runs at all. */
+.room-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 27rem);
+  gap: .9rem;
+  align-items: stretch;
+  height: var(--room-h, min(40rem, 76vh));
+  min-height: 22rem;
+}
+
+.room-grid.folded { grid-template-columns: minmax(0, 1fr) auto; }
+.room-grid.folded .panel { width: 2.9rem; }
+.room-grid.folded .panel-head h3,
+.room-grid.folded .panel-body { display: none; }
+
+/* ---- the stage -----------------------------------------------
+   Meet's arrangement, and for Meet's reasons: ONE BIG TILE, the
+   self-view small in a corner of it, and the controls floating over
+   the bottom. The person being seen gets the whole surface, and
+   nothing that is not them takes a fixed share of the screen. */
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  padding: .55rem;
+  border-radius: 8px;
+  border: 1px solid var(--room-edge);
+  /* Lit from above, faintly. A flat fill reads as a missing image;
+     the gradient makes it read as a room with a light in it. */
+  background:
+    radial-gradient(120% 80% at 50% 0%,
+      var(--room-deep) 0%, var(--room-pitch) 70%);
+  overflow: hidden;
+}
+
+/* THE TILE IS BLACK FROM THE FIRST PAINT. Not styled black once a
+   stream arrives — black as its own fill, before there is a track,
+   before permission has been asked for. A video surface that starts
+   pale and fills in a second later reads as a page still loading,
+   and she opens this with somebody already on the other end.
+
+   AND IT KEEPS ITS SHAPE. The tile used to take whatever box the
+   stage had, which on a wide short window was a letterbox slot and
+   on a narrow tall one a column — neither of which a camera produces,
+   so the picture was either cropped to a strip or stranded in the
+   middle of a tall black field. A 16:9 tile fitted inside the stage
+   gives the same proportion at every size: limited by height when
+   the window is wide, by width when it is narrow, centred either
+   way, with the stage's own gradient in the margins. */
+.tile {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 6px;
+  background: #000;
+  overflow: hidden;
+}
+
+/* CONTAIN, NOT COVER. Cover fills the tile and pays for it by
+   cropping — and a 4:3 webcam into a 16:9 tile loses a quarter of
+   the frame's height, which is the top of somebody's head and
+   whatever they are holding up to show her. On a consultation the
+   whole frame is the point; black bars at the sides read plainly as
+   the shape of their camera. */
+.far {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  display: block;
+}
+
+/* ---- nothing on it yet -----------------------------------------
+   Underneath the video, never instead of it: the picture simply
+   covers this the moment a track lands, and uncovers it again if the
+   connection drops. */
+.await {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  text-align: center;
+  /* Clear of the control pill, which floats over the bottom of the
+     stage. Centred in the space ABOVE the controls rather than in the
+     tile, or their name sits behind the Start button — which is
+     where it was on a short tile. */
+  padding: 1rem 1rem 4rem;
+  pointer-events: none;
+}
+
+.stage[data-remote="true"] .await { display: none; }
+
+.await .avatar {
+  display: grid;
+  place-items: center;
+  width: clamp(3.6rem, 9vh, 5.5rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--room-raise);
+  border: 1px solid var(--room-line);
+  color: var(--room-soft);
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3.6vh, 2.1rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.await b {
+  color: var(--room-ink);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -.01em;
+}
+
+.await-note {
+  color: var(--room-faint);
+  font-size: var(--room-small);
+}
+
+/* Their name on the tile, Meet's bottom-left. It stays once the
+   video is running, which is when it is actually needed — a face
+   fills the frame and the name under it is how she is sure. */
+.tile-name {
+  position: absolute;
+  left: .7rem;
+  bottom: .7rem;
+  max-width: 60%;
+  padding: .15rem .5rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .55);
+  color: var(--room-ink);
+  font-size: var(--room-small);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.stage[data-remote="true"] .tile-name { opacity: 1; }
+
+/* Her own face. Small, cornered, and mirrored — everybody expects
+   to see themselves the way a mirror shows them, and an unmirrored
+   self-view reads as subtly wrong without anybody being able to
+   say why.
+
+   Sized against the TILE's height, not the viewport's width: a
+   vw-sized self-view eats the picture on a short laptop screen, and
+   a percentage of the tile keeps the same proportion at every size
+   the tile takes. */
+.near {
+  position: absolute;
+  right: .7rem;
+  bottom: .7rem;
+  height: clamp(3.4rem, 22%, 7rem);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--room-line);
+  background: #000;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .5);
+  transform: scaleX(-1);
+}
+
+.near[data-off="true"] { display: none; }
+
+/* ---- the controls -------------------------------------------- */
+
+.bar {
+  position: absolute;
+  left: 50%;
+  bottom: 1.1rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .45rem;
+  border-radius: 999px;
+  border: 1px solid var(--room-line);
+  background: color-mix(in srgb, var(--room-raise) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .38);
+}
+
+/* THESE HAVE TO BE VISIBLE ON A DARK STAGE, and they were not: a
+   near-black fill inside a near-black pill left two icons she had to
+   hunt for. The fill is now a step lighter than the pill it sits in,
+   the border is brighter than the surround, and the icon is drawn at
+   full ink rather than a soft grey. */
+.ctl {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--room-soft);
+  background: var(--room-edge);
+  color: var(--room-ink);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s;
+}
+
+.ctl:hover:not([disabled]) {
+  background: color-mix(in srgb, var(--room-edge) 70%, #fff);
+  border-color: var(--room-ink);
+}
+
+.ctl:focus-visible {
+  outline: 2px solid var(--room-amber);
+  outline-offset: 2px;
+}
+
+.ctl[data-off="true"] {
+  background: var(--room-rust);
+  border-color: var(--room-rust);
+  color: #fff;
+}
+
+/* AND THE STATE IS NOT COLOUR ALONE. A slash across the icon says
+   "off" to an eye that cannot tell this red from that brown, and on
+   a screen in daylight where both read as dark. It is drawn rather
+   than swapped in as a second icon, so there is one set of paths to
+   keep right. */
+.ctl[data-off="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  box-shadow: 0 -2px 0 0 color-mix(in srgb, var(--room-rust) 100%, transparent);
+}
+
+/* Disabled is dimmer but still legible. At .35 opacity on this
+   ground the control vanished, which reads as "there is no button"
+   rather than "the button has nothing behind it". */
+.ctl[disabled] {
+  opacity: .6;
+  cursor: default;
+}
+
+/* Dashed says "nothing behind this yet" on the two round device
+   controls. NOT on End — that one is disabled because the session has
+   not started, which is an ordinary state and not a missing device. */
+.ctl[disabled]:not(.wide) { border-style: dashed; }
+
+.ctl svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ctl.wide {
+  width: auto;
+  padding: 0 1.1rem;
+  height: 40px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+/* ONE FILLED CONTROL IN VIEW AT A TIME. Start is the action while
+   somebody is waiting; End takes its place once the session is
+   running. The CRM's rule, kept in the room. */
+.ctl.start {
+  background: var(--room-sage);
+  border-color: var(--room-sage);
+  color: #101408;
+}
+
+.ctl.start:hover:not([disabled]) { background: color-mix(in srgb, var(--room-sage) 88%, #fff); }
+
+.ctl.end {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--room-rust) 55%, transparent);
+  color: var(--room-rust);
+}
+
+.ctl.end:not([disabled]) { background: var(--room-rust); color: #fff; border-color: var(--room-rust); }
+
+/* ---- when it cannot connect ---------------------------------- */
+
+.fallback {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  max-width: 21rem;
+  padding: .8rem .95rem;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--room-rust) 60%, transparent);
+  background: color-mix(in srgb, var(--room-raise) 94%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--room-ink);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fallback[hidden] { display: none; }
+
+.fallback b {
+  display: block;
+  margin-bottom: .15rem;
+  color: var(--room-rust);
+  font-size: var(--room-micro);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.fallback a { color: var(--room-amber); font-family: var(--font-mono); }
+
+/* ---- the record beside it ------------------------------------
+   Light, because it is READ and written in. The contrast with the
+   stage is the point: one surface for watching, one for working. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--ground);
+}
+
+.panel-head h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--room-micro);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.panel-head .grow { flex: 1; }
+
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* The pad. Always here, whatever else fails — and set like a
+   notebook rather than a form field, because that is what it is.
+   flex: none so the record below it takes the leftover height
+   rather than the two of them fighting over it. */
+.pad {
+  flex: none;
+  padding: .7rem .8rem .65rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.pad label {
+  display: flex;
+  align-items: baseline;
+  gap: .4rem;
+  margin-bottom: .35rem;
+  color: var(--soft);
+  font-size: var(--room-micro);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.pad label span {
+  color: var(--faint);
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+
+.pad textarea {
+  width: 100%;
+  min-height: 3.6rem;
+  max-height: 22vh;
+  padding: .55rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--room-base);
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.pad textarea::placeholder { color: var(--faint); }
+
+.pad textarea:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-wash);
+}
+
+/* ---- the record, in the panel ----------------------------------
+   The NSF itself, written into this div. min-height: 0 on every
+   ancestor is what lets it scroll INSIDE the panel instead of
+   stretching the panel past the bottom of the screen — a flex item's
+   default min-height is auto, which means "as tall as my contents",
+   and a twelve-section form has a great many contents. */
+
+.record-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* The reference and the save state, held above the scroll. Whether
+   the last keystroke reached the database is not something she
+   should have to scroll to find out. */
+.nsf-bar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex: none;
+  padding: .5rem .8rem;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--ground);
+}
+
+.nsf-bar .grow { flex: 1; }
+
+.nsf-ref {
+  color: var(--soft);
+  font-family: var(--font-mono);
+  font-size: var(--room-small);
+}
+
+.nsf-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: .7rem .7rem 1.5rem;
+}
+
+/* ONE COLUMN. The desk lays the fields out two-up in a 60rem sheet;
+   there is no honest way to do that in a 27rem panel, and a
+   two-column grid squeezed into this width produces inputs too
+   narrow to read what is in them. Same fields, same order, stacked. */
+.nsf-scroll .fields { grid-template-columns: minmax(0, 1fr); }
+.nsf-scroll .sec { margin-bottom: .5rem; }
+.nsf-scroll .sec-body { padding: 0 .7rem .8rem; }
+.nsf-scroll .sec-head { padding: .55rem .7rem; }
+.nsf-scroll .sec-title { font-size: 13px; }
+
+/* Every long answer is short here — she is typing while somebody is
+   talking, and a five-row textarea in a narrow panel pushes the next
+   question off the screen. They still grow when dragged. */
+.nsf-scroll .fld textarea { min-height: 2.2rem; }
+
+.nsf-wait,
+.nsf-down {
+  margin: 0;
+  padding: .8rem .85rem;
+  color: var(--soft);
+  font-size: var(--room-small);
+  line-height: 1.55;
+}
+
+.nsf-down {
+  background: #fff4e6;
+  border-bottom: 1px solid var(--amber-bright);
+  color: #6b4a12;
+}
+
+.nsf-down b { display: block; color: var(--ink-2); }
+.nsf-down .btn { margin-top: .5rem; }
+
+/* ---- who is in the room ---------------------------------------
+   Six lines that arrived with the booking. Set as a definition
+   list because that is what it is, and laid out label-above-value
+   so nothing wraps awkwardly in a panel this narrow. */
+
+.brief {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .5rem .9rem;
+  flex: none;
+  margin: 0;
+  padding: .7rem .8rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.brief > div { min-width: 0; }
+
+.brief dt {
+  margin-bottom: .1rem;
+  color: var(--faint);
+  font-size: var(--room-micro);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.brief dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--room-small);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* The name leads — it is the one line she looks at to be sure she
+   is in the right room. */
+.brief > div:first-child dd { font-weight: 600; }
+
+.brief a { color: var(--amber); font-family: var(--font-mono); }
+
+/* Their link, across both columns — a URL cannot share a line with
+   anything and stay readable. */
+.brief-link {
+  grid-column: 1 / -1;
+  padding-top: .45rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.brief-link[hidden] { display: none; }
+
+.brief-link dd {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  /* The button drops to its own line rather than being crushed. A
+     URL is the one value here with no natural break, so on a narrow
+     panel it takes the row and Copy follows underneath. */
+  flex-wrap: wrap;
+}
+
+/* The URL is allowed to be long and ugly — it is opaque on purpose.
+   What matters is that the whole of it is selectable and that the
+   Copy button beside it never wraps away from it. */
+.brief-link a {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* nowrap, because "Copy" broken across four lines inside a squeezed
+   flex item is what this looked like: a tall empty box with a mark
+   in it, which reads as a rendering fault rather than a button. */
+.brief-link .btn {
+  flex: 0 0 auto;
+  padding: .15rem .6rem;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+/* ---- narrow --------------------------------------------------- */
+
+/* ---- narrow: the phone and the tablet -------------------------
+   THE VIDEO IS FIRST, EVERYTHING ELSE IS BELOW IT, AND THE PAGE
+   SCROLLS THE WAY A PAGE DOES.
+
+   This started as a split screen — video above, record below, the
+   two sharing one viewport's height and neither allowed to scroll
+   the document. It was the wrong shape for a phone. Whichever way
+   the split went, both halves came out too small to work in, and
+   the result read as a desktop layout squeezed rather than a screen
+   designed for the device.
+
+   So the room stops trying to fit. The stage takes a proper 16:9
+   block at the top; the record runs underneath at whatever length
+   it needs; the document scrolls. That is what every other page in
+   this system does and what a thumb expects.
+
+   AND THE VIDEO STILL CANNOT BE LOST, which is the whole reason the
+   split existed: the stage is STICKY under the masthead and the
+   sub-nav, so scrolling moves the record past a client who stays
+   exactly where she left them.
+   ============================================================ */
+@media (max-width: 980px) {
+  .room-grid {
+    display: block;
+    height: auto;
+    min-height: 0;
+  }
+
+  .stage {
+    position: sticky;
+    /* Under both bars above, which are sticky themselves. Their
+       heights are measured into custom properties by the page — a
+       number written here would be wrong the moment the masthead
+       wraps onto two lines, which on a phone it now does. */
+    top: calc(var(--mast-h, 3.4rem) + var(--work-bar-h, 3.3rem));
+    z-index: 6;
+    aspect-ratio: 16 / 9;
+    /* A cap for the tall-and-narrow case: at 9/16 of a 430px phone
+       the stage would be 240px, which is fine — but a 340px-wide
+       window on a desktop would give it half the screen for a
+       thumbnail-sized face. */
+    max-height: 52vh;
+    margin-bottom: .6rem;
+    padding: .4rem;
+  }
+
+  /* Folded gets the record out of the way. Stacked, that means
+     collapsing it downward — the desktop rule shrinks a COLUMN to a
+     2.9rem strip, which here would be a 2.9rem-wide sliver. */
+  .room-grid.folded .panel { width: auto; }
+
+  /* The panel gives up its internal scroll. With the document
+     scrolling, a scroll container inside a scroll container is two
+     things fighting over one gesture — and the one the thumb lands
+     on is a matter of a few pixels. */
+  .panel { max-height: none; }
+  .record-wrap { overflow: visible; }
+  .nsf-scroll { overflow: visible; padding-bottom: .8rem; }
+
+  /* The page has an end to run off again. */
+  #consultation-room main { padding-bottom: 1.5rem; }
+
+  /* THE BRIEF STAYS WHOLE. It was cut to one line when the panel had
+     a fixed height to fight over; now that the record can be as long
+     as it likes, there is nothing to buy by hiding her details. One
+     column, because two labelled values in 390px is two truncated
+     values. */
+  .brief {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .45rem;
+    padding: .6rem .7rem;
+  }
+
+  .brief-link a { overflow-wrap: anywhere; }
+
+  /* The waiting card shrinks with the tile it sits in. The note goes
+     — the state chip in the bar just above is already saying the
+     same sentence, and on a short tile the two together push their
+     name down behind the controls. */
+  .await { padding-bottom: 3.4rem; gap: .3rem; }
+  .await .avatar { width: clamp(2.6rem, 12vw, 3.8rem); font-size: 1.2rem; }
+  .await b { font-size: 1rem; }
+  .await-note { display: none; }
+
+  /* The control pill is a fixed width and the self-view is a share of
+     a narrower tile; at the bottom-right they would meet, so the
+     self-view moves up out of the pill's way. */
+  .near { bottom: 3.6rem; right: .5rem; height: clamp(3rem, 20%, 4.6rem); }
+
+  .panel-head { padding: .45rem .7rem; }
+  .nsf-bar { padding: .4rem .7rem; }
+  .pad { padding: .6rem .7rem; }
+}
+
+/* ---- short: a phone on its side -------------------------------
+   Landscape has width to spare and almost no height. A 16:9 stage
+   would eat the screen, so here it is measured against the viewport
+   instead and the record starts within a thumb's reach of it. */
+@media (max-height: 560px) {
+  .stage {
+    aspect-ratio: auto;
+    height: 58vh;
+    min-height: 7.5rem;
+    max-height: none;
+  }
+
+  .await .avatar { display: none; }
+  .await { padding-bottom: 3rem; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .room-state[data-state="live"] .pip { animation: none; }
+  [data-pick] .row:hover { transform: none; }
+}

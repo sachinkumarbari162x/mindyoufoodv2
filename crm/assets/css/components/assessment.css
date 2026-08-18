@@ -1,0 +1,340 @@
+/* ============================================================
+   ASSESSMENT — the clinical record
+   ------------------------------------------------------------
+   People on the left, one version of one visit on the right.
+   Denser than the rest of the CRM because it is read across a
+   whole consultation rather than glanced at between things.
+   ============================================================ */
+
+.nsf-sheet { min-width: 0; }
+.nsf-sheet[hidden] { display: none; }
+
+.nsf-sheet.blank {
+  display: grid;
+  place-items: center;
+  min-height: 14rem;
+  padding: 2rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  color: var(--faint);
+  text-align: center;
+}
+
+.nsf-sheet.blank h3 { margin: 0 0 .3rem; font-size: 1rem; color: var(--soft); }
+.nsf-sheet.blank p { margin: 0; font-size: 13px; }
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .8rem;
+  margin-bottom: 1rem;
+  padding-bottom: .8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.sheet-head h3 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.sheet-head .meta { margin: .15rem 0 0; color: var(--soft); font-size: 12.5px; }
+.sheet-acts { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+
+/* Not a button. A statement about what already happened, which is
+   the whole difference between this and a form with a Save on it. */
+.saved { margin-right: .3rem; color: var(--faint); font-size: 12px; }
+.saved[data-state="saving"] { color: var(--amber); }
+.saved[data-state="saved"] { color: var(--sage); }
+.saved[data-state="failed"] { color: var(--rust); font-weight: 600; }
+
+/* ---- sections ------------------------------------------------ */
+
+.sec { margin-bottom: .7rem; background: var(--raise); border: 1px solid var(--line); }
+
+.sec-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .65rem .9rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sec-head:hover { background: var(--sink); }
+.sec-n { min-width: 1.5rem; color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+.sec-title { font-weight: 600; font-size: 14px; }
+
+.sec-when {
+  margin-left: auto;
+  padding: .05rem .4rem;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.sec-when[data-when="now"] { background: var(--amber-wash); color: var(--amber); }
+.sec-when[data-when="later"] { color: var(--faint); }
+
+.sec-caret { color: var(--faint); font-size: 11px; transition: transform .18s; }
+.sec[data-open="true"] .sec-caret { transform: rotate(90deg); }
+.sec-body { padding: 0 .9rem 1rem; border-top: 1px solid var(--line-soft); }
+.sec[data-open="false"] .sec-body { display: none; }
+.sec-note { margin: .7rem 0 .9rem; color: var(--soft); font-size: 12.5px; }
+
+/* ---- fields -------------------------------------------------- */
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: .8rem .9rem;
+}
+
+.fld { display: flex; flex-direction: column; gap: .22rem; min-width: 0; }
+.fld.wide { grid-column: 1 / -1; }
+.fld label { color: var(--ink-2); font-size: 12.5px; font-weight: 600; }
+.fld .hint { color: var(--faint); font-size: 11.5px; }
+.fld .unit { color: var(--faint); font-weight: 400; }
+
+.fld input,
+.fld select,
+.fld textarea {
+  width: 100%;
+  padding: .4rem .5rem;
+  border: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+}
+
+.fld textarea { resize: vertical; min-height: 2.4rem; }
+
+.fld input:focus,
+.fld select:focus,
+.fld textarea:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-wash);
+}
+
+/* Identity is shown and cannot be typed over. */
+.fld input[readonly] { background: var(--sink); color: var(--ink-2); cursor: default; }
+.fld input[readonly]:focus { border-color: var(--line); box-shadow: none; }
+
+/* Calculated fields are output. Typing into one should feel
+   impossible, so it does not look like an input. */
+.fld .calc {
+  padding: .4rem .5rem;
+  border: 1px dashed var(--line);
+  background: var(--sink);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fld .calc[data-empty="true"] { color: var(--faint); }
+
+/* ---- versions ------------------------------------------------ */
+
+.versions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-bottom: .9rem;
+  padding: .45rem .55rem;
+  background: var(--sink);
+  border: 1px solid var(--line-soft);
+}
+
+.versions[hidden] { display: none; }
+
+.versions-label {
+  margin-right: .3rem;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.ver {
+  padding: .22rem .5rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.ver:hover { border-color: var(--amber-bright); }
+
+.ver[aria-current="true"] {
+  background: var(--amber-wash);
+  border-color: var(--amber-bright);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.superseded {
+  margin: 0 0 .9rem;
+  padding: .65rem .85rem;
+  background: #fff4e6;
+  border-left: 3px solid var(--amber-bright);
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.superseded[hidden] { display: none; }
+
+.ver-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--amber);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Read-only: the whole sheet reads as a record rather than a form,
+   without a word being spent saying so. */
+body[data-readonly="true"] .fld input,
+body[data-readonly="true"] .fld select,
+body[data-readonly="true"] .fld textarea,
+body[data-readonly="true"] .notes textarea {
+  background: var(--sink);
+  color: var(--ink-2);
+}
+
+/* ---- what an amendment changed ------------------------------- */
+
+.fld[data-changed="true"] label { color: var(--rust); }
+
+.fld[data-changed="true"] input,
+.fld[data-changed="true"] select,
+.fld[data-changed="true"] textarea {
+  border-color: var(--rust);
+  box-shadow: inset 3px 0 0 var(--rust);
+}
+
+.changed {
+  color: var(--rust);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ---- the notes box ------------------------------------------- */
+
+.notes {
+  margin-top: 1rem;
+  padding: .8rem .9rem 1rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+}
+
+.notes label {
+  display: block;
+  margin-bottom: .3rem;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.notes textarea {
+  width: 100%;
+  padding: .5rem .6rem;
+  border: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.notes textarea:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-wash);
+}
+
+@media (max-width: 860px) {
+}
+
+/* Printing gives the record, not the application. */
+@media print {
+  .masthead,
+  .sheet-acts,
+  .sec-caret,
+  .sec-when,
+  .versions { display: none !important; }
+
+  .sec[data-open="false"] .sec-body { display: block !important; }
+}
+
+/* ---- one identity line, where a second header used to be ------
+   The bar above carries the name and the actions, so this is only
+   the reference and the date — two facts, one line, and about six
+   rems of the screen handed back to the form. */
+.sheet-line {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin: 0 0 .9rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.sheet-line-meta { color: var(--soft); font-family: var(--sans); font-size: 12.5px; }
+
+/* The client list, inside the workspace aside. */
+.work-aside .find { display: block; padding: .7rem .7rem .5rem; }
+
+.work-aside .find input {
+  width: 100%;
+  padding: .4rem .55rem;
+  border: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+}
+
+.work-aside .list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 .4rem .6rem; }
+
+.work-aside .row {
+  width: 100%;
+  display: block;
+  padding: .5rem .6rem;
+  margin: 0;
+  border: 1px solid transparent;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.work-aside .row:hover { background: var(--sink); }
+
+.work-aside .row[aria-current="true"] {
+  background: var(--amber-wash);
+  border-color: var(--amber-bright);
+}
+
+.work-aside .row .who { display: block; font-weight: 600; font-size: 13.5px; }
+.work-aside .row .sub { display: block; color: var(--faint); font-size: 11.5px; }

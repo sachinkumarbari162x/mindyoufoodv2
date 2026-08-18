@@ -1,0 +1,101 @@
+/* ============================================================
+   RECEPTIONIST · LAUNCHER
+   The floating button that opens the desk. Sits bottom-right,
+   above everything except the window it opens.
+   ============================================================ */
+
+.rcp-launcher {
+  position: fixed;
+  right: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: var(--rcp-z-launcher);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 12px 14px;
+  border: 1px solid var(--rcp-glass-rim);
+  border-radius: 999px;
+  cursor: pointer;
+
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-0);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--rcp-ink);
+
+  background: linear-gradient(180deg, var(--rcp-amber-hi), var(--rcp-amber));
+  box-shadow: var(--rcp-shadow-sm);
+  transition: transform 0.4s var(--rcp-ease-out), box-shadow 0.4s var(--rcp-ease),
+    opacity 0.3s var(--rcp-ease);
+}
+
+.rcp-launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 44px -18px rgba(20, 16, 12, 0.6);
+}
+
+.rcp-launcher:focus-visible {
+  outline: 2px solid var(--rcp-ink);
+  outline-offset: 3px;
+}
+
+/* Open state: the launcher is redundant while the window is up,
+   and on mobile it would sit on top of the composer. Hidden from
+   the a11y tree too — the window's own close button takes over. */
+.rcp[data-open="true"] .rcp-launcher {
+  opacity: 0;
+  transform: translateY(8px) scale(0.94);
+  pointer-events: none;
+}
+
+.rcp-launcher-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(20, 16, 12, 0.12);
+}
+
+.rcp-launcher-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: var(--rcp-ink);
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Unread/attention dot — the receptionist opened with a greeting
+   the visitor has not seen yet. */
+.rcp-launcher-dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rcp-rust);
+  border: 2px solid var(--rcp-cream-hi);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.3s var(--rcp-ease), transform 0.4s var(--rcp-ease-out);
+}
+
+.rcp[data-unread="true"] .rcp-launcher-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (max-width: 480px) {
+  /* Label drops on the narrowest screens; the icon carries it. */
+  .rcp-launcher-label {
+    display: none;
+  }
+  .rcp-launcher {
+    padding: 12px;
+  }
+}

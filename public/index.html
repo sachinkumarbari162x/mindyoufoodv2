@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Mind Your Food — Personalized Nutrition</title>
+  <meta name="description"
+    content="Personalized nutrition built on medical nutrition therapy — protein, fibre, carbohydrates, fats and the micronutrients that quietly run your metabolism, shaped around your real life." />
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- No font preloads here on purpose. The only thing on this page
+       that uses the receptionist's typefaces is the invite panel,
+       which is well below the fold — preloading them would compete
+       with the hero video for bandwidth to render nothing visible.
+       consult.html preloads them, because there they ARE the fold. -->
+
+  <!-- One manifest of @imports; every rule lives in a component
+       file under assets/css/. See main.css for the layering. -->
+  <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+
+<body>
+
+  <!-- Scroll target for "back to top" and the brand links.
+
+       They used to point at #hero, which could never work: .hero is
+       `position: sticky; top: 0`, so it is pinned to the top of the
+       viewport at every scroll position. The browser scrolls an anchor
+       target into view, saw it was already exactly where it should be,
+       and did nothing. The button looked broken because it was.
+
+       This span sits at document position 0 and is not sticky, so
+       jumping to it means jumping to the top. Empty and aria-hidden —
+       it is a coordinate, not content. -->
+  <span id="top" aria-hidden="true"></span>
+
+  <!-- ══════════════════════ LIQUID-GLASS NAVIGATION ══════════════════════ -->
+  <nav class="nav" id="nav" aria-label="Primary">
+    <div class="nav-glass">
+     <div class="nav-inner">
+      <a href="#top" class="brand"><i>Mind</i> <b>Your Food</b></a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#nutrients" data-nav>Nutrients</a></li>
+        <li><a href="#approach" data-nav>Approach</a></li>
+        <li><a href="#focus" data-nav>Focus</a></li>
+        <li><a href="#method" data-nav>Method</a></li>
+        <li><a href="#myths" data-nav>Myths</a></li>
+        <li class="nav-pill" id="navPill" aria-hidden="true"></li>
+      </ul>
+
+      <div class="nav-actions">
+
+        <!-- Straight to the desk page rather than scrolling to the
+             invite panel: the visitor asked to book, so make that the
+             next thing that happens. -->
+        <a href="./consult.html" class="btn btn-glass nav-cta">Book a consultation</a>
+
+        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"
+          aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+     </div>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════ HERO — split: copy left, nutrients right ══════════════════════ -->
+  <header class="hero hero-split" id="hero">
+    <!-- The original clip, untouched, on the browser's own `loop`. No
+         re-encode, no playbackRate, no seeking, nothing reading its
+         position — every one of those made it read as stuck. The
+         nutrient list runs on its own clock, independent of this. -->
+    <video class="hero-video" id="heroVideo" autoplay loop muted playsinline
+      preload="auto" poster="./media/poster.jpg"
+      disablepictureinpicture disableremoteplayback
+      aria-hidden="true" tabindex="-1">
+      <source src="./media/video1.mp4" type="video/mp4">
+    </video>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <div class="hero-inner" id="heroInner">
+
+      <!-- ── left: the pitch ── -->
+      <div class="hero-left">
+        <p class="eyebrow">Personalized nutrition · Built for real life</p>
+        <h1>Food that <em>heals,</em> nourishes &amp; fits your real life.</h1>
+        <p class="hero-lead">
+          No crash diets. No restriction. Medical nutrition therapy shaped around your body,
+          your culture and your hormones.
+        </p>
+        <div class="hero-cta">
+          <a href="#consult" class="btn btn-solid">Begin your plan</a>
+          <a href="#nutrients" class="btn btn-glass">Learn the basics</a>
+        </div>
+      </div>
+
+      <!-- ── right: nutrients, revealed in step with the video ── -->
+      <aside class="nl" id="nl" aria-label="Key nutrients">
+        <div class="nl-head">
+          <span class="nl-title">Macros &amp; micros</span>
+          <span class="nl-count"><b id="nlSeen">0</b> / 6</span>
+        </div>
+
+        <!-- Meta is deliberately one line: daily intake as a share of
+             body weight. Macros convert exactly from g/kg. Fibre is
+             derived for a ~70 kg reference (it isn't dosed by weight
+             clinically) and micronutrients are genuinely trace — both
+             are labelled as such rather than given a fake percentage. -->
+        <ol class="nl-list" id="nlList">
+          <li class="nl-item" data-at="0.03">
+            <span class="nl-tag">Macro</span>
+            <h3>Protein</h3>
+            <span class="nl-num">0.08–0.12% <i>of body weight</i></span>
+          </li>
+          <li class="nl-item" data-at="0.19">
+            <span class="nl-tag">Macro</span>
+            <h3>Fibre</h3>
+            <span class="nl-num">≈0.04% <i>of body weight</i></span>
+          </li>
+          <li class="nl-item" data-at="0.35">
+            <span class="nl-tag">Macro</span>
+            <h3>Carbohydrates</h3>
+            <span class="nl-num">0.30–0.50% <i>of body weight</i></span>
+          </li>
+          <li class="nl-item" data-at="0.51">
+            <span class="nl-tag">Macro</span>
+            <h3>Fats</h3>
+            <span class="nl-num">0.08–0.10% <i>of body weight</i></span>
+          </li>
+          <li class="nl-item" data-at="0.67">
+            <span class="nl-tag">Micro</span>
+            <h3>Vitamins</h3>
+            <span class="nl-num">trace <i>· µg to mg daily</i></span>
+          </li>
+          <li class="nl-item" data-at="0.83">
+            <span class="nl-tag">Micro</span>
+            <h3>Minerals</h3>
+            <span class="nl-num">trace <i>· µg to mg daily</i></span>
+          </li>
+        </ol>
+
+        <div class="nl-progress" aria-hidden="true"><span id="nlBar"></span></div>
+        <p class="nl-foot">Approximate daily intake · your numbers depend on your labs and activity</p>
+      </aside>
+
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true"><span></span>Scroll</div>
+  </header>
+
+
+  <!-- ══════════════════════ MAIN — pulls up over the hero ══════════════════════ -->
+  <main class="sheet" id="sheet">
+
+    <!-- ───── APPROACH ───── -->
+    <section class="wrap band" id="approach">
+      <div class="split">
+        <div class="split-side reveal">
+          <p class="eyebrow">In one word</p>
+          <p class="word">Personalized.</p>
+        </div>
+        <div class="split-body reveal">
+          <p>I believe food should heal, nourish, and fit into real life — never feel like a punishment.</p>
+          <p>My work combines medical nutrition therapy with the things diets usually ignore: your lifestyle,
+            your culture, your hormones, and your mental well-being. That's how habits actually last.</p>
+          <p>I won't hand you a generic meal plan. I'll build one around <em>you</em> — and then I'll stay
+            beside you while you make it your own. You stay accountable; I make sure you're never doing it alone.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── MARQUEE ───── -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>PCOS &amp; Hormonal Health</span><span>Diabetes Care</span><span>Gut Health</span>
+        <span>Weight Management</span><span>Sports Nutrition</span><span>Sustainable Transformation</span>
+        <span>PCOS &amp; Hormonal Health</span><span>Diabetes Care</span><span>Gut Health</span>
+        <span>Weight Management</span><span>Sports Nutrition</span><span>Sustainable Transformation</span>
+      </div>
+    </div>
+
+    <!-- ───── NUTRIENTS ───── -->
+    <section class="wrap band" id="nutrients">
+      <div class="sec-head reveal">
+        <p class="eyebrow">The building blocks</p>
+        <h2>Macros &amp; <em>micros</em></h2>
+        <p class="sec-sub">Six things every plan has to get right. Not rules to fear — levers to
+          use, in the amounts your body actually needs.</p>
+      </div>
+
+      <!-- ───── THE PLATE ─────
+           Macros left, the plate itself in the middle, micros right.
+           This is the one-glance version of the section: it says
+           "here is what a plate is made of" before the six cards
+           below go into what each one does. Stacks to a single
+           column on narrow screens, with the plate pulled to the
+           top so the image still leads. -->
+      <div class="plate-grid reveal" aria-label="What a balanced plate is made of">
+        <div class="plate-col plate-col-macros">
+          <h3 class="plate-col-title">Macros</h3>
+          <ul class="plate-list">
+            <li>
+              <h4>Protein</h4>
+              <p>0.8–1.2 g per kg body weight. Repairs tissue and keeps you full.</p>
+            </li>
+            <li>
+              <h4>Fibre</h4>
+              <p>25–30 g daily. Feeds the gut microbiome.</p>
+            </li>
+            <li>
+              <h4>Carbohydrates</h4>
+              <p>45–60% of daily energy. Your body's preferred fuel.</p>
+            </li>
+            <li>
+              <h4>Fats</h4>
+              <p>20–35% of daily energy. Essential for hormones.</p>
+            </li>
+          </ul>
+        </div>
+
+        <figure class="plate-figure">
+          <img src="./media/Screenshot%202026-08-11%20083556.png"
+               alt="A balanced plate of whole foods" loading="lazy" decoding="async">
+        </figure>
+
+        <div class="plate-col plate-col-micros">
+          <h3 class="plate-col-title">Micros</h3>
+          <ul class="plate-list">
+            <li>
+              <h4>Vitamins</h4>
+              <p>Trace amounts, µg to mg. Essential for immunity and repair.</p>
+            </li>
+            <li>
+              <h4>Minerals</h4>
+              <p>Trace amounts, µg to mg. Critical for energy and bone strength.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="disclaimer reveal">General nutrition guidance, not medical advice. Your numbers depend on your
+        labs, medication, activity and history — that is exactly what a consultation is for.</p>
+    </section>
+
+    <!-- ───── FOCUS AREAS ───── -->
+    <section class="wrap band" id="focus">
+      <div class="sec-head reveal">
+        <p class="eyebrow">What I work with</p>
+        <h2>Focus <em>areas</em></h2>
+      </div>
+
+      <div class="focus-grid">
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="12" cy="9" r="5" />
+            <path d="M12 14v7M9 18h6" stroke-linecap="round" />
+          </svg>
+          <h3>PCOS &amp; Hormonal Health</h3>
+          <p>Nutrition that works with your cycle and hormones, not against them.</p>
+        </article>
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 7h18l-2 13H5L3 7Z" />
+            <path d="M8 7a4 4 0 0 1 8 0" stroke-linecap="round" />
+          </svg>
+          <h3>Weight Management</h3>
+          <p>Sustainable change without crash diets or the rebound that follows them.</p>
+        </article>
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11Z" />
+          </svg>
+          <h3>Diabetes Care</h3>
+          <p>Evidence-based, certified guidance to manage blood sugar through food.</p>
+        </article>
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 3v4M12 7c-4 0-6 3-6 7s2 4 2 4M12 7c4 0 6 3 6 7s-2 4-2 4" stroke-linecap="round" />
+          </svg>
+          <h3>Gut Health</h3>
+          <p>Calm digestion and a healthier microbiome through targeted, gentle changes.</p>
+        </article>
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="14" cy="5" r="2" />
+            <path d="M5 21l4-6 3 2 2-5 4 4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h3>Sports Nutrition</h3>
+          <p>Fuel performance, recovery, and body composition with precision.</p>
+        </article>
+        <article class="focus-card reveal">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 21s-7-5-7-11a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 6-7 11-7 11Z" />
+          </svg>
+          <h3>Sustainable Transformation</h3>
+          <p>A lifestyle you can actually keep — long after the program ends.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ───── METHOD ───── -->
+    <section class="wrap band" id="method">
+      <div class="sec-head reveal">
+        <p class="eyebrow">How we work together</p>
+        <h2>A method built on <em>accountability</em></h2>
+      </div>
+
+      <ol class="steps">
+        <li class="step reveal">
+          <div class="no">Step 01</div>
+          <h3>Listen &amp; assess</h3>
+          <p>We start with a proper conversation, not a questionnaire. Your medical history, any
+            recent labs, the medication you take, how you sleep, how you actually eat on a bad
+            week — and what you have already tried that did not hold.</p>
+          <p>Most plans fail because they were built on a guess about one of those. Nothing gets
+            designed until the picture is complete.</p>
+        </li>
+        <li class="step reveal">
+          <div class="no">Step 02</div>
+          <h3>Personalize</h3>
+          <p>Then the plan is built around the food you already eat — your kitchen, your culture,
+            your budget, and the time you genuinely have on a weekday evening. It works with your
+            hormones and whatever we are managing rather than around them.</p>
+          <p>If something in it does not fit your life, it is the wrong plan. We change the plan;
+            you do not have to change your life to fit it.</p>
+        </li>
+        <li class="step reveal">
+          <div class="no">Step 03</div>
+          <h3>Stay accountable</h3>
+          <p>We meet regularly, and you lead those sessions. You tell me what worked, what you
+            quietly dropped, and where the week fell apart — none of which is a failure. It is the
+            information the next adjustment is built from.</p>
+          <p>My job is to keep the plan honest and the pace realistic. The ownership stays yours;
+            what you never have to do is any of it alone.</p>
+        </li>
+        <li class="step reveal">
+          <div class="no">Step 04</div>
+          <h3>Sustain</h3>
+          <p>As things settle we take the scaffolding away — fewer rules, fewer check-ins, more of
+            it running on habit rather than on effort.</p>
+          <p>The aim is a way of eating you could keep for years without thinking about it, not a
+            protocol you are relieved to finish. By the end you should be able to handle a holiday,
+            a hard month, or a change in your health without needing me to rebuild it.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ───── MYTHS ───── -->
+    <section class="wrap band" id="myths">
+      <div class="sec-head reveal">
+        <p class="eyebrow">From the journal</p>
+        <h2>Myths, <em>minded</em></h2>
+      </div>
+
+      <div class="myth-list">
+        <div class="myth reveal">
+          <span class="myth-tag">Myth</span>
+          <div>
+            <p class="claim">Carbs make you gain weight.</p>
+            <p class="truth">Quantity, quality, and context decide outcomes — not a single macronutrient.
+              The right carbs support hormones and energy.</p>
+          </div>
+        </div>
+        <div class="myth reveal">
+          <span class="myth-tag">Myth</span>
+          <div>
+            <p class="claim">Skipping meals speeds up fat loss.</p>
+            <p class="truth">It often slows metabolism and triggers later overeating. Consistent, balanced
+              meals work far better.</p>
+          </div>
+        </div>
+        <div class="myth reveal">
+          <span class="myth-tag">Myth</span>
+          <div>
+            <p class="claim">Detox teas &amp; cleanses reset your body.</p>
+            <p class="truth">Your liver and kidneys already do that. Real results come from sustainable food
+              habits, not a 7-day fix.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── QUOTE BAND ───── -->
+    <section class="attention">
+      <div class="wrap reveal">
+        <blockquote>"I don't believe in one plan for everyone. I believe in <span>your</span> plan — and in
+          being there while you live it."</blockquote>
+        <cite>— Mind Your Food</cite>
+      </div>
+    </section>
+
+    <!-- ───── CONSULT ───── -->
+    <section class="wrap band" id="consult">
+      <div class="consult-card reveal">
+        <p class="eyebrow">Let's begin</p>
+        <h2>Your personalized plan starts with a <em>conversation</em></h2>
+        <p class="sec-sub">Tell me a little about you and what you'd like to work on. I take on a limited
+          number of clients to give each one real attention — I'll reply personally.</p>
+        <div class="consult-cta">
+          <a href="./consult.html" class="btn btn-solid">Request a consultation</a>
+          <a href="#top" class="btn btn-line">Back to top</a>
+        </div>
+        <p class="hero-note">By appointment · Personalized to one client at a time</p>
+      </div>
+
+    </section>
+
+    <!-- ───── NEWSLETTER ─────
+         Sits under the consultation ask on purpose: someone who is
+         not ready to book still has somewhere to go, and a weekly
+         myth is a low-commitment way to stay in touch.
+
+         Double opt-in — this only ever triggers a confirmation
+         email; nothing is subscribed until that link is clicked.
+         The response is deliberately generic whether or not the
+         address is already on the list. -->
+    <section class="wrap band" id="newsletter">
+      <div class="news-card reveal">
+        <div class="news-copy">
+          <p class="eyebrow">Every Sunday</p>
+          <h2>One nutrition myth, <em>dismantled</em></h2>
+          <p class="news-lead">
+            A short weekly note taking apart one thing you have been told about food —
+            what the claim is, what the evidence actually says, and what to do instead.
+            No plans to buy, no fear, no detox teas.
+          </p>
+          <ul class="news-points">
+            <li>Written by Khadija, not scraped from anywhere</li>
+            <li>Roughly a three-minute read</li>
+            <li>One click to leave, any week</li>
+          </ul>
+        </div>
+
+        <form class="news-form" id="newsletterForm" novalidate>
+          <label class="news-label" for="newsEmail">Your email</label>
+          <div class="news-row">
+            <input class="news-input" id="newsEmail" name="email" type="email"
+                   inputmode="email" autocomplete="email" required
+                   placeholder="you@example.com" aria-describedby="newsNote">
+            <button class="btn btn-solid news-submit" type="submit">Send me Sunday's</button>
+          </div>
+
+          <!-- Honeypot: bots fill it, people never see it. Mirrors the
+               `company` field the appointments endpoint already uses. -->
+          <div class="news-hp" aria-hidden="true">
+            <label for="newsCompany">Company</label>
+            <input id="newsCompany" name="company" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <p class="news-note" id="newsNote">
+            You'll get one confirmation email first — the subscription only starts once you
+            click the link in it. <a href="https://mindyourfood.co.in/privacy.html">Privacy</a>.
+          </p>
+
+          <p class="news-status" data-news-status role="status" aria-live="polite"></p>
+
+          <noscript>
+            <p class="news-note">
+              Signing up needs JavaScript. Email
+              <a href="mailto:khadija@mindyourfood.co.in?subject=Newsletter">khadija@mindyourfood.co.in</a>
+              with the subject "Newsletter" and you'll be added.
+            </p>
+          </noscript>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ══════════════════════ FOOTER ══════════════════════ -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a href="#top" class="brand"><i>Mind</i> <b>Your Food</b></a>
+          <p>A personalized nutrition platform helping you achieve better health through practical,
+            sustainable, and science-based dietary guidance.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Explore</h4>
+          <a href="#nutrients">Macros &amp; micros</a>
+          <a href="#approach">Approach</a>
+          <a href="#focus">Focus areas</a>
+          <a href="#method">Method</a>
+          <a href="#myths">Myth journal</a>
+        </div>
+        <div class="foot-col">
+          <h4>Work with me</h4>
+          <a href="./consult.html">Book a consultation</a>
+          <a href="#consult">WhatsApp</a>
+          <a href="#consult">Telegram</a>
+          <a href="#consult">Instagram</a>
+        </div>
+        <div class="foot-col">
+          <h4>Legal</h4>
+          <a href="https://mindyourfood.co.in/privacy.html">Privacy</a>
+          <a href="https://mindyourfood.co.in/terms.html">Terms</a>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>© <span id="yr"></span> Mind Your Food · Clinical Dietitian &amp; Sports Nutritionist</span>
+        <span class="made">made by <a href="#" class="odin">brownOdin</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════ FRONT-DESK ICON ══════════════════════
+       The front desk deliberately does NOT live on this page. It is
+       its own route (consult.html), so the marketing page never pays
+       for the chat widget, the ambient canvas renderer, or the chat
+       stylesheet — none of which a visitor who is only reading needs.
+
+       What ships here is this: one anchor and one SVG. Being a real
+       link rather than a scripted button means it works with no JS,
+       middle-clicks into a new tab, and shows its destination on
+       hover like any other link. -->
+  <a class="chat-fab" href="./consult.html"
+     aria-label="Open the front desk to book a consultation">
+    <span class="chat-fab-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12Z" />
+        <path d="M8.6 11.2h6.8M8.6 14h4.2" />
+      </svg>
+    </span>
+    <span class="chat-fab-label">Book a consultation</span>
+  </a>
+
+  <script src="./assets/js/site.js"></script>
+</body>
+
+</html>

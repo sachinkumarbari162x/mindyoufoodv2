@@ -1,0 +1,428 @@
+/* ============================================================
+   DASHBOARD HOME — the practice, measured
+   ------------------------------------------------------------
+   The third of three ways of looking at this practice. Overview
+   is a digest, Console is a work surface, this is the one you
+   think in front of.
+
+   IT IS INFORMATION DESIGN, NOT TYPOGRAPHY. A document is read
+   top to bottom and gets its craft from the type; this is scanned,
+   and gets its craft from making the thing that needs attention
+   read at a glance. So: summary above detail, state encoded in
+   shape as well as number, and figures that line up in columns.
+
+   NO COLOUR IS DECLARED HERE. Every one comes from tokens.css,
+   including the two chart hues — and there are only two, because
+   the palette was checked with a validator rather than by eye and
+   four hues could not be told apart under deuteranopia on this
+   beige. The note in tokens.css has the numbers.
+   ============================================================ */
+
+.dash {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+/* ---- the head ---------------------------------------------------- */
+
+.dash-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: .4rem;
+}
+
+.dash-id { min-width: 0; }
+
+.dash-eyebrow {
+  margin: 0;
+  color: var(--amber);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.dash-head h2 {
+  margin: .1rem 0 0;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.dash-acts { margin-left: auto; }
+
+/* The switcher lives in components/home-modes.css — three
+   pages use it and none of them owns it. */
+
+/* ---- the grid ----------------------------------------------------- */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: .8rem;
+  align-items: start;
+}
+
+.dash-card {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  padding: .8rem .9rem 1rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+}
+
+/* The two that carry a shape rather than a list get the full width
+   where there is any to give. */
+@media (min-width: 60rem) {
+  .dash-wide { grid-column: span 2; }
+}
+
+.dash-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.dash-card-head h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.dash-card-head .grow { flex: 1; }
+
+.dash-note { color: var(--faint); font-size: 11px; }
+
+.dash-link {
+  margin-left: auto;
+  color: var(--amber);
+  font-size: 11.5px;
+  text-decoration: none;
+}
+
+.dash-link:hover { text-decoration: underline; }
+
+.dash-card .empty {
+  margin: 0;
+  padding: 1rem .2rem;
+  color: var(--faint);
+  font-size: 12.5px;
+}
+
+/* ---- bars ---------------------------------------------------------
+   A bar chart is a row of rectangles with text in it, which is what
+   HTML already is. SVG here would buy nothing and cost the text
+   selection, the ellipsis and the reflow that come free. */
+
+.funnel, .bars { display: flex; flex-direction: column; gap: .3rem; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr) 2.6rem;
+  align-items: center;
+  gap: .5rem;
+  padding: .12rem .15rem;
+}
+
+.bar-row[data-href] { cursor: pointer; }
+.bar-row[data-href]:hover { background: var(--sink); }
+
+.bar-l {
+  color: var(--ink-2);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The track is where the bar ISN'T. Faint, because a full-strength
+   track competes with the data drawn on top of it. */
+.bar-track {
+  position: relative;
+  display: block;
+  height: 14px;
+  min-width: 0;
+  background: var(--chart-track);
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--chart-1);
+  /* 4px on the leading end only, anchored to the baseline — a bar
+     rounded at both ends reads as a pill and loses its zero. */
+  border-radius: 0 3px 3px 0;
+}
+
+/* THE FUNNEL'S ONE HUE, LIGHT TO DARK. Five stages of a single
+   pipeline are magnitude, not identity: colouring them separately
+   would claim a difference in kind that is not there. */
+.bar-fill[data-step="1"] { background: var(--chart-ramp-1); }
+.bar-fill[data-step="2"] { background: var(--chart-ramp-2); }
+.bar-fill[data-step="3"] { background: var(--chart-ramp-3); }
+.bar-fill[data-step="4"] { background: var(--chart-ramp-4); }
+.bar-fill[data-step="5"] { background: var(--chart-ramp-5); }
+
+.bar-v {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.bar-sub {
+  grid-column: 2 / -1;
+  margin-top: -.1rem;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- programmes ---------------------------------------------------- */
+
+.progs { display: flex; flex-direction: column; gap: .7rem; }
+
+.prog { display: flex; flex-direction: column; gap: .25rem; }
+
+.prog-top {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+}
+
+.prog-who {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prog-n {
+  margin-left: auto;
+  color: var(--soft);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.prog-sub { margin: 0; color: var(--faint); font-size: 11px; }
+.prog-sub b { color: var(--rust); font-weight: 600; }
+
+/* ---- the week -----------------------------------------------------
+   The only chart here that uses colour to tell two things apart,
+   which is exactly the number the palette was validated for. */
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: .4rem;
+  align-items: end;
+  height: 9rem;
+}
+
+.week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  height: 100%;
+}
+
+.week-cols {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;               /* the surface gap between adjacent fills */
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border-bottom: 1px solid var(--chart-grid);
+}
+
+.week-col {
+  width: 40%;
+  max-width: 1.1rem;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--chart-track);
+}
+
+.week-col[data-series="1"] { background: var(--chart-1); }
+.week-col[data-series="2"] { background: var(--chart-2); }
+
+.week-n {
+  color: var(--faint);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+}
+
+/* A legend is always present for two series, and the two are also
+   the only coloured things in this card — identity is never
+   colour-alone anywhere on the page. */
+.legend { display: flex; gap: .7rem; }
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  color: var(--soft);
+  font-size: 11px;
+}
+
+.key i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--chart-track);
+}
+
+.key i[data-series="1"] { background: var(--chart-1); }
+.key i[data-series="2"] { background: var(--chart-2); }
+
+/* ---- the machinery -------------------------------------------------
+   Status colour is reserved and never used for a series. Every line
+   carries a WORD as well as a dot: a red dot on its own is a thing
+   somebody has to have been taught, and says nothing at all to a
+   reader who cannot separate it from the green one. */
+
+.health { display: flex; flex-direction: column; }
+
+.health-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .1rem;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+}
+
+.health-row:last-child { border-bottom: 0; }
+
+.health-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.health-row[data-state="good"] .health-dot { background: var(--sage); }
+.health-row[data-state="warning"] .health-dot { background: var(--amber-bright); }
+.health-row[data-state="critical"] .health-dot { background: var(--rust); }
+
+.health-n { color: var(--ink-2); }
+
+.health-s {
+  margin-left: auto;
+  color: var(--soft);
+  font-size: 11.5px;
+  text-align: right;
+}
+
+.health-row[data-state="critical"] .health-s { color: var(--rust); font-weight: 600; }
+
+/* ---- the assistant -------------------------------------------------- */
+
+.model-row { padding: .2rem 0; }
+
+.model-name {
+  margin: 0;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  overflow-wrap: anywhere;
+}
+
+.model-rate {
+  margin: .1rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.model-sub { margin: .15rem 0 0; color: var(--soft); font-size: 11.5px; line-height: 1.4; }
+
+/* ---- the table ------------------------------------------------------
+   Not a fallback for a broken browser. A second way to read the same
+   rows — for a screen reader, for a copy into an email, and for
+   anybody who wants the number rather than the picture. */
+
+.dash-table {
+  margin-top: .3rem;
+  border-top: 1px solid var(--line);
+  padding-top: .5rem;
+}
+
+.dash-table > summary {
+  color: var(--soft);
+  font-size: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dash-table > summary::-webkit-details-marker { display: none; }
+.dash-table > summary::before { content: "▸ "; color: var(--faint); }
+.dash-table[open] > summary::before { content: "▾ "; }
+.dash-table > summary:hover { color: var(--ink-2); }
+
+.dash-tbl {
+  width: 100%;
+  max-width: 30rem;
+  margin-top: .5rem;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.dash-tbl th {
+  padding: .25rem .5rem .25rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.dash-tbl td {
+  padding: .3rem .5rem .3rem 0;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink-2);
+}
+
+.dash-tbl td.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  width: 5rem;
+}
+
+/* ---- narrow ---------------------------------------------------------- */
+
+@media (max-width: 34rem) {
+  .bar-row { grid-template-columns: minmax(5rem, 7rem) minmax(0, 1fr) 2.2rem; }
+  .dash-head h2 { font-size: 1.15rem; }
+  .week-grid { height: 7rem; gap: .25rem; }
+  .modes { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .modes, .dash-acts, .dash-link { display: none; }
+  .dash-grid { display: block; }
+  .dash-card { break-inside: avoid; border-color: #999; }
+}

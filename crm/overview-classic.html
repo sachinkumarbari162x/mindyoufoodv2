@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Overview (retired) · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <!-- ============================================================
+       RETIRED, AND KEPT.
+
+       This was the CRM's home: four stat tiles, an assistant panel
+       and six digests. It was compared against a work-surface
+       console and a measured dashboard, and it lost to the console
+       — it is neither thing, too busy to work from and too shallow
+       to think with.
+
+       It is referred to by nothing. No nav entry, no link, no
+       redirect points here; it is reachable only by typing this
+       address, and it will keep working for as long as the API
+       shapes it reads do.
+
+       IT IS NOT DELETED BECAUSE A DECISION A WEEK OLD IS NOT A
+       DECISION YET. If the console turns out to be wrong on a real
+       Monday, this is what we go back to, and going back should
+       cost a line in masthead.js rather than a rebuild.
+
+       ONE THING IN HERE IS STILL BETTER than what replaced it: the
+       assistant panel, which states the day in a sentence and shows
+       the figures that sentence came from underneath. The console
+       has its own headline and it is not as good. That panel is the
+       piece worth moving across.
+       ============================================================ -->
+  <!-- Main nav: moves between pages. -->
+  <header data-masthead></header>
+
+  <!-- Sub-nav: moves within this page. One row down and smaller, so
+       the two levels never read as the same thing. Overview only. -->
+  <div data-subnav></div>
+
+
+  <main>
+    <section class="fn" id="overview">
+      <div class="fn-head">
+        <p class="eyebrow">At a glance</p>
+        <h2>Overview</h2>
+        <p class="fn-note">
+          The state of every area in one place. Figures are totals for the
+          period, not projections. Lists are the most recent few — each
+          panel links through to the whole thing.
+        </p>
+        <div class="fn-acts">
+          <div class="periods" data-periods role="group" aria-label="Time period">
+            <button type="button" data-period="7d" aria-pressed="true">7 days</button>
+            <button type="button" data-period="30d" aria-pressed="false">30 days</button>
+            <button type="button" data-period="90d" aria-pressed="false">90 days</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-body">
+        <!-- ── assistant ──
+             First, because it is what she opens the CRM to read.
+             It states the day in a sentence and shows the figures
+             that sentence came from directly beneath it. -->
+        <div class="panel" id="p-assistant">
+          <div class="panel-head">
+            <h3>Assistant</h3>
+            <span class="more">Reads your data · never sends anything</span>
+          </div>
+          <div data-assistant></div>
+        </div>
+
+        <div class="stats" data-stats></div>
+
+        <!-- ── requests ── -->
+        <div class="panel" id="p-requests">
+          <div class="panel-head">
+            <h3>Requests</h3>
+            <a class="more" href="./requests.html">Open Requests →</a>
+          </div>
+          <div class="panel-list" data-list="waiting">
+            <p class="empty">Nothing waiting. Anything a visitor books lands here.</p>
+          </div>
+        </div>
+
+        <!-- ── today ── -->
+        <div class="panel" id="p-today">
+          <div class="panel-head">
+            <h3>Today</h3>
+            <a class="more" href="./today.html">Open Today →</a>
+          </div>
+          <div class="panel-list" data-list="today">
+            <p class="empty">Nothing today.</p>
+          </div>
+        </div>
+
+        <!-- ── upcoming ── -->
+        <div class="panel" id="p-upcoming">
+          <div class="panel-head">
+            <h3>Upcoming</h3>
+            <a class="more" href="./upcoming.html">Open Upcoming →</a>
+          </div>
+          <div class="panel-list" data-list="upcoming">
+            <p class="empty">Nothing scheduled yet.</p>
+          </div>
+        </div>
+
+        <!-- ── people ── -->
+        <div class="panel" id="p-people">
+          <div class="panel-head">
+            <h3>People</h3>
+            <a class="more" href="./people.html">Open People →</a>
+          </div>
+          <div class="panel-list" data-list="people">
+            <p class="empty">No one yet.</p>
+          </div>
+        </div>
+
+        <!-- ── messages ── -->
+        <div class="panel" id="p-messages">
+          <div class="panel-head">
+            <h3>Messages</h3>
+            <a class="more" href="./messages.html">Open Messages →</a>
+          </div>
+          <div class="panel-list" data-list="messages">
+            <p class="empty">Nothing sent yet.</p>
+          </div>
+        </div>
+
+        <!-- ── hours ── -->
+        <div class="panel" id="p-hours">
+          <div class="panel-head">
+            <h3>Hours</h3>
+            <a class="more" href="./hours.html">Open Hours →</a>
+          </div>
+          <div class="week" data-week></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/overview.js"></script>
+</body>
+
+</html>

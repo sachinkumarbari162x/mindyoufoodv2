@@ -1,0 +1,113 @@
+/* ============================================================
+   5 · HERO — sticky video stage
+   ============================================================ */
+.hero {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100vh;
+  height: 100svh;
+  min-height: 640px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #0d0a08;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+
+  /* Force the video onto its own compositor layer. Without this the
+     browser re-rasterises the scrim, the nav's backdrop-filter and the
+     hero text against every decoded frame — which is what made a
+     720×1280 clip upscaled ~2.7x to cover a landscape hero judder. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Nothing outside the hero can be affected by what happens inside it,
+   so the compositor can skip a lot of work per frame. */
+.hero {
+  contain: paint;
+}
+
+/* readability scrim — vertical gradient + a soft vignette */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(10, 7, 5, .72) 0%, rgba(10, 7, 5, .3) 32%, rgba(10, 7, 5, .55) 72%, rgba(10, 7, 5, .88) 100%),
+    radial-gradient(120% 80% at 70% 30%, transparent 40%, rgba(10, 7, 5, .55) 100%);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 3;
+  width: min(100% - 3rem, var(--maxw));
+  padding-top: 4rem;
+  color: #FBF6EE;
+  will-change: transform, opacity;
+}
+
+.hero-inner .eyebrow {
+  color: rgba(251, 246, 238, .7);
+}
+
+.hero h1 {
+  font-size: clamp(2.9rem, 7.4vw, 6rem);
+  max-width: 15ch;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, .35);
+}
+
+.hero h1 em {
+  color: var(--rose);
+}
+
+.hero-lead {
+  margin-top: 1.6rem;
+  max-width: 40rem;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  color: rgba(251, 246, 238, .82);
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+  margin-top: 2.2rem;
+}
+
+.hero .btn-solid {
+  background: #FBF6EE;
+  color: #1a1310;
+}
+
+.hero .btn-solid:hover {
+  background: var(--rose);
+  color: #1a1310;
+}
+
+.hero .btn-glass {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .28);
+  color: #FBF6EE;
+}
+
+.hero .btn-glass:hover {
+  background: rgba(255, 255, 255, .2);
+}
+
+.hero-note {
+  margin-top: 1.6rem;
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}

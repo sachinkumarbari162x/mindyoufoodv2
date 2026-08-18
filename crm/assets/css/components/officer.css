@@ -1,0 +1,180 @@
+/* ============================================================
+   THE ASSISTANT — square icon, square panel
+   ------------------------------------------------------------
+   Pinned bottom-right on every page. Square because everything
+   here is square: a round bubble reads as a support widget from
+   somebody else's product.
+   ============================================================ */
+
+.officer-fab {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 60;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  /* A 2px amber edge, not a hairline in --line.
+
+     On an off-white page a 1px light-grey border against a white
+     button is very nearly nothing, and the icon read as invisible.
+     It is the only floating control in the CRM and it has to be
+     findable without hunting for it. */
+  border: 2px solid var(--amber);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(20, 16, 12, .12);
+}
+
+.officer-fab:hover {
+  border-color: var(--amber-bright);
+  background: var(--amber-wash);
+}
+
+.officer-fab:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.officer-mark {
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.officer-mark svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+/* The count, and only when it is not zero. */
+.officer-pip {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--edge);
+  background: var(--rust);
+  color: var(--raise);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.officer-pip[hidden] { display: none; }
+
+/* ---- the panel ---- */
+.officer-panel {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 4.4rem;
+  z-index: 60;
+  width: min(23rem, calc(100vw - 2.4rem));
+  max-height: min(30rem, calc(100vh - 7rem));
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  box-shadow: 0 8px 28px rgba(20, 16, 12, .14);
+}
+
+.officer-panel[hidden] { display: none; }
+
+.officer-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .8rem 1rem .5rem;
+  background: var(--raise);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.officer-head h2 { margin: 0; font-size: 14px; }
+
+.officer-x {
+  border: 0;
+  background: none;
+  color: var(--faint);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.officer-x:hover { color: var(--ink); }
+
+.officer-body { padding: .4rem 1rem .2rem; }
+
+/* ---- one task ----
+   The urgency stripe is on the left edge, so the eye can sort the
+   list before reading a word of it. */
+.task {
+  padding: .7rem 0 .7rem .7rem;
+  border-left: 3px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.task:last-child { border-bottom: none; }
+
+.task[data-urgency="now"] { border-left-color: var(--rust); }
+.task[data-urgency="soon"] { border-left-color: var(--amber); }
+.task[data-urgency="watch"] { border-left-color: var(--line); }
+
+.task-what {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.task-detail {
+  margin: .2rem 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--soft);
+}
+
+.task-go {
+  display: inline-block;
+  margin-top: .4rem;
+  font-size: 12.5px;
+  color: var(--amber);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.task-go:hover { border-bottom-color: var(--amber); }
+
+.officer-clear {
+  margin: .6rem 0 .2rem;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.officer-quiet {
+  margin: 0 0 .6rem;
+  font-size: 12.5px;
+  color: var(--soft);
+}
+
+.officer-foot {
+  margin: 0;
+  padding: .5rem 1rem .8rem;
+  font-size: 11.5px;
+  color: var(--faint);
+}

@@ -1,0 +1,26 @@
+/* ------------------------------------------------------------
+   SPLIT HERO — pitch left, nutrients right
+   ------------------------------------------------------------ */
+.hero-split .hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+  gap: clamp(1.6rem, 5vw, 5rem);
+  align-items: center;
+  padding-top: clamp(4.5rem, 11vh, 6.5rem);
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+}
+
+.hero-split h1 {
+  font-size: clamp(2.05rem, 4.4vw, 4.2rem);
+  max-width: 13ch;
+}
+
+.hero-split .hero-lead {
+  margin-top: clamp(.8rem, 1.6vh, 1.2rem);
+  max-width: 30rem;
+  font-size: clamp(.9rem, 1.15vw, 1.05rem);
+}
+
+.hero-split .hero-cta {
+  margin-top: clamp(1.1rem, 2.4vh, 1.8rem);
+}

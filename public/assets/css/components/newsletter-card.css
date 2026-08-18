@@ -1,0 +1,219 @@
+/* ============================================================
+   NEWSLETTER CARD — "one nutrition myth, dismantled"
+   Sits under the consultation ask. Styled on the SITE's tokens
+   (serif/sans, espresso/rose) rather than the receptionist's:
+   this is the practice's own voice in the page, not part of the
+   front desk.
+
+   Two columns on desktop — the pitch, then the form — collapsing
+   to one on narrow screens with the pitch first, because nobody
+   types their email in before reading what it is for.
+
+   DISSOLVED: no card. No panel, no border, no shadow, no fill — the
+   block sits directly on the sheet the same way the hero's nutrient
+   column does. The type and the single rose rule carry the
+   structure instead, which stops the page turning into a stack of
+   competing boxes right where it is asking for something.
+   ============================================================ */
+
+.news-card {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(26px, 4vw, 58px);
+  align-items: center;
+
+  /* Vertical rhythm only. The horizontal padding a card would have
+     needed is gone, so the copy lines up with every other section
+     on the page rather than sitting inset from it. */
+  padding: clamp(24px, 4vw, 46px) 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* ---- copy ---- */
+.news-copy h2 {
+  margin: 6px 0 12px;
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.news-copy h2 em {
+  font-style: italic;
+  color: var(--rose-deep);
+}
+
+.news-lead {
+  margin: 0 0 18px;
+  max-width: 46ch;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.news-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.news-points li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.news-points li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.6em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rose);
+}
+
+/* ---- form ---- */
+.news-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.news-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.news-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 1rem;
+  color: var(--ink);
+  /* --paper, not --bg: with the card dissolved the field sits
+     straight on the page, and a background matching the page would
+     leave nothing but a hairline to say it is a text box. */
+  background: var(--paper);
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.news-input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.65;
+}
+
+.news-input:focus {
+  outline: none;
+  border-color: var(--rose-deep);
+  box-shadow: 0 0 0 3px var(--rose-wash);
+}
+
+/* Only marked invalid once the field has been touched and left —
+   turning the box red while somebody is still halfway through
+   typing their address is just nagging. */
+.news-input[aria-invalid="true"] {
+  border-color: var(--rose-deep);
+  background: var(--rose-wash);
+}
+
+.news-submit {
+  flex: 0 0 auto;
+  cursor: pointer;
+  border: 0;
+}
+
+.news-submit[disabled] {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+/* Honeypot. Off-screen rather than `display: none` — some bots skip
+   hidden fields, and the ones that do not are exactly the ones this
+   is meant to catch. Never focusable, never announced. */
+.news-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.news-note {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.news-note a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+/* ---- result ----
+   Empty and unstyled until there is something to say, so the card
+   does not reserve a visible gap for a message that may never come.
+   The element itself stays in the DOM either way: it is the
+   aria-live region, and a live region added after the fact is
+   frequently not announced. */
+.news-status {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 0;
+}
+
+.news-status:empty {
+  display: none;
+}
+
+.news-status[data-state="ok"] {
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--rose-wash);
+  border: 1px solid var(--rose);
+}
+
+.news-status[data-state="error"] {
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--rose-deep);
+  background: var(--rose-wash);
+  border: 1px solid var(--rose-deep);
+}
+
+/* ---- stacked ---- */
+@media (max-width: 860px) {
+  .news-card {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+}
+
+@media (max-width: 420px) {
+  .news-submit {
+    width: 100%;
+  }
+}

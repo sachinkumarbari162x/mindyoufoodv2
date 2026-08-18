@@ -1,0 +1,310 @@
+/* ============================================================
+   CHECKOUT
+   ------------------------------------------------------------
+   Written from scratch rather than pulled from main.css, and that
+   is the point: this page has a navigation bar's worth of nothing
+   on it, so importing a manifest that styles a navigation bar
+   would be carrying furniture into an empty room.
+
+   The palette and the typefaces are the site's, so the page is
+   recognisably the same practice. Everything else is subtraction.
+
+   THE HIERARCHY IS THE ARGUMENT. Three sizes, and they answer the
+   three questions in the order they are asked: when is it, what
+   does it cost, and where do I press. Nothing else on the page
+   competes with those, because nothing else on the page matters.
+   ============================================================ */
+
+:root {
+  --ink: #211A15;
+  --ink-soft: #4D4138;
+  --brown: #7A6253;
+  --bg: #FBFAF8;
+  --paper: #FFFFFF;
+  --rose: #C68B91;
+  --rose-deep: #A35C66;
+  --line: rgba(33, 26, 21, .14);
+  --line-soft: rgba(33, 26, 21, .07);
+
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Jost", "Segoe UI", system-ui, sans-serif;
+
+  color-scheme: light;
+}
+
+/* THE ELEMENTS THEMSELVES, NOT JUST THEIR CHILDREN. Narrowing
+   this from `*` to `.card *` left .card out of its own rule — so
+   a card with width:100% and 2.75rem of padding measured wider
+   than the viewport and the page scrolled sideways on a phone.
+   The descendants were never the problem; the box with the
+   padding was. */
+.card, .page, .rcp-till,
+.card *, .card *::before, .card *::after,
+.rcp-till *, .rcp-till *::before, .rcp-till *::after { box-sizing: border-box; }
+
+/* SCOPED TO THE STANDALONE PAGE. This file is loaded by the front
+   desk too now, because the till opens inside its window — and a
+   bare `html, body` rule here would quietly restyle the whole
+   desk: its typeface, its weight, its colour. The card's own
+   rules below are all class-scoped and travel safely; only this
+   one was about the page. */
+body.checkout-page {
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The card sets its own family so it reads the same in both
+   homes, rather than inheriting the desk's. */
+.card, .rcp-till {
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+}
+
+/* The background and the glass are in atmosphere.css, shared
+   with the front desk. This file is only what is ON the card. */
+
+/* The card's shape and size. Its SURFACE — tint, border, blur —
+   comes from .frost, so the desk and the checkout cannot drift
+   apart into two slightly different glasses. */
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 30rem;
+  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 5vw, 2.75rem);
+  border-radius: 1.75rem;
+}
+
+/* Centred in the viewport, not at the top of it. A page with one
+   decision on it should put that decision where the eye already
+   is. */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+}
+
+.state {
+  width: 100%;
+  text-align: center;
+  animation: rise .5s cubic-bezier(.2, .7, .3, 1) both;
+}
+.state[hidden] { display: none; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .state { animation: none; }
+}
+
+/* ---- the offer ---------------------------------------------- */
+
+.eyebrow {
+  margin: 0 0 1.75rem;
+  font-size: .75rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--brown);
+  font-weight: 400;
+}
+
+/* THE HOUR IS THE HEADLINE. It is the thing being bought; the
+   price is only what it costs. */
+.when {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -.01em;
+}
+.when-day {
+  display: block;
+  font-size: clamp(2rem, 7vw, 2.75rem);
+}
+.when-time {
+  display: block;
+  font-size: clamp(2rem, 7vw, 2.75rem);
+  color: var(--rose-deep);
+}
+
+.how {
+  margin: .9rem 0 0;
+  font-size: .9375rem;
+  color: var(--ink-soft);
+}
+
+.rule {
+  height: 1px;
+  background: var(--line-soft);
+  margin: 2.25rem 0;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.price-label {
+  font-size: .875rem;
+  color: var(--ink-soft);
+}
+.price-figure {
+  font-family: var(--serif);
+  font-size: 1.875rem;
+  font-weight: 400;
+  /* Digits that line up. A price is a number people read twice. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- the one action ------------------------------------------
+   Full width, because on a page with a single button there is no
+   argument for it being any narrower. */
+.pay {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.0625rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #F7F2EA;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: .02em;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, opacity .18s ease;
+}
+.pay:hover { background: #2E251E; }
+.pay:active { transform: translateY(1px); }
+.pay:focus-visible { outline: 2px solid var(--rose-deep); outline-offset: 3px; }
+.pay[disabled] { opacity: .5; cursor: default; transform: none; }
+
+.held {
+  margin: 1.125rem 0 0;
+  font-size: .8125rem;
+  color: var(--brown);
+}
+.held strong {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+/* When the hold is nearly out, the countdown says so by itself —
+   no banner, no red, no shouting. */
+.held.is-urgent strong { color: var(--rose-deep); }
+
+.testing {
+  margin: 1.5rem 0 0;
+  /* Wrapped evenly rather than leaving one orphaned word on a
+     phone. */
+  text-wrap: balance;
+  padding: .625rem .875rem;
+  border: 1px dashed var(--line);
+  border-radius: .625rem;
+  font-size: .75rem;
+  letter-spacing: .04em;
+  color: var(--brown);
+}
+.testing[hidden] { display: none; }
+
+/* ---- paid ---------------------------------------------------- */
+
+.tick { display: grid; place-items: center; margin-bottom: 1.5rem; }
+.tick-ring { stroke: var(--line); }
+.tick-mark { stroke: var(--rose-deep); }
+
+/* Drawn rather than shown. It takes a third of a second and it is
+   the only ornament on the page — worth it exactly once, at the
+   moment somebody has just parted with money and wants to be told
+   it worked. */
+.tick-mark {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  animation: draw .45s .1s cubic-bezier(.2, .7, .3, 1) forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .tick-mark { animation: none; stroke-dashoffset: 0; }
+}
+
+.done-title, .gone-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  line-height: 1.15;
+}
+.done-when {
+  margin: .875rem 0 0;
+  font-size: 1rem;
+  color: var(--rose-deep);
+}
+
+.quiet {
+  margin: .875rem 0 0;
+  font-size: .9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* A REFERENCE, AND IT HAS TO BE COPYABLE BY EYE. At .08em the
+   hyphen in MYF/2026-27/0042 sat so far from its neighbours that
+   it read as a space, and a receipt number somebody transcribes
+   wrongly is a support email. Tighter spacing, lining figures,
+   and dark enough to actually read. */
+.receipt-no {
+  margin: 1.25rem 0 0;
+  font-size: .8125rem;
+  letter-spacing: .03em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink-soft);
+}
+.receipt-no[hidden] { display: none; }
+
+/* ---- the ways out -------------------------------------------- */
+
+.back {
+  display: inline-block;
+  margin-top: 1.75rem;
+  padding: .8125rem 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: .9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .18s ease;
+}
+.back:hover { border-color: var(--brown); }
+.back:focus-visible { outline: 2px solid var(--rose-deep); outline-offset: 3px; }
+.back-btn { font-weight: 300; }
+
+/* ---- waiting -------------------------------------------------- */
+
+.pulse {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  border-top-color: var(--rose-deep);
+  animation: spin .9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pulse { animation: none; }
+}

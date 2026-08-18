@@ -1,0 +1,409 @@
+/* ============================================================
+   ACCOUNT · THE PHONE LAYER
+   ------------------------------------------------------------
+   Everything that makes this read as an app rather than as a
+   website that has been made narrow. It applies below 900px and
+   nowhere else — the iPad and desktop layouts are already right
+   and are not touched.
+
+   THE FOUR THINGS THAT ACTUALLY TELL YOU IT IS A WEB PAGE, in
+   the order somebody notices them:
+
+     1. Navigation across the TOP. Every iOS app puts its primary
+        navigation at the bottom, where a thumb is. A row of pills
+        under the address bar is the single loudest tell there is,
+        and it is also genuinely worse to use one-handed on a
+        6-inch phone.
+
+     2. A title that does not move. iOS large titles collapse into
+        a compact bar as you scroll and the bar grows a hairline.
+        Static type at the top of a scrolling page reads as a
+        document.
+
+     3. Separators that run edge to edge. In a grouped iOS list
+        the hairline starts where the TEXT starts, not where the
+        card does, so the leading icon or tick sits in a clear
+        gutter. It is a two-pixel detail that does most of the
+        work.
+
+     4. Screens that cut. Native pushes slide; a cross-fade reads
+        as a page load.
+
+   All four are fixed below. What is deliberately NOT attempted:
+   a fake iOS status bar, a fake home indicator, or a back-swipe
+   gesture. Imitating chrome the browser is already drawing puts
+   two of everything on screen, and a swipe that is nearly right
+   is worse than no swipe at all.
+   ============================================================ */
+
+/* THE MORE TAB EXISTS ONLY ON A PHONE, and this rule is why.
+
+   Everything else in this file lives inside the media query, so
+   above 900px it simply does not apply — but `display` has to be
+   said somewhere for the default state, and a rule that only
+   exists inside `max-width: 900px` leaves the button falling
+   through to the browser default on every larger screen. It sat
+   in the middle of the desktop sidebar as a plain button labelled
+   "More", under the nav it was meant to replace. */
+.acc-more {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  /* ---- the tab bar -------------------------------------------
+     Fixed to the bottom, above the home indicator, with the
+     translucent blur iOS uses so content scrolls visibly beneath
+     it rather than disappearing under a solid slab. */
+
+  .acc-side {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 0;
+
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+    overflow: visible;
+
+    /* The iOS tab bar is not opaque. Where the browser supports
+       it, content shows through; where it does not, the solid
+       card colour is a perfectly good fallback and is what the
+       `background` line above already gives. */
+    /* Opaque enough that text does not read THROUGH it. iOS is
+       translucent but its blur is far stronger than anything the
+       web gives us, so at 0.82 the words underneath were legible
+       against the labels — which looks like a rendering fault
+       rather than a material. */
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    backdrop-filter: saturate(180%) blur(24px);
+  }
+
+  /* Only the primary five are tabs. The rest live behind More —
+     iOS tab bars hold five and a sixth is where every app that
+     ignores this starts to feel cramped. */
+  .acc-nav {
+    display: none;
+  }
+  .acc-nav[data-tab],
+  .acc-more {
+    display: flex;
+    /* `border: 0` because .acc-more is a <button> and does not
+       inherit .acc-nav's reset — the browser's default 2px outset
+       border was drawing a box around the More tab and nothing
+       else. */
+    border: 0;
+    cursor: pointer;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+
+    padding: 5px 2px 3px;
+    border-radius: 8px;
+    background: none;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--ink-3);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* The icon comes back, and it is the bigger half of a tab. */
+  .acc-nav .ic,
+  .acc-more .ic {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    color: inherit;
+  }
+  .acc-nav .ic svg,
+  .acc-more .ic svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .acc-nav:hover {
+    background: none;
+  }
+  .acc-nav[aria-current="page"] {
+    background: none;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .acc-nav[aria-current="page"] .ic {
+    color: var(--accent);
+  }
+  /* iOS taps dim rather than ripple. */
+  .acc-nav:active,
+  .acc-more:active {
+    opacity: 0.45;
+  }
+
+  /* ---- the large title, and its collapse ---------------------
+     A compact bar fades in as the large title leaves. Both exist
+     at once and cross-fade, which is what iOS does — and it is
+     why the compact bar must not be `display:none`, or it would
+     pop rather than arrive. */
+
+  .acc-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 25;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: calc(44px + env(safe-area-inset-top));
+    padding-bottom: 10px;
+
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid transparent;
+
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, border-color 0.18s ease;
+  }
+  .acc-topbar.on {
+    opacity: 1;
+    border-bottom-color: var(--line);
+  }
+
+  .acc-main {
+    /* Clear of the status bar at the top and the tab bar at the
+       bottom. The tab bar is fixed, so its height has to be paid
+       for here or the last row of every screen sits under it. */
+    padding: calc(14px + env(safe-area-inset-top)) 18px
+      calc(96px + env(safe-area-inset-bottom));
+  }
+
+  /* iOS large title: heavier and tighter than the web default. */
+  .acc-title {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.032em;
+    line-height: 1.08;
+  }
+  .acc-title.light {
+    font-weight: 600;
+  }
+
+  /* ---- screens cut, they do not fade ------------------------- */
+  .acc-view {
+    animation: acc-push 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @keyframes acc-push {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---- grouped lists -----------------------------------------
+     THE SEPARATOR STARTS WHERE THE TEXT STARTS. In a grouped iOS
+     list the hairline is inset past the leading tick or icon, so
+     that column reads as a gutter rather than as part of the row.
+     It is the detail that does most of the work, and it is two
+     lines of CSS. */
+
+  .item {
+    border-bottom: 0;
+    position: relative;
+  }
+  .item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 37px; /* the tick, plus its gap */
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .item.filler:not(:last-child)::after {
+    left: 37px;
+  }
+
+  .info-row {
+    border-bottom: 0;
+    position: relative;
+  }
+  .info-row:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .focus-row {
+    border-bottom: 0;
+    position: relative;
+  }
+  .focus-row:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 52px; /* past the icon */
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* iOS section headers: small, grey, uppercase, and closer to
+     the group they label than to the one above. */
+  .acc-sec {
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 30px 0 8px;
+    padding-left: 4px;
+  }
+
+  /* Cards are a touch tighter and a touch rounder on a phone. */
+  .card {
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .acc {
+    border-radius: 16px;
+  }
+
+  /* ---- more ---------------------------------------------------
+     A sheet, because that is what iOS opens for a list of
+     destinations that do not fit. It slides from the bottom, has
+     a grabber, and closes on a tap outside. */
+
+  .sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+  .sheet[hidden] {
+    display: none;
+  }
+  .sheet.on {
+    opacity: 1;
+  }
+
+  .sheet-card {
+    width: 100%;
+    max-height: 78vh;
+    overflow-y: auto;
+    background: var(--paper);
+    border-radius: 14px 14px 0 0;
+    padding: 8px 16px calc(20px + env(safe-area-inset-bottom));
+    transform: translate3d(0, 100%, 0);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .sheet.on .sheet-card {
+    transform: none;
+  }
+
+  .sheet-grab {
+    width: 36px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--ink-3);
+    opacity: 0.5;
+    margin: 8px auto 14px;
+  }
+
+  .sheet h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    padding: 0 4px 12px;
+  }
+
+  /* The rest of the destinations, as a grouped list. */
+  .sheet-list {
+    background: var(--card);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 16.5px;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+  }
+  .sheet-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 50px;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .sheet-item .ic {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+  }
+  .sheet-item .chev {
+    margin-left: auto;
+    color: var(--ink-3);
+  }
+  .sheet-item:active {
+    background: var(--paper);
+  }
+
+  /* ---- the strip sits under the compact bar ------------------ */
+  .state-strip {
+    top: calc(44px + env(safe-area-inset-top));
+  }
+}
+
+/* ---- installed, on a phone ------------------------------------
+   No browser chrome at all, so the status bar is ours to clear
+   and the app should fill the screen edge to edge. */
+@media (max-width: 900px) and (display-mode: standalone) {
+  /* Nothing scrolls behind the tab bar into the home indicator. */
+  body {
+    overscroll-behavior-y: none;
+  }
+}

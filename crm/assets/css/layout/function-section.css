@@ -1,0 +1,110 @@
+/* ============================================================
+   FUNCTION SECTION — the layout the whole CRM is built on
+   ------------------------------------------------------------
+   Every function is one <section> in two columns:
+
+     left   a PINNED header — what this function is, what it
+            holds, and the controls that belong to it
+     right  the work itself
+
+   Scroll anywhere and the heading beside you names what you are
+   looking at and offers its own actions. That is the reason
+   there is no sidebar and no search box: the thing you need is
+   always already on screen, in its own column, rather than
+   somewhere you have to go and look for it.
+
+   Lifted from the marketing site's #focus section, which pins a
+   title beside a scrolling grid — turned here into navigation.
+   ============================================================ */
+
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.2rem) 6rem;
+}
+
+/* One section per page, so there is no divider to draw — the page
+   boundary is the separation. */
+.fn {
+  padding: clamp(2rem, 5vh, 3.4rem) 0;
+}
+
+.fn-head h2 {
+  margin: .3rem 0 .5rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+  line-height: 1.08;
+}
+
+/* Measured, not full width: a pinned column of text that runs to
+   the edge reads as a wall rather than a caption. */
+.fn-note {
+  color: var(--soft);
+  font-size: 13.5px;
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
+.fn-tally {
+  margin-top: .9rem;
+  font-size: 13px;
+  color: var(--soft);
+}
+
+.fn-tally b {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin-right: .3rem;
+}
+
+.fn-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-top: 1rem;
+}
+
+.fn-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.sub {
+  margin: 1.6rem 0 .5rem;
+  font-size: 12.5px;
+  color: var(--soft);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+@media (min-width: 900px) {
+  .fn {
+    display: grid;
+    grid-template-columns: minmax(14rem, 19rem) 1fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  /* The pin. It has a column to itself, so it never covers the
+     work — which is exactly why it needs no opaque ground. */
+  .fn-head {
+    position: sticky;
+    top: var(--pin-top);
+  }
+}
+
+/* Narrow: the header scrolls with its section, as headings do. A
+   pin here would be a full-width slab reading as a box rather
+   than a heading, and it would eat a third of a phone screen. */
+@media (max-width: 899px) {
+  .fn-head {
+    margin-bottom: 1.2rem;
+  }
+
+  .fn-note {
+    max-width: none;
+  }
+}

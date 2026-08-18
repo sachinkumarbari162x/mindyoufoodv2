@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Programme · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, like the plan and the room: she reads a
+       month in here, she does not glance at a list. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/components/programme-monitor.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <div class="work">
+
+      <div class="work-bar">
+        <button class="work-aside-btn" type="button" data-aside-btn
+                aria-expanded="false" aria-controls="pm-locations">
+          <span class="more-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          Programmes
+        </button>
+
+        <h2>Programme</h2>
+
+        <p class="work-who" data-bar-who></p>
+      </div>
+
+      <div class="work-veil" data-aside-veil hidden></div>
+
+      <div class="work-body work-split">
+
+        <!-- LOCATIONS. Who, and then which way of cutting their
+             month. Files' sidebar, and the same two-section shape. -->
+        <aside class="work-aside" id="pm-locations" data-aside>
+          <p class="pm-side-head">Programmes</p>
+          <div class="pm-side-list" data-people>
+            <p class="pm-empty">Loading…</p>
+          </div>
+
+          <p class="pm-side-head" data-views-head hidden>Views</p>
+          <div class="pm-side-list" data-views hidden></div>
+
+          <p class="pm-side-sub" data-side-note hidden></p>
+        </aside>
+
+        <div class="work-main">
+
+          <!-- Nothing chosen. Not an error, and it does not pretend
+               to be one. -->
+          <div data-blank>
+            <p class="pm-empty">
+              Choose a programme on the left to read how it is going.
+            </p>
+          </div>
+
+          <div class="pm" data-browser hidden>
+
+            <div>
+              <!-- THE PATH. Two levels at most, and still worth
+                   drawing: the one thing worse than being lost in a
+                   folder is not seeing the way out. -->
+              <nav class="pm-path" aria-label="Path">
+                <div class="pm-crumbs" data-crumbs></div>
+
+                <div class="pm-path-acts">
+                  <label class="pm-find">
+                    <span class="pm-sr">Search this folder</span>
+                    <input type="search" data-find placeholder="Search…" />
+                  </label>
+
+                  <select class="pm-sort" data-sort aria-label="Sort by">
+                    <option value="date">Newest first</option>
+                    <option value="date-asc">Oldest first</option>
+                    <option value="name">Name</option>
+                    <option value="kind">Kind</option>
+                  </select>
+
+                  <div class="pm-view" role="group" aria-label="View">
+                    <button type="button" data-as="grid" aria-pressed="true" title="Icons">
+                      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+                        <rect x="1" y="1" width="6" height="6" /><rect x="9" y="1" width="6" height="6" />
+                        <rect x="1" y="9" width="6" height="6" /><rect x="9" y="9" width="6" height="6" />
+                      </svg>
+                      <span class="pm-sr">Icons</span>
+                    </button>
+                    <button type="button" data-as="list" aria-pressed="false" title="List">
+                      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+                        <rect x="1" y="2" width="14" height="2" /><rect x="1" y="7" width="14" height="2" />
+                        <rect x="1" y="12" width="14" height="2" />
+                      </svg>
+                      <span class="pm-sr">List</span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+
+              <!-- The month in four figures. Above the folder rather
+                   than inside the panel, because it is true of
+                   everything below it. -->
+              <div class="pm-summary" data-summary hidden></div>
+
+              <div data-folder></div>
+            </div>
+
+            <!-- WHAT IS SELECTED, EXPLAINED. Empty until something
+                 is chosen — it does not guess at a default. -->
+            <aside class="pm-info" data-info aria-live="polite">
+              <p class="pm-empty">Nothing selected.</p>
+            </aside>
+          </div>
+
+        </div>
+      </div>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/programme-monitor.js"></script>
+</body>
+
+</html>

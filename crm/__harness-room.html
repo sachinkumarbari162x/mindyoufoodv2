@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Consulting Room · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, not crm.css — see assets/workspace.css. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/layout/consulting-room.css" />
+</head><body id="consultation-room">
+  <header data-masthead></header>
+
+  <main>
+    <div class="work">
+
+      <div class="work-bar">
+        <p class="eyebrow">Seeing somebody</p>
+        <h2>Consulting Room</h2>
+
+        <p class="work-who" data-room-when></p>
+
+        <div class="work-acts">
+          <span class="room-state" data-state-chip data-state="waiting">
+            <span class="pip"></span><span data-state-text>Setting up…</span>
+          </span>
+          <a class="btn quiet" href="./today.html">Leave</a>
+        </div>
+      </div>
+
+      <!-- Nobody chosen yet. The room is for one person, so a person
+           is picked before there is a room at all — arriving from a
+           Today row skips this entirely. -->
+      <div class="work-body" data-pick hidden>
+        <p class="empty">Loading today's sessions…</p>
+      </div>
+
+      <div class="work-body room-wrap" data-room>
+
+        <div class="room-grid" data-grid>
+          <!-- THE STAGE IS BLACK BEFORE ANYTHING ARRIVES. The tile and
+               its fill are painted on the first frame, so there is
+               never a pale box that fills in a second later — a video
+               surface that appears late reads as a page still loading,
+               and she opens this with somebody already waiting.
+
+               data-remote flips to "true" the moment their track
+               lands; until then the card below the video is what she
+               is looking at, and the video sits black on top of
+               nothing. -->
+          <div class="stage" data-stage data-remote="false">
+            <div class="tile">
+              <video class="far" data-far autoplay playsinline></video>
+
+              <!-- Whose room this is, and why it is still black.
+                   Meet's shape: an initial on a dark card, replaced
+                   the instant a camera is on the other end. -->
+              <div class="await" data-await>
+                <span class="avatar" data-avatar>·</span>
+                <b data-await-who>—</b>
+                <span class="await-note" data-await-note>Nobody here yet</span>
+              </div>
+
+              <span class="tile-name" data-tile-name>—</span>
+
+              <!-- Inside the tile, not the stage. The tile keeps a
+                   16:9 shape and is centred, so a self-view pinned to
+                   the stage's edge would drift onto the gradient and
+                   sit detached from the picture it belongs to. -->
+              <video class="near" data-near autoplay playsinline muted></video>
+            </div>
+
+            <div class="fallback" data-fallback hidden>
+              <b>Could not connect</b>
+              Ring them instead — <a data-phone href="#">their number</a>.
+            </div>
+
+            <div class="bar">
+              <button class="ctl" type="button" data-mic aria-label="Mute microphone">
+                <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+              </button>
+              <button class="ctl" type="button" data-cam aria-label="Turn camera off">
+                <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"/><path d="m14 11 7-4v10l-7-4z"/></svg>
+              </button>
+
+              <!-- The two controls the client's page does not contain.
+                   The server checks the side as well, so this is the
+                   visible half of a rule rather than the whole of it. -->
+              <button class="ctl wide start" type="button" data-start>Start consultation</button>
+              <button class="ctl wide end" type="button" data-end disabled>End</button>
+            </div>
+          </div>
+
+          <aside class="panel">
+            <div class="panel-head">
+              <h3>Assessment</h3>
+              <span class="grow"></span>
+              <button class="btn quiet" type="button" data-fold>Hide</button>
+            </div>
+
+            <div class="panel-body">
+              <!-- WHO IS IN THE ROOM. Every line is already in the
+                   session Today handed over, so nothing is fetched to
+                   fill it. A room that waits on a request it does not
+                   need is a room that opens late, and she is opening
+                   it with somebody already on the other end. -->
+              <dl class="brief" data-brief>
+                <div><dt>Seeing</dt><dd data-brief-name>—</dd></div>
+                <div><dt>About</dt><dd data-brief-focus>—</dd></div>
+                <div><dt>Booked</dt><dd data-brief-when>—</dd></div>
+                <div><dt>How</dt><dd data-brief-mode>—</dd></div>
+                <div><dt>Phone</dt><dd><a data-brief-phone href="#">—</a></dd></div>
+                <div><dt>Email</dt><dd data-brief-email>—</dd></div>
+
+                <!-- THEIR WAY IN, so she can see it and hand it over.
+                     Without this the room could be opened but never
+                     tested: she had no way to reach the same room as
+                     the client, and no way to tell which link belongs
+                     to which session.
+
+                     It is here rather than in the public page for the
+                     obvious reason — this side is behind her session.
+                     Video only: a phone consultation has no room, and
+                     minting a link for one would put an unused token
+                     in the database and an unanswerable question on
+                     the screen. -->
+                <div class="brief-link" data-link-row hidden>
+                  <dt>Their link</dt>
+                  <dd>
+                    <a data-link-url href="#" target="_blank" rel="noopener noreferrer">—</a>
+                    <button class="btn quiet" type="button" data-link-copy>Copy</button>
+                  </dd>
+                </div>
+              </dl>
+
+              <!-- ALWAYS HERE, whatever else fails. The one thing she
+                   must never lose is somewhere to write while somebody
+                   is talking. -->
+              <div class="pad">
+                <label for="pad">Scratch pad<span data-pad-saved></span></label>
+                <textarea id="pad" data-pad
+                  placeholder="Kept in this browser. Survives everything else on this page."></textarea>
+              </div>
+
+              <!-- THE NSF ITSELF, written straight into this div —
+                   no frame, no second page. Same sections and same
+                   fields as the assessment page, out of the one
+                   module both of them mount. See assets/js/nsf-panel.js. -->
+              <div class="record-wrap" data-record role="region" aria-label="Nutrition assessment">
+                <p class="nsf-wait">Opening the record…</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  
+
+<script>
+const draft = { id:"a1", personId:"p1", personName:"Aisha Khan", ref:"aishakhan1_0",
+  visit:1, amendment:0, kind:"follow_up", status:"draft", openSections:["intake","anthro","pes"],
+  notes:"", values:{ weight_kg:"65.2", height_cm:"162", dob:"1992-04-18", sex:"Female" }, measurements:[] };
+window.fetch = async (url) => {
+  const u = String(url);
+  const json = (o) => new Response(JSON.stringify(o), { status:200, headers:{"Content-Type":"application/json"} });
+  if (u.includes("/assessments?personId=")) return json({ assessments:[draft] });
+  if (u.endsWith("/assessments")) return json({ assessment: draft, opened:true });
+  return json({ ok:true, url:"http://localhost:5501/c/OLdefNwong8huHM4Su0CCT-ciPKCj6mW" });
+};
+</script>
+<script type="module">
+import * as panel from "./assets/js/nsf-panel.js";
+import { mount as mountMast } from "./assets/js/masthead.js";
+document.body.id = "consultation-room";
+try { mountMast("consultation-room"); } catch (e) {}
+const set = (k,v) => { const e=document.querySelector("[data-"+k+"]"); if(e) e.textContent=v; };
+set("avatar","A"); set("await-who","Aisha Khan"); set("tile-name","Aisha Khan");
+set("await-note","They're waiting"); set("room-when","Aisha Khan | Sat 15 Aug | 02:43");
+set("state-text","They're waiting");
+set("brief-name","Aisha Khan"); set("brief-focus","PCOS & hormonal health");
+set("brief-when","Sat 15 Aug | 02:43"); set("brief-mode","Video call");
+set("brief-email","brownodinsaas@gmail.com"); set("brief-phone","+919876543210");
+document.querySelector("[data-link-row]").hidden = false;
+set("link-url","http://localhost:5501/c/OLdefNwong8huHM4Su0CCT-ciPKCj6mW");
+await panel.mount(document.querySelector("[data-record]"),
+  { id:"c1", personId:"p1", name:"Aisha Khan", email:"a@b.c", phone:"+919876543210", focusArea:"PCOS & hormonal health" });
+const mast=document.querySelector("[data-masthead]"), barEl=document.querySelector(".work-bar");
+if (mast) document.documentElement.style.setProperty("--mast-h", mast.offsetHeight+"px");
+if (barEl) document.documentElement.style.setProperty("--work-bar-h", barEl.offsetHeight+"px");
+</script>
+</body></html>

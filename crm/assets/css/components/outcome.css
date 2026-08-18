@@ -1,0 +1,167 @@
+/* ============================================================
+   OUTCOME — saying what became of a session
+   ------------------------------------------------------------
+   Four words on a row: Done, Didn't come, Cancelled, Moved.
+
+   THE STRIP IS QUIET ON PURPOSE. Contacting somebody is the
+   action on a session that has not happened yet; recording what
+   happened is the action on one that has. Both live on the same
+   row, so the second sits on its own line below a hairline —
+   present, unmissable when wanted, and not competing with the
+   phone number for the eye.
+
+   Nothing here is amber. The rule everywhere else in the CRM is
+   one primary action in view at a time, and on Today that is
+   already spent on the way to reach the person.
+   ============================================================ */
+
+.row-end {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+  padding-top: .7rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.end-ask {
+  margin-right: .3rem;
+  color: var(--soft);
+  font-size: 12.5px;
+}
+
+.btn.end {
+  font-size: 12.5px;
+  padding: .3rem .6rem;
+  color: var(--ink-2);
+}
+
+/* ---- recorded ----------------------------------------------
+   The row does not vanish the instant she taps. It becomes a
+   sentence with an Undo on it and stays for a few seconds,
+   because a row that disappears takes the undo with it and
+   leaves her unsure whether she hit the right one. */
+.row.is-said {
+  border-color: var(--sage-wash);
+  background: color-mix(in srgb, var(--sage-wash) 40%, var(--raise));
+}
+
+.said {
+  color: var(--sage);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ---- moving somebody ---------------------------------------
+   Her real free hours, as things to tap. The one action of the
+   four that cannot be finished in a single tap, because a move
+   is not a move until it has somewhere to go. */
+.move-when {
+  grid-column: 1 / -1;
+  padding-top: .6rem;
+}
+
+.move-ask,
+.move-load,
+.move-none {
+  color: var(--soft);
+  font-size: 12.5px;
+}
+
+.move-none {
+  margin-top: .3rem;
+  color: var(--ink-2);
+}
+
+.move-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .5rem;
+}
+
+.btn.slot {
+  font-size: 12.5px;
+  padding: .3rem .6rem;
+  background: var(--sink);
+  border-color: var(--line-soft);
+}
+
+/* ---- history ------------------------------------------------
+   The same row, past tense. Flatter than a live one: nothing on
+   it can be acted on, and a row that looks clickable and is not
+   is a small lie told every time the page is read. */
+.row.is-past {
+  background: var(--ground);
+  box-shadow: none;
+}
+
+.ending {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--soft);
+}
+
+/* Only the two that cost her money get a colour. Marking all four
+   would make the page a wall of status and tell her nothing — the
+   whole job of colour here is that a bad month LOOKS like one. */
+.ending.is-no_show,
+.ending.is-cancelled {
+  color: var(--rust);
+}
+
+.ending.is-done {
+  color: var(--sage);
+}
+
+.row-note {
+  margin-top: .3rem;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.row-stamp {
+  color: var(--faint);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ---- the ninety-day counts ----------------------------------
+   Above the list, not in it. They are the reason to open this
+   page; the list is what you read once a number surprises you. */
+.tallies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  margin-top: 1rem;
+}
+
+.tally {
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+}
+
+.tally b {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tally span {
+  color: var(--soft);
+  font-size: 12.5px;
+}
+
+/* ---- when something is refused ------------------------------
+   Two refusals can actually reach her, and both are somebody
+   else's doing rather than hers: an hour taken while she was
+   looking at it, and an undo that came too late. Said on the
+   row, so it is attached to the thing it is about. */
+.row-warn {
+  grid-column: 1 / -1;
+  margin-top: .5rem;
+  color: var(--rust);
+  font-size: 12.5px;
+}

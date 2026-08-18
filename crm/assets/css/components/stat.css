@@ -1,0 +1,111 @@
+/* ============================================================
+   STAT TILES — the headline numbers
+   ------------------------------------------------------------
+   Deliberately NOT charts. Each of these answers one question
+   with one number; a plot would add ink without adding meaning.
+   Charts belong here later, when there is a trend worth reading
+   rather than a total worth knowing.
+
+   Two rules worth keeping:
+
+   · The number wears a TEXT token, never an accent. Colour on a
+     figure reads as a category, and these are not categories.
+   · Direction is never colour alone — every change carries an
+     arrow and a sign, so it survives colourblindness, print,
+     and forced-colours mode.
+   ============================================================ */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: .6rem;
+}
+
+.stat {
+  padding: .95rem 1.1rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+  background: var(--raise);
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.stat-value {
+  margin-top: .35rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.stat-unit {
+  margin-left: .15rem;
+  font-size: .5em;
+  color: var(--soft);
+}
+
+/* ---- change ------------------------------------------------
+   The arrow carries the meaning; the colour only reinforces it. */
+.stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  margin-top: .45rem;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--soft);
+}
+
+.stat-change[data-dir="up"] {
+  color: var(--sage);
+}
+
+.stat-change[data-dir="down"] {
+  color: var(--rust);
+}
+
+/* Flat is not good news or bad news, so it stays in plain ink. */
+.stat-change[data-dir="flat"] {
+  color: var(--faint);
+}
+
+.stat-change-note {
+  color: var(--faint);
+}
+
+/* ---- period selector ---------------------------------------
+   One row, above the tiles, in the pinned header — so changing
+   the window never means scrolling back up to find the control. */
+.periods {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--sink);
+}
+
+.periods button {
+  padding: .28rem .6rem;
+  border: 0;
+  border-radius: var(--edge);
+  background: transparent;
+  color: var(--soft);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.periods button[aria-pressed="true"] {
+  background: var(--raise);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}

@@ -1,0 +1,90 @@
+/* ============================================================
+   7 · FOOTER
+   ============================================================ */
+.site-footer {
+  position: relative;
+  z-index: 10;
+  background: var(--bg-deep);
+  border-top: 1px solid var(--line-soft);
+  padding-block: 4.5rem 2rem;
+}
+
+.foot-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+
+.foot-brand p {
+  margin-top: 1rem;
+  color: var(--ink-soft);
+  font-size: .92rem;
+  max-width: 26rem;
+}
+
+.foot-col h4 {
+  font-size: .68rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--rose-deep);
+  margin-bottom: 1.1rem;
+}
+
+.foot-col a {
+  display: block;
+  font-size: .92rem;
+  color: var(--ink-soft);
+  padding-block: .3rem;
+  transition: color .3s var(--ease), transform .3s var(--ease);
+}
+
+.foot-col a:hover {
+  color: var(--ink);
+  transform: translateX(3px);
+}
+
+.foot-bottom {
+  margin-top: 3.5rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  font-size: .8rem;
+  color: var(--ink-soft);
+}
+
+.made {
+  letter-spacing: .04em;
+}
+
+.odin {
+  position: relative;
+  font-weight: 500;
+  color: var(--brown);
+  transition: color .35s var(--ease);
+}
+
+.odin::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .4s var(--ease);
+}
+
+.odin:hover {
+  color: var(--rose-deep);
+}
+
+.odin:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}

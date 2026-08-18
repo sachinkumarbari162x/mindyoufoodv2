@@ -1,0 +1,1714 @@
+/* ============================================================
+   THE PROGRAMME — iOS liquid glass
+   ------------------------------------------------------------
+   Built from liquid-os-ui.html, with two deliberate departures
+   noted where they occur: the wallpaper does not animate, and
+   every glass surface has a solid fallback.
+
+   WHAT MAKES IT GLASS AND NOT FROSTED PLASTIC. A backdrop blur on
+   its own reads as a translucent panel. Glass has thickness, so
+   it DISPLACES what is behind it as well as blurring it, and it
+   catches a highlight along the edge the light comes from. Three
+   layers do that here:
+
+     the surface   a barely-there white fill and a hairline border
+     ::before      the backdrop, blurred AND warped through
+                   #lensWarp — this is the one that matters
+     ::after       a diagonal specular sweep in screen blend
+
+   Take away the middle one and it stops being glass immediately.
+
+   IT NEEDS SOMETHING TO REFRACT. Glass over a flat colour is
+   invisible, which is why this page is dark with a painted
+   wallpaper underneath — the whole look depends on there being
+   something behind it worth bending.
+   ============================================================ */
+
+:root {
+  --dur: 620ms;
+  --ease-glass: cubic-bezier(.2, .9, .25, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .5, 1);
+
+  --ink: #ffffff;
+  --soft: rgba(255, 255, 255, .72);
+  --faint: rgba(255, 255, 255, .48);
+
+  /* The practice's amber and sage, lifted for a dark ground —
+     #a76c14 on this wallpaper is unreadable. */
+  --amber: #ffc46b;
+  --sage: #8fe0a6;
+  --rust: #ff9b7a;
+
+  /* On an iPhone -apple-system IS San Francisco, so the app is set
+     in the system face on the device it is designed for and falls
+     back to the practice's own elsewhere. */
+  --sans: -apple-system, BlinkMacSystemFont, "Hanken Grotesk", system-ui, sans-serif;
+  --serif: "Fraunces", Georgia, serif;
+  --mono: "Spline Sans Mono", ui-monospace, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* iOS paints a grey box over anything tapped unless told not to,
+     which ruins every glass control on the page. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body { min-height: 100%; }
+
+body {
+  background: #080c26;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain;
+}
+
+/* ---- the device ---------------------------------------------------
+   MOBILE FIRST, AND THE FRAME IS THE EXCEPTION. On a phone the app
+   simply fills the screen: drawing a phone around it would be a
+   phone inside a phone, and the hardware already has the notch and
+   the home bar this would be imitating.
+
+   From a tablet upward there is no screen to fill, so the app takes
+   the shape it was designed for and sits in the middle of the room.
+   Everything below with a .device or .dyn or .homebar in it belongs
+   to that case only.
+   ------------------------------------------------------------------ */
+
+/* The room. Painted, but invisible on a phone because the device
+   covers it completely. */
+#wall {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(120% 85% at 50% -8%, transparent 26%, rgba(0, 0, 0, .62) 100%);
+}
+
+.lens { position: absolute; width: 0; height: 0; }
+
+.stage { position: relative; z-index: 2; }
+
+/* THE FRAME IS KEPT ON A PHONE TOO, just scaled to it. On an SE or a
+   Galaxy the app reads as a made thing sitting on a surface rather
+   than as a web page bolted to the edges of the glass — and the
+   inset gives the rounded corners somewhere to be, which a
+   full-bleed layout has to fake.
+
+   What does NOT come along: the dynamic island and the home bar.
+   The hardware already has both, and drawing a second set is a
+   phone inside a phone. */
+.stage {
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 6px)
+    calc(env(safe-area-inset-right, 0px) + 6px)
+    calc(env(safe-area-inset-bottom, 0px) + 6px)
+    calc(env(safe-area-inset-left, 0px) + 6px);
+  min-height: 100dvh;
+}
+
+.device {
+  position: relative;
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 12px);
+  padding: 5px;
+  border-radius: 34px;
+  background: linear-gradient(150deg, #33353d, #0b0c10 55%, #1d1f26);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .12),
+    0 0 0 1px #000,
+    0 18px 40px -18px rgba(0, 0, 0, .8);
+}
+
+.screen {
+  position: relative;
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 22px);
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+/* The wallpaper the cards refract. Fixed on a phone so it does not
+   scroll away underneath the glass. */
+/* width and height are NOT optional here. A canvas is a replaced
+   element: `inset: 0` with auto sizing leaves it at its intrinsic
+   300x150 and the wallpaper paints into a stamp in the corner. */
+#screenWall {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+.screen-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(120% 85% at 50% -8%, transparent 30%, rgba(0, 0, 0, .5) 100%);
+}
+
+.dyn, .homebar { display: none; }
+
+.app {
+  position: relative;
+  z-index: 2;
+  /* Same reason. Belt and braces, because this one is the container
+     everything else is measured against. */
+  min-width: 0;
+  max-width: 34rem;
+  margin: 0 auto;
+  /* The stage carries the safe-area inset now, so the bezel sits
+     clear of the notch and this only has to space its own content.
+
+     AND THE SCROLLING MOVED INSIDE. With the frame kept on a phone,
+     the body scrolling would slide the whole device up the page and
+     leave the bezel halfway off the top. The screen stays put and
+     its contents scroll, which is what a phone does.
+
+     AND THEN IT MOVED AGAIN, INTO THE TAB PAGE. With four
+     destinations, `.app` scrolling would mean one scroll position
+     shared by all of them: leaving Progress halfway down and tapping
+     Today would land you halfway down Today. Each page now keeps its
+     own place, which is what every tabbed app on this phone does.
+     `.app` is the frame; `.tab-page > .scroll` is the paper. */
+  padding: 1rem 1rem 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* The frame does not scroll. If this is ever `auto` again, two
+     scrollbars nest and the tab bar drifts up the page. */
+  overflow: hidden;
+}
+
+.app::-webkit-scrollbar { display: none; }
+
+/* ---- from a tablet up: the device appears ------------------------- */
+
+@media (min-width: 48rem) {
+  body { overflow: hidden; }
+  html { overflow: hidden; }
+
+  .stage {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: clamp(1rem, 3vh, 2.5rem) 1rem;
+  }
+
+  /* 390 x 844 is an iPhone 15. Capped against the viewport height so
+     it never runs off a short laptop screen. */
+  .stage { padding: clamp(1rem, 3vh, 2.5rem) 1rem; }
+
+  /* The full bezel, at the size a phone actually is. */
+  .device {
+    width: min(390px, 92vw);
+    aspect-ratio: 390 / 844;
+    min-height: 0;
+    max-height: 92dvh;
+    padding: 12px;
+    border-radius: 56px;
+    background: linear-gradient(150deg, #33353d, #0b0c10 55%, #1d1f26);
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, .14),
+      0 0 0 2px #000,
+      0 46px 100px -22px rgba(0, 0, 0, .78),
+      0 0 70px -22px rgba(120, 150, 255, .3);
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 44px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The app becomes the scrolling part, so the frame stays still. */
+  /* Still the frame, not the paper — the pages scroll inside it here
+     too. The top padding clears the drawn notch. */
+  .app {
+    position: relative;
+    inset: auto;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    max-width: none;
+    padding: 3.2rem 1rem 0;
+  }
+
+  .app::-webkit-scrollbar { display: none; }
+
+  .dyn {
+    display: block;
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    width: 112px;
+    height: 32px;
+    border-radius: 999px;
+    background: #000;
+  }
+
+  .homebar {
+    display: block;
+    position: absolute;
+    bottom: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    width: 130px;
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, .6);
+  }
+}
+
+/* ============================================================
+   GLASS
+   ============================================================ */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  /* A touch more fill and a touch less shine. The reference is a
+     showcase — it wants you to notice the glass. This is something
+     somebody reads a diet plan off three times a day, and the
+     material should be the last thing they see. */
+  background: rgba(255, 255, 255, .06);
+  box-shadow:
+    0 8px 26px -10px rgba(0, 0, 0, .45),
+    inset 0 1px 0 rgba(255, 255, 255, .22);
+  transition:
+    border-radius var(--dur) var(--ease-spring),
+    background var(--dur) var(--ease-glass),
+    box-shadow var(--dur) var(--ease-glass);
+}
+
+/* THE REFRACTION. z-index -1 under an isolated parent, so it sits
+   behind the card's own content but cannot escape into the page. */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+  filter: url(#lensWarp);
+}
+
+/* The specular sweep, at about a third of the reference's strength
+   and without the screen blend. Screen over a bright blob was
+   producing a white smear across the top of every card — which read
+   as a rendering fault rather than as light. */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(140deg,
+    rgba(255, 255, 255, .12) 0%,
+    rgba(255, 255, 255, .02) 26%,
+    transparent 46%);
+}
+
+/* ---- when glass is the wrong answer ------------------------------
+   DEPARTURE FROM THE REFERENCE. Somebody who has asked their phone
+   to reduce transparency has usually asked because translucent
+   text is hard for them to read. The look is not worth failing
+   that, so every surface becomes solid and the lens is dropped —
+   the layout is untouched and nothing moves. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass { background: rgba(18, 22, 48, .94); }
+  .glass::before, .glass::after { display: none; }
+}
+
+/* Same for a browser with no backdrop-filter: a transparent white
+   fill over a wallpaper with no blur is unreadable, so it stops
+   being transparent. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(18, 22, 48, .92); }
+  .glass::before { display: none; }
+}
+
+/* ---- top --------------------------------------------------------- */
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .2rem .4rem;
+}
+
+.top-id { min-width: 0; }
+
+/* THEIR NAME, NOT THE PRACTICE'S. This link arrives in a message
+   with no account behind it, so the first thing the screen has to
+   answer is "is this mine". A name settles that before the first
+   tap. It is the largest thing in the header for that reason and
+   not as a flourish. */
+.whose {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Demoted, deliberately. She is one person, they know who she is,
+   and her brand does not need to be bigger than their own name
+   every morning. */
+.brand {
+  color: var(--amber);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  opacity: .8;
+}
+
+.sync {
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.sync[hidden] { display: none; }
+.sync[data-state="sending"] { color: var(--amber); }
+.sync[data-state="offline"] { color: var(--rust); }
+
+/* A newer version is waiting, and she was in the middle of
+   something so it did not reload itself. Tappable, and the only
+   state of this pill that is — the other two are reports. */
+.sync[data-state="update"] {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, .4);
+  cursor: pointer;
+}
+
+.sync[data-state="update"]:active { transform: scale(.96); }
+
+/* ---- the two states that are not a programme ---------------------- */
+
+.card { padding: 2rem 1.4rem; text-align: center; }
+.card[hidden] { display: none; }
+
+.card h1 {
+  margin-bottom: .5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.card p { margin-bottom: .4rem; }
+.card p:last-child { margin-bottom: 0; }
+.quiet { color: var(--soft); font-size: .92rem; }
+
+/* ---- the hero ----------------------------------------------------
+   The reference's clock, doing this app's job: a quiet date over one
+   very large, very light numeral. 200-weight at 88px is the single
+   most iOS thing on the page. */
+
+.programme { display: flex; flex-direction: column; gap: 1rem; }
+.programme[hidden] { display: none; }
+
+.hero { padding: .6rem .4rem 0; text-align: center; }
+
+.hero-date {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--soft);
+  letter-spacing: .3px;
+}
+
+.hero-n {
+  margin-top: .1rem;
+  font-size: clamp(72px, 26vw, 96px);
+  font-weight: 200;
+  line-height: .9;
+  letter-spacing: -5px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, .35);
+}
+
+/* ---- how far through the day they are -----------------------------
+   The count and the bar say the same thing twice on purpose: the
+   number is what they read, the bar is what they see without
+   reading. It answers "am I finished" without a scan of seven rows.
+
+   NOTHING CELEBRATES A FULL DAY. This is a clinical record, and an
+   app that cheers for green ticks teaches people to tick green. */
+.hero-done {
+  margin-top: .15rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-bar {
+  width: min(11rem, 60%);
+  height: 4px;
+  margin: .5rem auto 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .14);
+  overflow: hidden;
+}
+
+.hero-bar[hidden] { display: none; }
+
+.hero-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--soft);
+  transition: width .45s var(--ease-glass), background .45s linear;
+}
+
+/* Complete is stated, not congratulated — a change of colour and
+   nothing more. */
+.hero-bar i[data-full="true"] { background: var(--sage); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bar i { transition: none; }
+}
+
+/* ---- the way back to today -----------------------------------------
+   Only when they have wandered off it. A permanent control that does
+   nothing on the screen you are usually looking at is one you stop
+   seeing, so this appears exactly when it has something to do. */
+.back-today {
+  display: block;
+  margin: 0 auto .3rem;
+  min-height: 40px;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-today[hidden] { display: none; }
+.back-today:active { transform: scale(.95); }
+.back-today:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* ---- which day ---------------------------------------------------- */
+
+/* min-width: 0 IS LOad-BEARING. A flex item's default min-width is
+   auto, which floors it at its content — and thirty chips is about
+   1900px of content. Without this the whole app inherited that
+   width: the centred hero was pushed off the side of the screen and
+   every card ran past the right edge. It was invisible at seven
+   chips and obvious at thirty. */
+/* ============================================================
+   THE DATE PICKER — Apple's two stages, in this app's glass
+   ------------------------------------------------------------
+   COMPACT is the field: one line, the chosen date, a chevron.
+   INLINE is the month grid it opens into. The collapsed state is
+   the default because nine opens in ten are "tick today", and a
+   calendar standing above the rows pushes the work below the fold.
+
+   This replaced a thirty-chip strip. Thirty was a number rather
+   than a design — four fit on a phone, reaching the 3rd meant
+   dragging past twenty-six days nobody wanted, and it went wrong
+   the day a programme ran past a month.
+   ============================================================ */
+
+.cal { min-width: 0; }
+
+.cal-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  min-height: 44px;                 /* the smallest target worth aiming at */
+  padding: 0 .9rem 0 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cal-field:active { transform: scale(.985); }
+.cal-field:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+.cal-field-v { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Drawn rather than typed. A "›" is a different glyph in every
+   fallback face, and this one has to sit on a baseline it shares
+   with nothing. */
+.cal-chev {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--faint);
+  border-bottom: 2px solid var(--faint);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .28s var(--ease-glass);
+}
+
+.cal-field[aria-expanded="true"] .cal-chev {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.cal-sheet {
+  margin-top: .5rem;
+  padding: .7rem .6rem .5rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .06);
+}
+
+.cal-sheet[hidden] { display: none; }
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: 0 .3rem .4rem;
+}
+
+.cal-month { font-size: .95rem; font-weight: 600; }
+
+.cal-nav { display: flex; gap: .1rem; }
+
+.cal-nav button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+}
+
+.cal-nav button:active { background: rgba(255, 255, 255, .1); }
+.cal-nav button:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+
+/* A chevron that pages into an empty month is a control that lies
+   about there being something there. */
+.cal-nav button[disabled] { opacity: .25; cursor: default; }
+.cal-nav button[disabled]:active { background: none; }
+
+.cal-arrow {
+  width: 9px;
+  height: 9px;
+  border-top: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+}
+
+.cal-arrow-l { transform: rotate(-45deg) translate(1px, 1px); }
+.cal-arrow-r { transform: rotate(135deg) translate(1px, 1px); }
+
+.cal-dow,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-dow {
+  padding-bottom: .25rem;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.cal-grid { gap: 2px; }
+
+.cal-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  /* 40px is the floor Apple sets for a calendar cell, and seven of
+     them fit inside 320px with the gaps. */
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cal-n { font-size: 1rem; font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* Days spilling in from the months either side. Shown rather than
+   blanked — a grid with holes reads as broken, and seeing that the
+   1st is a Thursday is half of what a calendar is for. */
+.cal-day[data-out="true"] { opacity: .22; }
+
+/* STILL TO COME. Part of the plan, just not yet — which is a
+   different fact from "not part of this plan", so it is drawn
+   differently: legible, ringed, and plainly not ready. Seeing the
+   14th of September sitting there is what makes ninety days feel
+   finite rather than endless. */
+.cal-day[data-ahead="true"] { opacity: .6; }
+
+.cal-day[data-ahead="true"] .cal-n {
+  color: var(--soft);
+  font-weight: 400;
+}
+
+/* Outside the programme, or not yet happened. Greyed and dead: a
+   date that cannot be chosen must still be legible, or somebody
+   reads the gap as a fault. */
+.cal-day[disabled] { color: var(--faint); cursor: default; }
+.cal-day[disabled] .cal-n { font-weight: 300; }
+
+.cal-day:not([disabled]):active { background: rgba(255, 255, 255, .12); }
+.cal-day:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+
+/* TODAY IS TINTED, NOT FILLED. Apple's rule, and the reason it
+   matters here: filled means "chosen", and on a screen where the
+   chosen day is usually today the two would be indistinguishable
+   exactly when it counts. */
+.cal-day[data-today="true"] .cal-n { color: var(--amber); font-weight: 700; }
+
+/* Chosen. The one opaque thing in the grid. */
+.cal-day[data-on="true"] {
+  background: rgba(255, 255, 255, .93);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+
+.cal-day[data-on="true"] .cal-n { color: #0a0a12; font-weight: 600; }
+.cal-day[data-today="true"][data-on="true"] .cal-n { color: #0a0a12; }
+
+/* Something was reported that day. This is what turns a date
+   picker into a picture of the month, and it is the one thing the
+   old strip did that had to survive. */
+.cal-dot {
+  position: absolute;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sage);
+}
+
+.cal-day[data-on="true"] .cal-dot { background: #2f7a48; }
+
+/* Where the plan is up to, in words. A grid of dates cannot say
+   "day 12 of 90", and on a ninety-day programme that is the
+   question. */
+.cal-span {
+  padding: .5rem .3rem .1rem;
+  color: var(--faint);
+  font-size: 11.5px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-span:empty { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-chev { transition: none; }
+}
+
+/* ---- one thing to do ---------------------------------------------- */
+
+.list { display: flex; flex-direction: column; gap: .7rem; }
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  padding: 1rem 1.05rem;
+  border-radius: 26px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .13);
+  background: rgba(255, 255, 255, .06);
+  box-shadow:
+    0 8px 26px -10px rgba(0, 0, 0, .45),
+    inset 0 1px 0 rgba(255, 255, 255, .22);
+  transition: background var(--dur) var(--ease-glass), box-shadow var(--dur) var(--ease-glass);
+}
+
+.row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+  filter: url(#lensWarp);
+}
+
+.row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(140deg,
+    rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, .02) 28%, transparent 48%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .row { background: rgba(18, 22, 48, .94); }
+  .row::before, .row::after { display: none; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .row { background: rgba(18, 22, 48, .92); }
+  .row::before { display: none; }
+}
+
+/* THE ANSWER IS ON THE EDGE, NOT ACROSS THE CARD.
+   Washing the whole row in its colour was the obvious move and the
+   wrong one: the pills sit on that wash and are translucent, so a
+   card marked "done" turned all three buttons green and you could
+   no longer see which had been pressed. iOS tints the CHOSEN
+   CONTROL and leaves the container alone, so this does too — the
+   border carries the state for a scan down the list, the solid pill
+   carries it up close. */
+.row[data-state="done"] { border-color: rgba(143, 224, 166, .55); }
+.row[data-state="part"] { border-color: rgba(255, 196, 107, .55); }
+.row[data-state="skip"] { border-color: rgba(255, 255, 255, .34); }
+
+.row-main { display: flex; flex-direction: column; gap: .15rem; }
+
+.row-label { font-size: 1.04rem; font-weight: 500; line-height: 1.4; text-wrap: pretty; }
+.row-sub { color: var(--soft); font-size: .85rem; }
+.row-sub[hidden] { display: none; }
+
+.row-acts { display: flex; gap: .45rem; }
+
+/* Thumb-sized, and pill-shaped like every iOS control. */
+.tick {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .09);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--ink);
+  font: inherit;
+  font-size: .93rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s var(--ease-spring), background var(--dur) var(--ease-glass);
+}
+
+/* The spring on press is most of what makes this feel like iOS
+   rather than like a web page pretending. */
+.tick:active { transform: scale(.9); }
+.tick:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.tick[data-on="true"] { border-color: transparent; color: #0a0a12; }
+.tick[data-state="done"][data-on="true"] { background: #8fe0a6; }
+.tick[data-state="part"][data-on="true"] { background: #ffc46b; }
+.tick[data-state="skip"][data-on="true"] { background: rgba(255, 255, 255, .9); }
+
+@media (hover: hover) {
+  .tick:hover:not([data-on="true"]) { background: rgba(255, 255, 255, .14); }
+}
+
+/* ---- the weight ---------------------------------------------------- */
+
+/* ---- anything else ------------------------------------------------
+   The one place in this app where a person writes a sentence. */
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 1rem 1.05rem 1.1rem;
+}
+
+/* Closed on any day but today, like the ticks — and the box goes
+   rather than refusing after they have typed into it. Being told
+   "no" after writing four sentences is the version of this rule
+   nobody forgives. */
+.note[data-shut="true"] > *:not(.note-l):not(.note-sent) { display: none; }
+.note[data-shut="true"] .note-l { color: var(--faint); }
+
+.note-l { font-size: .98rem; font-weight: 600; }
+
+.note textarea {
+  width: 100%;
+  min-height: 5rem;
+  padding: .7rem .9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  /* 16px or more, or iOS zooms the whole page on focus and leaves
+     them looking at a magnified textarea they have to pinch out of. */
+  resize: vertical;
+}
+
+.note textarea::placeholder { color: var(--faint); }
+
+.note textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .13);
+}
+
+.note-row {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+/* WHAT THIS BOX IS NOT, and not in small print. A text field on a
+   health app reads as a chat window; somebody typing chest pain
+   into it at midnight has been misled by the control, not by the
+   wording underneath it. */
+.note-why {
+  flex: 1;
+  min-width: 0;
+  color: var(--faint);
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+/* Dead until there is something to send. A button that can be
+   pressed to no effect teaches people the app is unreliable. */
+.go[disabled] {
+  opacity: .4;
+  cursor: default;
+  box-shadow: none;
+}
+
+.go[disabled]:active { transform: none; }
+
+.note-said { font-size: .85rem; color: var(--sage); }
+.note-said[hidden] { display: none; }
+
+/* WHAT THEY ALREADY SENT. A box that swallows text and shows
+   nothing back is one people stop trusting the second time, because
+   there is no way to tell "sent" from "lost". */
+.note-sent {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-top: .1rem;
+}
+
+.note-sent[hidden] { display: none; }
+
+.note-one {
+  padding: .55rem .8rem;
+  border-radius: 14px;
+  border-left: 2px solid var(--sage);
+  background: rgba(255, 255, 255, .06);
+  color: var(--soft);
+  font-size: .9rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* HER ANSWER, MARKED BY WHO WROTE IT rather than by which side of
+   the screen it sits on.
+
+   Chat bubbles were the obvious move and the wrong one: they would
+   make this look like a messaging app, and a messaging app promises
+   a speed of answer nobody has agreed to. The line under the box
+   says she reads these between sessions; the layout has to say the
+   same thing. So it is the same shape as their own note, in her
+   amber, with her name on it. */
+.note-one[data-from="her"] {
+  border-left-color: var(--amber);
+  background: rgba(255, 196, 107, .1);
+  color: var(--ink);
+}
+
+.note-who {
+  display: block;
+  margin-bottom: .1rem;
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Still in the outbox. Said plainly rather than with a spinner —
+   there is nothing to wait for and nothing they need to do. */
+.note-one[data-pending="true"] {
+  border-left-color: var(--faint);
+  opacity: .72;
+}
+
+.note-one[data-pending="true"]::after {
+  content: " · sending";
+  color: var(--faint);
+  font-size: .8rem;
+}
+
+/* ---- asking to be seen again -------------------------------------
+   The one card on this screen that reaches into her working week.
+   It reads as an ask rather than a booking, because that is what
+   it is: she confirms every session herself, and a card that
+   looked like a calendar would be promising a diary the client
+   cannot see. */
+
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 1rem 1.05rem 1.1rem;
+}
+
+.ask-l { font-size: .98rem; font-weight: 600; }
+.ask-why { font-size: .8rem; line-height: 1.45; }
+
+.ask textarea {
+  width: 100%;
+  min-height: 3.4rem;
+  margin-top: .5rem;
+  padding: .6rem .9rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink);
+  font: inherit;
+  /* 16px or more, or iOS zooms the page on focus. */
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.ask textarea::placeholder { color: var(--faint); }
+
+.ask textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .13);
+}
+
+.ask-go { margin-top: .6rem; width: 100%; }
+
+/* ONCE ASKED, THE CARD BECOMES THE ANSWER. A button still offering
+   to ask, after you have asked, is how somebody asks three times. */
+.ask-state {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.5;
+}
+
+.ask-state[data-state="asked"] { color: var(--soft); }
+
+/* A time is a fact rather than a state, so it is the one line here
+   that is allowed to look pleased about itself. */
+.ask-state[data-state="booked"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.weigh { display: flex; flex-direction: column; gap: .5rem; padding: 1rem 1.05rem 1.1rem; }
+
+.weigh-l { font-size: .98rem; font-weight: 600; }
+.weigh-row { display: flex; gap: .5rem; }
+
+.weigh-row input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: .6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.weigh-row input::placeholder { color: var(--faint); }
+
+.weigh-row input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .13);
+}
+
+.go {
+  flex: none;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .9);
+  color: #0a0a12;
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s var(--ease-spring);
+}
+
+.go:active { transform: scale(.92); }
+.go:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+.weigh-said { font-size: .85rem; }
+.weigh-said[hidden] { display: none; }
+.weigh-said[data-tone="good"] { color: var(--sage); }
+.weigh-said[data-tone="bad"] { color: var(--rust); }
+.weigh-why { font-size: .8rem; }
+
+/* ---- the line that is always here ---------------------------------- */
+
+.care {
+  padding: .95rem 1.1rem;
+  color: var(--soft);
+  font-size: .85rem;
+  line-height: 1.55;
+}
+
+.ref {
+  padding: 0 .4rem;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: .72rem;
+}
+
+/* ---- motion -------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .tick:active, .cal-day:active, .cal-field:active, .go:active { transform: none; }
+}
+
+/* ---- a day that has closed ---------------------------------------
+   Shown, readable, and plainly not writable. Every past day is
+   still reachable in the calendar — a day that was missed stays
+   missed and stays legible — so "closed" has to read before a tap
+   rather than after one. The dot that marks a reported day lives
+   with the calendar above; see .cal-dot. */
+
+.shut {
+  margin: -.3rem .2rem 0;
+  color: var(--faint);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.shut[hidden] { display: none; }
+
+/* A closed day's answers stay legible — only the ability to change
+   them goes. */
+.tick[disabled] {
+  opacity: .55;
+  cursor: default;
+  transform: none;
+}
+
+.tick[disabled][data-on="true"] { opacity: .8; }
+
+/* ---- taking a photograph ------------------------------------------
+   A label wrapping a hidden file input, because a file input cannot
+   be styled and this has to look like the pills beside it. */
+.shot {
+  flex: none;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.shot[hidden] { display: none; }
+.shot input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.shot-face {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  padding: 0 .9rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, .05);
+  color: var(--soft);
+  font-size: .88rem;
+  font-weight: 600;
+  transition: transform .2s var(--ease-spring), background var(--dur) var(--ease-glass);
+}
+
+/* Dashed, and quieter than the three answers. It is optional — the
+   programme works with photographs switched off entirely — and an
+   optional control that shouts is a control people resent. */
+.shot:active .shot-face { transform: scale(.9); }
+
+@media (hover: hover) {
+  .shot:hover .shot-face { background: rgba(255, 255, 255, .12); color: var(--ink); }
+}
+
+.shot-said { margin-top: .1rem; font-size: .8rem; color: var(--soft); }
+.shot-said[hidden] { display: none; }
+.shot-said[data-tone="good"] { color: var(--sage); }
+.shot-said[data-tone="bad"] { color: var(--rust); }
+
+/* ============================================================
+   THE TABS
+   ------------------------------------------------------------
+   Four destinations replacing one very long scroll. What was
+   wrong with the scroll was not how it looked — it was that six
+   unrelated jobs were stacked in an order nobody chose, all
+   visible at once, with no way to say where you were or to get
+   back to where you had been.
+
+   EACH PAGE KEEPS ITS OWN SCROLL POSITION, which is the whole
+   reason `.app` stopped scrolling. One position shared between
+   four pages means leaving Progress halfway down and finding
+   Today halfway down too.
+
+   PAGES ARE HIDDEN, NOT UNMOUNTED. Everything stays in the DOM:
+   the canvas keeps its bitmap, the textarea keeps its draft, and
+   switching tabs costs nothing. `hidden` rather than a class, so
+   a page that is not on screen is inert to a screen reader as
+   well as invisible to everybody else.
+   ============================================================ */
+
+.tabs {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  /* The pages are absolute inside this, so it has to be the thing
+     they measure against. */
+  isolation: isolate;
+}
+
+.tabs[hidden] { display: none; }
+
+.tab-page {
+  position: absolute;
+  inset: 0;
+  /* A short fade only. A slide would imply the four pages sit in a
+     row and can be swiped between, which they cannot — promising a
+     gesture that does not exist is worse than no animation at all. */
+  animation: tab-in .34s var(--ease-glass) both;
+}
+
+.tab-page[hidden] { display: none; }
+
+@keyframes tab-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* THE PAPER. One per page, and the bottom padding is what keeps the
+   last card from finishing underneath the tab bar — the bar floats
+   over the scroll on purpose, so content keeps running behind it and
+   there is always visibly more. */
+.scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.scroll::-webkit-scrollbar { display: none; }
+
+/* NOTHING IN A SCROLLER SHRINKS TO FIT IT.
+
+   A flex item defaults to `flex-shrink: 1`, so in a column of fixed
+   height the children are squeezed rather than the container
+   scrolled. It cost an hour: the day grid on Progress was silently
+   cropped mid-row inside its own card and the page reported that it
+   fitted, because as far as the browser was concerned it did — the
+   cards had given up their height to make it true.
+
+   Anything that overflows a page now overflows into the scroll,
+   which is what a scroll is for. */
+.scroll > * { flex: 0 0 auto; }
+
+/* ---- the cards inside a page ---------------------------------------
+   `.card` was written for the two full-screen messages this app can
+   show — "One moment…" and "This link doesn't work" — and it is
+   centred and generously padded because a lone sentence in the middle
+   of a screen should be. Every card on a tab is a panel of content
+   instead, so it reads from the left and sits tighter.
+
+   Scoped to `.scroll` rather than changed at the source, so the two
+   messages keep the treatment they were designed with. */
+.scroll .card {
+  padding: 1.1rem 1.2rem 1.2rem;
+  text-align: left;
+}
+
+/* The exception, and it earns it: a ring is a circle and everything
+   about it is centred, including the reading in the middle. */
+.scroll .ring-card { text-align: center; padding: 1.4rem 1.2rem; }
+
+/* The large title, iOS style: it belongs to the page and scrolls away
+   with it. Today has no title, because the date IS its title. */
+.page-t {
+  margin: .2rem .2rem -.4rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.page-why { margin: 0 .2rem; }
+
+/* ---- the bar ------------------------------------------------------
+   Glass like everything else, floating clear of the bottom edge with
+   the home bar's own space left under it. */
+
+.tabbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(.55rem + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  height: 62px;
+  padding: 0 6px;
+  border-radius: 26px;
+
+  /* DENSER THAN EVERY OTHER PIECE OF GLASS ON THE PAGE, and it is the
+     one that should be. Cards sit ON the wallpaper; this floats over
+     the CONTENT, and at the shared .06 fill the row buttons scrolling
+     underneath were legible straight through it — "Done Some No"
+     reading behind "Today Progress Messages" is not a translucent
+     bar, it is two screens at once.
+
+     A dark tint rather than more white, so the labels keep their
+     contrast, and a heavier blur so what passes underneath becomes
+     colour instead of words. */
+  background: rgba(10, 14, 40, .84);
+}
+
+.tabbar::before {
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  backdrop-filter: blur(30px) saturate(150%);
+}
+
+/* Where there is no backdrop-filter at all, the bar has to stand on
+   its own fill — otherwise it is a transparent strip with text in it. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar { background: rgba(10, 14, 40, .95); }
+}
+
+/* THE SLIDING INDICATOR — the one thing a tab bar conveys that four
+   static icons cannot. Where you came from and where you went is the
+   information; without it a tab bar is four buttons that repaint.
+
+   Driven by --tab-i (0–3) rather than a class per tab, so a fifth
+   destination is a change to one number in the JS. */
+.tab-ind {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc((100% - 12px) / 4);
+  height: 50px;
+  border-radius: 21px;
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32);
+  transform: translateX(calc(var(--tab-i, 0) * 100%));
+  transition: transform .46s var(--ease-spring);
+  pointer-events: none;
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 50px;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--faint);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease-glass), transform .2s var(--ease-spring);
+}
+
+.tab svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .4s var(--ease-spring);
+}
+
+.tab:active { transform: scale(.9); }
+.tab[aria-current="page"] { color: var(--ink); }
+.tab[aria-current="page"] svg { transform: translateY(-1px) scale(1.04); }
+
+/* SOMETHING UNREAD, ON THE TAB THAT HOLDS IT. Her reply is the only
+   thing in this app that arrives without the client doing anything,
+   so it is the only thing that gets a dot. */
+.tab-dot {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 22px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 2px rgba(8, 12, 38, .85);
+}
+
+.tab-dot[hidden] { display: none; }
+
+/* ============================================================
+   PROGRESS
+   ------------------------------------------------------------
+   Every number on this screen was measured. There is no score,
+   no streak and no grade — none of those exist in the database,
+   and a figure nobody computed is one that cannot be trusted the
+   one time it matters.
+   ============================================================ */
+
+.ring-card { display: grid; justify-items: center; gap: .7rem; }
+
+.ring-host { position: relative; display: grid; place-items: center; }
+
+.ring-mid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.ring-n {
+  font-size: 2.4rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ring-l {
+  margin-top: .15rem;
+  color: var(--soft);
+  font-size: .78rem;
+  letter-spacing: .04em;
+}
+
+.ring-why {
+  color: var(--soft);
+  font-size: .9rem;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.card-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-bottom: .7rem;
+}
+
+.card-h h2 { font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; }
+
+.tag {
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .09);
+  color: var(--soft);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag[hidden] { display: none; }
+
+/* DOWN IS NOT GOOD AND UP IS NOT BAD, and this is the one place the
+   app could accidentally say so. Most people on her books are trying
+   to lose weight; some are recovering, pregnant, or building back
+   after illness. So the two directions are simply DIFFERENT — sage
+   and amber, both calm, neither a verdict. */
+.tag[data-dir="down"] { background: rgba(143, 224, 166, .16); color: var(--sage); }
+.tag[data-dir="up"] { background: rgba(255, 196, 107, .16); color: var(--amber); }
+
+/* ---- the weight line ---------------------------------------------
+   THE NUMBER LEADS AND THE LINE FOLLOWS. "68.4 kg" is what they came
+   to see; the shape of the last six weeks is what they stay for. A
+   chart with no reading above it makes somebody measure a pixel
+   against an axis to answer "what am I now". */
+
+.weight-now { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.weight-now[hidden] { display: none; }
+
+.weight-kg {
+  font-size: 2.1rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.weight-kg small { font-size: .95rem; font-weight: 500; color: var(--soft); letter-spacing: 0; }
+.weight-when { color: var(--faint); font-size: .82rem; }
+
+.chart-wrap { margin: .8rem 0 .2rem; }
+.chart-wrap[hidden] { display: none; }
+.chart-wrap canvas { display: block; }
+
+/* The chart in words, for a screen reader and for anybody who cannot
+   see the line. Off-screen rather than absent: a canvas is a
+   rectangle of nothing to a screen reader, and this is the only way
+   the reading gets out at all. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- the course as a shape ---------------------------------------
+   One square per day. "Have I been keeping this up" is answered by
+   the pattern long before any number, which is why a plain grid beats
+   a percentage here. Tapping one opens that day on Today. */
+
+.grid-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+  gap: 5px;
+}
+
+.grid-day {
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .07);
+  cursor: pointer;
+  transition: transform .2s var(--ease-spring), background var(--dur) var(--ease-glass);
+}
+
+.grid-day:active { transform: scale(.82); }
+.grid-day:disabled { cursor: default; }
+
+/* THREE STEPS OF ONE HUE, not three colours. This is a magnitude —
+   none, some, all — and a categorical palette on an ordered scale is
+   the classic way to make a chart unreadable. Sage, because that is
+   already the practice's "answered" colour on the rows. */
+.grid-day[data-fill="1"] { background: rgba(143, 224, 166, .28); }
+.grid-day[data-fill="2"] { background: rgba(143, 224, 166, .52); }
+.grid-day[data-fill="3"] { background: rgba(143, 224, 166, .82); }
+
+/* Today, wherever it falls in the course. */
+.grid-day[data-today="true"] { box-shadow: 0 0 0 2px var(--ink); }
+/* The day currently open on the Today tab — so switching tabs does
+   not lose your place. */
+.grid-day[data-on="true"] { box-shadow: 0 0 0 2px var(--amber); }
+/* Inside the plan, not yet reached. Drawn, and not tappable, so
+   ninety days reads as finite. */
+.grid-day[data-ahead="true"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .13);
+}
+
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .9rem;
+  margin-top: .75rem;
+  color: var(--faint);
+  font-size: .75rem;
+}
+
+.key-one { display: inline-flex; align-items: center; gap: .35rem; }
+
+.key-one i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .07);
+}
+
+.key-one i[data-fill="1"] { background: rgba(143, 224, 166, .28); }
+.key-one i[data-fill="3"] { background: rgba(143, 224, 166, .82); }
+
+/* ============================================================
+   MESSAGES
+   ------------------------------------------------------------
+   The thread used to live inside the note box, filtered to
+   whichever day was selected — so her reply to a message sent on
+   the 3rd could only be found by navigating back to the 3rd. A
+   reply you have to hunt for is a reply nobody reads.
+
+   It is one continuous conversation and it now has one place,
+   oldest first, with the day written above each run. Still not
+   chat bubbles: bubbles promise a speed of answer nobody has
+   agreed to, and the line at the top of the page says the
+   opposite.
+   ============================================================ */
+
+.thread { display: flex; flex-direction: column; gap: .5rem; }
+
+.thread-day {
+  margin: .7rem .2rem .1rem;
+  color: var(--faint);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.thread-day:first-child { margin-top: 0; }
+.thread-none[hidden] { display: none; }
+
+/* The way from one tab to the other, offered at the point somebody
+   wants it: the bottom of the thread is exactly where "and now I want
+   to write one" happens. */
+.note-jump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  min-height: 44px;
+  margin-top: .2rem;
+  padding: .5rem .9rem;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .05);
+  color: var(--soft);
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .2s var(--ease-spring), background var(--dur) var(--ease-glass);
+}
+
+.note-jump[hidden] { display: none; }
+.note-jump:active { transform: scale(.97); }
+
+.note-jump-c {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-right: 1.8px solid var(--faint);
+  border-bottom: 1.8px solid var(--faint);
+  transform: rotate(-45deg);
+}
+
+@media (hover: hover) {
+  .note-jump:hover { background: rgba(255, 255, 255, .1); color: var(--ink); }
+}
+
+/* ============================================================
+   PLAN
+   ------------------------------------------------------------
+   What she prescribed, read-only, grouped by kind. A different
+   question from "what did I do today", and keeping the two on one
+   page is most of what made the old scroll confusing.
+   ============================================================ */
+
+.group-h {
+  margin: 0 .2rem .5rem;
+  color: var(--faint);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.plan-row { padding: .6rem 0; }
+.plan-row + .plan-row { border-top: 1px solid rgba(255, 255, 255, .08); }
+.plan-row p { margin: 0; }
+.plan-row .row-label { font-size: .98rem; font-weight: 550; }
+
+.plan-row .row-sub {
+  margin-top: .1rem;
+  color: var(--soft);
+  font-size: .85rem;
+}
+
+/* THE WEIGH BOX IS NOW INSIDE THE CARD IT FEEDS, so it drops the
+   padding it carried as a standalone card — otherwise it indents a
+   second time and sits visibly narrower than everything above it.
+   The rule above it is what says "this is where that line comes
+   from", which is the whole reason it moved. */
+.card .weigh {
+  padding: .9rem 0 0;
+  margin-top: .9rem;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-page { animation: none; }
+  .tab-ind { transition: none; }
+}

@@ -1,0 +1,49 @@
+/* ============================================================
+   WORKSPACE — the entry for pages that are worked in
+   ------------------------------------------------------------
+   The assessment and the consulting room load THIS instead of
+   crm.css.
+
+   It is the same CRM: the same tokens, the same buttons, rows
+   and tags, the same masthead, the same panel behind the
+   hamburger. Somebody moving between pages should not be able to
+   tell that a different stylesheet arrived.
+
+   ONE THING IS DIFFERENT, and it is why this file exists.
+   crm.css pulls in function-section.css, which turns every page
+   into a two-column grid with a pinned header occupying 19rem on
+   the left. That is right for a list with a caption beside it,
+   and wrong for a page she sits inside for an hour — it made the
+   sub-nav render as a narrow left-hand column, which is not a
+   sub-nav.
+
+   This entry leaves that layout out and brings workspace.css
+   instead. Not an override, an omission: nothing here has to win
+   a specificity fight, because the rules it would be fighting
+   were never loaded.
+
+   What else is left out, and why:
+     stat, week, settings, editor, knowledge, datatable, lanes
+       — components no workspace page renders. A stylesheet that
+         ships rules for pages it is not is how a "small change"
+         to Hours breaks the assessment form.
+   ============================================================ */
+
+/* ---- the same foundations ---- */
+@import url("./css/base/tokens.css");
+@import url("./css/base/base.css");
+
+/* ---- chrome, shared exactly ---- */
+@import url("./css/layout/masthead.css");
+@import url("./css/layout/more-panel.css");
+
+/* ---- and a layout of its own ---- */
+@import url("./css/layout/workspace.css");
+
+/* ---- the components these pages actually use ---- */
+@import url("./css/components/button.css");
+@import url("./css/components/row.css");
+@import url("./css/components/tag.css");
+@import url("./css/components/officer.css");
+@import url("./css/components/state.css");
+@import url("./css/components/assessment.css");

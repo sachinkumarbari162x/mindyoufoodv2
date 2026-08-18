@@ -1,0 +1,93 @@
+/* ============================================================
+   HOME MODES — the switcher between the three ways of looking
+   ------------------------------------------------------------
+   Its own file because three pages use it and none of them owns
+   it. It started inside the dashboard's stylesheet, which meant
+   the console had to pull in a whole dashboard to borrow one
+   control — and the second copy of a control is the one that
+   drifts.
+
+   NOT A TAB BAR, and the difference matters. Tabs imply the same
+   content in different arrangements. These are three different
+   questions, so each one says which underneath its name:
+
+     Overview    what has been happening
+     Console     what needs you now
+     Dashboard   how the whole thing is going
+
+   A switcher whose options all sound the same is one nobody
+   touches twice.
+
+   Every colour comes from tokens.css.
+   ============================================================ */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: .5rem;
+  margin: .2rem 0 .8rem;
+}
+
+.mode {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+  padding: .5rem .7rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+a.mode:hover {
+  border-color: var(--amber-bright);
+  color: var(--ink);
+}
+
+a.mode:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 1px;
+}
+
+/* The one you are on is not a link — a control that reloads the
+   page you are already looking at has never done anything. */
+.mode[aria-current="page"] {
+  border-color: var(--amber);
+  background: var(--amber-wash);
+  color: var(--ink);
+}
+
+.mode-l {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Said out loud rather than implied. Two of these three are trials
+   reachable only by address, and somebody deciding between them
+   should know which is the one the practice actually runs on. */
+.mode-tag {
+  padding: 0 .25rem;
+  border: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.mode-h {
+  color: var(--soft);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+@media (max-width: 34rem) {
+  .modes { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .modes { display: none; }
+}

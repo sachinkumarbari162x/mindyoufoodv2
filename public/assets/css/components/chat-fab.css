@@ -1,0 +1,109 @@
+/* ============================================================
+   FRONT-DESK ICON
+   The one piece of the receptionist that appears on the marketing
+   page. It is an anchor to consult.html, not a launcher — there is
+   no chat on this page to launch.
+
+   Collapsed to a circle at rest, it grows its label on hover and
+   focus. That keeps the corner quiet while a visitor is reading,
+   without hiding what the button is from anyone who tabs to it.
+
+   Uses the receptionist's AMBER so the icon here and the desk it
+   opens are visibly the same thing.
+   ============================================================ */
+
+.chat-fab {
+  position: fixed;
+  right: clamp(14px, 3vw, 26px);
+  bottom: clamp(14px, 3vw, 26px);
+  z-index: 900;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 7px;
+  border-radius: 999px;
+  text-decoration: none;
+
+  color: var(--rcp-ink, #14100c);
+  background: linear-gradient(180deg, var(--rcp-amber-hi, #e0a63f), var(--rcp-amber, #c88a24));
+  box-shadow: 0 14px 34px -14px rgba(20, 16, 12, 0.6), 0 2px 8px -3px rgba(20, 16, 12, 0.4);
+
+  transition: gap 0.4s var(--ease), padding 0.4s var(--ease),
+    transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+
+.chat-fab:hover,
+.chat-fab:focus-visible {
+  gap: 10px;
+  padding-right: 20px;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -16px rgba(20, 16, 12, 0.66);
+}
+
+.chat-fab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.chat-fab-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(20, 16, 12, 0.1);
+}
+
+.chat-fab-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+/* The label is laid out but clipped to zero width at rest, so the
+   element keeps a real accessible name — `display: none` would take
+   it out of the a11y tree and leave a nameless circle. */
+.chat-fab-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  font-family: var(--rcp-sans, system-ui, sans-serif);
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: max-width 0.45s var(--ease), opacity 0.3s var(--ease);
+}
+
+.chat-fab:hover .chat-fab-label,
+.chat-fab:focus-visible .chat-fab-label {
+  max-width: 15rem;
+  opacity: 1;
+}
+
+/* On touch there is no hover to expand it, and the label would sit
+   permanently over the page. The icon carries it; the aria-label on
+   the anchor is what a screen reader announces either way. */
+@media (hover: none) {
+  .chat-fab-label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-fab,
+  .chat-fab-label {
+    transition: none;
+  }
+  .chat-fab:hover,
+  .chat-fab:focus-visible {
+    transform: none;
+  }
+}
+
+@media print {
+  .chat-fab {
+    display: none;
+  }
+}

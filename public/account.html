@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" class="account">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your account · Mind Your Food</title>
+<meta name="description" content="Your plan, your records and your sessions with Khadija.">
+
+<!-- A CLIENT'S OWN HEALTH RECORD IS NOT FOR SEARCH ENGINES, and
+     not for anything that follows a link out of here either. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+
+<!-- ABSOLUTE PATHS, NOT RELATIVE, AND IT MATTERS HERE.
+
+     This page is served from two addresses: /account.html and
+     /me/<token>. With "./assets/..." the second one resolves to
+     /me/<token>/assets/... — and the static server answers that
+     with THIS FILE, because everything under /me/ maps to the
+     app. So every stylesheet and every script came back as HTML
+     with a 200, the browser refused to execute them, and the
+     page rendered unstyled and inert with nothing in the console
+     that named the cause. -->
+<link rel="icon" href="/assets/img/account-icon.svg" type="image/svg+xml">
+
+<!-- ============================================================
+     INSTALLABLE.
+     The manifest is what Android reads to offer an install and to
+     open this without browser chrome afterwards.
+
+     iOS READS ALMOST NONE OF IT. Safari wants its own tags, and
+     apple-touch-icon MUST be a PNG — an SVG there is silently
+     ignored and the home screen gets a blurry screenshot of the
+     page instead. The 180px file exists for that one reason, and
+     it is deliberately NOT rounded: iOS applies its own mask, and
+     a pre-rounded icon comes out rounded twice with pale corners.
+     ============================================================ -->
+<link rel="manifest" href="/assets/account.webmanifest">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="apple-touch-icon" href="/assets/img/account-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My food">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="stylesheet" href="/assets/css/account/tokens.css">
+<link rel="stylesheet" href="/assets/css/account/frame.css">
+<link rel="stylesheet" href="/assets/css/account/components.css">
+<link rel="stylesheet" href="/assets/css/account/phone.css">
+<link rel="stylesheet" href="/assets/css/account/gate.css">
+</head>
+
+<!--
+  ============================================================
+   THIS FILE CONTAINS NO DATA AND NO IDENTIFIERS.
+  ------------------------------------------------------------
+   Every name, figure, date and document title on the finished
+   screen arrives from GET /api/client/me after the cookie has
+   been checked. There is no client id, no plan id, no token and
+   no key anywhere in this markup — view-source on a signed-in
+   session shows exactly what a stranger sees.
+
+   That is deliberate and it was asked for in as many words. It
+   also means the only way to see anything here is to hold a
+   valid HttpOnly cookie, which no script on this page can read.
+
+   The structure is the mockup at docs/health-dashboard_6.html:
+   ten screens, a sticky sidebar, cards on paper.
+  ============================================================
+-->
+<body>
+
+<!-- ============ THE DOOR ============
+     Everything else is behind this. It is not hidden by CSS —
+     the views below hold no content until the API answers. -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <div class="gate-brand"><b>Mind</b><i>Your Food</i></div>
+
+    <!-- step one: the address -->
+    <form id="gate-email-step" autocomplete="on">
+      <h1>Open your account</h1>
+      <p>We will email you a six-digit code. No password to remember.</p>
+      <label class="gate-field">
+        <span>The email address Khadija has for you</span>
+        <input type="email" id="gate-email" name="email" required
+               autocomplete="email" inputmode="email" placeholder="you@example.com">
+      </label>
+      <button type="submit" class="btn" id="gate-send">Send me a code</button>
+    </form>
+
+    <!-- step two: the code -->
+    <form id="gate-code-step" hidden>
+      <h1>Check your email</h1>
+      <p id="gate-sent-to">The code is good for 15 minutes.</p>
+      <label class="gate-field">
+        <span>Six digits</span>
+        <input type="text" id="gate-code" name="code" required
+               inputmode="numeric" autocomplete="one-time-code"
+               maxlength="6" pattern="[0-9]{6}" class="code" placeholder="000000">
+      </label>
+      <button type="submit" class="btn" id="gate-open">Open my account</button>
+      <button type="button" class="gate-back" id="gate-again">Use a different address</button>
+    </form>
+
+    <p class="gate-said" id="gate-said" hidden></p>
+    <p class="gate-dev" id="gate-dev" hidden></p>
+
+    <p class="gate-foot">
+      This is for clients of the practice. If you have not had a consultation yet,
+      <a href="/consult.html">book one here</a>.
+    </p>
+  </div>
+</div>
+
+
+<!-- ONE LINE, AND ONLY WHEN THERE IS SOMETHING TRUE TO SAY.
+     Offline, or something ticked that has not been sent, or a
+     screen drawn from the cache. Silent otherwise — a status bar
+     that is always there is a status bar nobody reads. -->
+<div class="state-strip" id="state-strip" role="status" aria-live="polite" hidden></div>
+
+<!-- THE COMPACT BAR. Empty and invisible until the large title
+     scrolls away, then it cross-fades in with the screen's name —
+     which is what iOS does, and why both exist at once rather
+     than one replacing the other. Phone only. -->
+<div class="acc-topbar" id="topbar" aria-hidden="true"></div>
+
+<div class="acc-shell" id="shell" hidden>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="acc-side">
+    <a class="acc-brand" href="/index.html"><b>Mind</b><i>Your Food</i></a>
+
+    <button class="acc-nav" data-tab data-route="summary" aria-current="page">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>
+      Summary
+    </button>
+
+    <div class="acc-group">Programme</div>
+    <button class="acc-nav" data-route="plan">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M9 3.5v2h6v-2M8.5 10h7M8.5 14h5"/></svg></span>
+      Plan
+    </button>
+    <button class="acc-nav" data-tab data-route="diet">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7a3 3 0 006 0V3M10 3v18M17 3c-1.5 0-2.5 2-2.5 5.5S15.5 13 17 13v8"/></svg></span>
+      Diet
+    </button>
+    <button class="acc-nav" data-tab data-route="calendar">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/><rect x="7" y="12.5" width="2.6" height="2.6" rx=".6" fill="currentColor" stroke="none"/><rect x="11.5" y="12.5" width="2.6" height="2.6" rx=".6" fill="currentColor" stroke="none"/></svg></span>
+      Calendar
+    </button>
+    <button class="acc-nav" data-route="sleep">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 019.5 4 7 7 0 1020 14.5z"/></svg></span>
+      Sleep
+    </button>
+    <button class="acc-nav" data-tab data-route="workout">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8v8M17.5 8v8M4 10v4M20 10v4M6.5 12h11"/></svg></span>
+      Movement
+    </button>
+    <button class="acc-nav" data-route="supplements">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="12" height="6.5" rx="3.25" transform="rotate(-42 9 12.2)"/><path d="M9.5 8.2l4 4"/></svg></span>
+      Supplements
+    </button>
+
+    <div class="acc-group">Support</div>
+    <button class="acc-nav" data-route="sessions">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg></span>
+      Sessions
+    </button>
+    <button class="acc-nav" data-route="records">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M14 3v5h5M11 12v5M8.5 14.5h5"/></svg></span>
+      Health records
+    </button>
+    <button class="acc-nav" data-route="faq">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.4a2.8 2.8 0 015.4.9c0 1.9-2.7 2.4-2.7 4M12 17.4h.01"/></svg></span>
+      Questions
+    </button>
+
+    <!-- THE FIFTH TAB, phone only. iOS tab bars hold five; the
+         other seven destinations live in the sheet below. -->
+    <button class="acc-more" id="more-tab" type="button">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>
+      More
+    </button>
+
+    <div class="acc-spacer"></div>
+    <button class="acc-nav" data-route="account">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/></svg></span>
+      <span data-slot="nav-name">Account</span>
+    </button>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="acc-main" id="main">
+
+    <!-- ---- SUMMARY ---- -->
+    <section class="acc-view" id="view-summary" hidden>
+      <div class="acc-eyebrow" data-slot="today-date"></div>
+      <h1 class="acc-title light" data-slot="greeting"></h1>
+      <p class="acc-lede" data-slot="standing"></p>
+
+      <div class="card" style="margin-top:36px;padding:30px">
+        <div class="today-stats" data-slot="today-stats"></div>
+        <div style="margin-top:30px"><div class="track"><i data-slot="day-bar" style="width:0%"></i></div></div>
+      </div>
+
+      <div data-slot="weigh-in"></div>
+
+      <div class="acc-sec">Today</div>
+      <div class="card" style="padding:8px 26px" data-slot="focus"></div>
+    </section>
+
+    <!-- ---- PLAN ---- -->
+    <section class="acc-view" id="view-plan" hidden>
+      <div class="acc-eyebrow">Your programme</div>
+      <h1 class="acc-title">The plan</h1>
+      <p class="acc-lede" data-slot="plan-lede"></p>
+      <div style="margin-top:40px" data-slot="plan-sections"></div>
+    </section>
+
+    <!-- ---- DIET ---- -->
+    <section class="acc-view" id="view-diet" hidden>
+      <div class="acc-eyebrow" data-slot="diet-date"></div>
+      <h1 class="acc-title">Diet</h1>
+      <div class="day-progress">
+        <svg class="ring" viewBox="0 0 60 60" aria-hidden="true">
+          <circle cx="30" cy="30" r="25" fill="none" stroke="#E6E6E9" stroke-width="6"/>
+          <circle data-slot="diet-ring" cx="30" cy="30" r="25" fill="none" stroke="var(--accent)"
+                  stroke-width="6" stroke-linecap="round" stroke-dasharray="157"
+                  stroke-dashoffset="157" transform="rotate(-90 30 30)"/>
+        </svg>
+        <div class="pt">
+          <b data-slot="meals-done"></b>
+          <div class="kc" data-slot="kcal-count"></div>
+        </div>
+      </div>
+      <div class="grid-2" data-slot="meal-grid" style="margin-top:22px"></div>
+      <div data-slot="filler-list"></div>
+    </section>
+
+    <!-- ---- CALENDAR ---- -->
+    <section class="acc-view" id="view-calendar" hidden>
+      <div class="acc-eyebrow" data-slot="cal-eyebrow"></div>
+      <h1 class="acc-title">Your calendar</h1>
+      <p class="acc-lede" data-slot="cal-lede"></p>
+      <div style="margin-top:34px" data-slot="calendar"></div>
+    </section>
+
+    <!-- ---- SLEEP ---- -->
+    <section class="acc-view" id="view-sleep" hidden>
+      <div class="acc-eyebrow">Recommended by Khadija</div>
+      <h1 class="acc-title">Sleep</h1>
+      <div class="grid-2" style="margin-top:34px" data-slot="sleep-cards"></div>
+    </section>
+
+    <!-- ---- MOVEMENT ---- -->
+    <section class="acc-view" id="view-workout" hidden>
+      <div class="acc-eyebrow" data-slot="workout-sub">From your consultation</div>
+      <h1 class="acc-title">Movement</h1>
+      <div class="grid-2" data-slot="workout-grid" style="margin-top:34px"></div>
+    </section>
+
+    <!-- ---- SUPPLEMENTS ---- -->
+    <section class="acc-view" id="view-supplements" hidden>
+      <div class="acc-eyebrow">Daily protocol</div>
+      <h1 class="acc-title">Supplements</h1>
+      <p class="acc-lede">Grouped by when they are taken, because that is what decides whether they work.</p>
+      <div style="margin-top:34px" data-slot="supp-card"></div>
+    </section>
+
+    <!-- ---- SESSIONS ---- -->
+    <section class="acc-view" id="view-sessions" hidden>
+      <div class="acc-eyebrow">Your consultations</div>
+      <h1 class="acc-title">Sessions</h1>
+      <div data-slot="sessions"></div>
+    </section>
+
+    <!-- ---- HEALTH RECORDS ---- -->
+    <section class="acc-view" id="view-records" hidden>
+      <div class="acc-eyebrow">Clinical documents</div>
+      <h1 class="acc-title">Health records</h1>
+
+      <input type="file" id="rec-file" hidden
+             accept="application/pdf,image/jpeg,image/png,image/webp">
+      <label class="dropzone" id="dropzone" for="rec-file" style="margin-top:34px">
+        <span class="di"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg></span>
+        <b>Drop a file here, or browse</b>
+        <p>Reports, prescriptions, scans · PDF or a photo</p>
+      </label>
+
+      <div class="acc-sec">Documents</div>
+      <div data-slot="rec-list"></div>
+    </section>
+
+    <!-- ---- QUESTIONS ---- -->
+    <section class="acc-view" id="view-faq" hidden>
+      <div class="acc-eyebrow">Common questions</div>
+      <h1 class="acc-title">Questions</h1>
+      <p class="acc-lede">The ones that come up most. If yours is not here, ask her at your next session.</p>
+      <div style="margin-top:40px" data-slot="faq-list"></div>
+    </section>
+
+    <!-- ---- ACCOUNT ---- -->
+    <section class="acc-view" id="view-account" hidden>
+      <div class="acc-eyebrow">Your profile</div>
+      <h1 class="acc-title">Account</h1>
+      <div data-slot="account"></div>
+
+      <!-- ADD IT TO THE HOME SCREEN.
+           Hidden until one of the two paths says otherwise: Android
+           fires beforeinstallprompt and we show a button, iOS fires
+           nothing at all and we can only say where the button is.
+           On a desktop browser neither happens and this stays
+           closed, which is right — nobody installs this on a
+           laptop. -->
+      <div class="install-card" id="install-card" hidden>
+        <h3>Keep it on your home screen</h3>
+        <p>It opens straight to your plan, and works without signal.</p>
+
+        <button class="btn" id="install-button" hidden>Add to home screen</button>
+
+        <ol class="install-steps" id="install-ios" hidden>
+          <li>Tap the <b>Share</b> button at the bottom of Safari.</li>
+          <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+          <li>Open it from your home screen and sign in once more — the
+              installed app keeps its own sign-in.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ---- EMPTY ---- -->
+    <section class="acc-view" id="view-empty" hidden>
+      <div class="empty">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+        <h2 data-slot="empty-title">Nothing here yet</h2>
+        <p data-slot="empty-body">Once there is something to show, it will appear on this screen.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MORE. A sheet, because that is what iOS opens for a list of
+     destinations that will not fit on the bar. Built from the
+     sidebar's own buttons at runtime, so the two can never list
+     different things. -->
+<div class="sheet" id="more-sheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-label="More">
+    <div class="sheet-grab"></div>
+    <h2>More</h2>
+    <div class="sheet-list" id="more-list"></div>
+  </div>
+</div>
+
+<script src="/assets/js/account/api.js" defer></script>
+<script src="/assets/js/account/format.js" defer></script>
+<script src="/assets/js/account/outbox.js" defer></script>
+<script src="/assets/js/account/views.js" defer></script>
+<script src="/assets/js/account/phone.js" defer></script>
+<script src="/assets/js/account/gate.js" defer></script>
+<script src="/assets/js/account/app.js" defer></script>
+</body>
+</html>

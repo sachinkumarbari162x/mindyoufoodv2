@@ -1,0 +1,19 @@
+{
+  "name": "Mind Your Food \u2014 your programme",
+  "short_name": "My programme",
+  "description": "Your plan from Khadija, and what you did each day.",
+  "start_url": "/me/",
+  "scope": "/me/",
+  "display": "standalone",
+  "background_color": "#080c26",
+  "theme_color": "#080c26",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/img/programme-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

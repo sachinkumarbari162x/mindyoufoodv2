@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Today · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="today">
+      <div class="fn-head">
+        <p class="eyebrow">Happening now</p>
+        <h2>Today</h2>
+        <p class="fn-note">
+          Your confirmed sessions, in order. Call or message from here —
+          you ring them, so there is no meeting link to hand out.
+        </p>
+        <p class="fn-tally"><b data-count="today">·</b> booked</p>
+      </div>
+
+      <div class="fn-body" data-list="today">
+        <p class="empty">Nothing today.</p>
+      </div>
+    </section>
+
+    <!-- Hidden unless there is something in it. A permanently
+         visible "nothing overdue" panel would be a second empty box
+         to read past every morning, on the page that is meant to be
+         the clearest one in the CRM. -->
+    <section class="fn" id="overdue" data-overdue hidden>
+      <div class="fn-head">
+        <p class="eyebrow">Still open</p>
+        <h2>Not closed off</h2>
+        <p class="fn-note">
+          Sessions from earlier days you have not said anything about.
+          They are on no other page until you do — and they leave this
+          one the moment you say how they went.
+        </p>
+      </div>
+
+      <div class="fn-body" data-list="overdue"></div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/today.js"></script>
+</body>
+
+</html>

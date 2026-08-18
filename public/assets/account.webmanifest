@@ -1,0 +1,64 @@
+{
+  "name": "Mind Your Food — your account",
+  "short_name": "My food",
+  "description": "Your plan, your records and your sessions with Khadija.",
+
+  "id": "/account.html",
+  "start_url": "/account.html",
+  "scope": "/",
+
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+
+  "background_color": "#F5F5F7",
+  "theme_color": "#FFFFFF",
+
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["health", "lifestyle", "medical"],
+
+  "icons": [
+    {
+      "src": "/assets/img/account-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/img/account-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/img/account-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/img/account-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Today's food",
+      "short_name": "Diet",
+      "description": "What to eat today, and tick it off",
+      "url": "/account.html#diet",
+      "icons": [{ "src": "/assets/img/account-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sessions",
+      "short_name": "Sessions",
+      "description": "When you are next seeing Khadija",
+      "url": "/account.html#sessions",
+      "icons": [{ "src": "/assets/img/account-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

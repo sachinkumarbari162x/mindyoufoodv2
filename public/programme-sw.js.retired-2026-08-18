@@ -1,0 +1,121 @@
+/* ============================================================
+   PROGRAMME · service worker
+   ------------------------------------------------------------
+   The smallest one that earns its place: it makes the app OPEN
+   without a network. It does not cache a single API response —
+   the plan and the ticks are handled by the page, which keeps its
+   own copy in localStorage and its own outbox.
+
+   WHY NOT CACHE THE API TOO. Because a stale plan is a client
+   following food she has already changed, and a service worker
+   serving it would be doing that silently. The shell is safe to
+   serve from cache; the record is not.
+
+   ---- WHY THIS IS NO LONGER CACHE-FIRST ---------------------
+   It was, and that was a bug rather than a preference:
+
+       caches.match(x).then(hit => hit || fetch(x))
+
+   Once a file was in the cache the network was NEVER consulted
+   again. The only way to ship a change was to remember to bump
+   SHELL by hand, and "remember to" is not a mechanism. On this
+   machine it showed up as the app keeping an old design through
+   reload after reload. In somebody's pocket it is worse: a phone
+   that installed the app in March runs March's JavaScript against
+   whatever the plan looks like in July, and neither end knows.
+
+   So it is STALE-WHILE-REVALIDATE now. The cached copy is served
+   immediately — the app still opens on a train, which is the
+   whole reason this file exists — and the network is asked in the
+   background every single time. What comes back replaces the
+   cache, so the next open is current.
+
+   And when the new copy actually DIFFERS, the page is told, so it
+   can pick a safe moment to reload rather than waiting for one.
+   See "sw:updated" in assets/js/programme.js.
+
+   SHELL is still here and still worth bumping on a release, but
+   it is now a hard reset rather than the only way anything moves.
+   ============================================================ */
+const SHELL = "myf-programme-v10";
+
+const FILES = [
+  "/programme.html",
+  "/assets/css/programme.css",
+  "/assets/js/programme.js",
+  "/assets/js/photos.js",
+  "/assets/programme.webmanifest",
+  "/assets/img/programme-icon.svg",
+];
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== SHELL).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+/** Tell every open copy of the app that its shell moved. */
+async function announce(path) {
+  const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+  for (const c of clients) c.postMessage({ type: "sw:updated", path });
+}
+
+/* Has this file actually changed?
+
+   The static server sends no ETag and no Last-Modified — it sends
+   `no-store`, because the HTTP cache is not where this app's
+   freshness is decided. So the comparison is Content-Length,
+   which is crude and catches essentially every real edit.
+
+   A change that keeps the byte count identical slips past the
+   NOTIFICATION only. The cache is written either way, so the next
+   open is still current — the cost of the crudeness is one reload
+   of latency, not a stale app. */
+const changed = (a, b) =>
+  a && b && a.headers.get("content-length") !== b.headers.get("content-length");
+
+self.addEventListener("fetch", (e) => {
+  const url = new URL(e.request.url);
+
+  // Never the API. Never anything that is not ours.
+  if (url.origin !== location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
+  if (e.request.method !== "GET") return;
+
+  /* /me/<token> is the app opening. Serve the shell, which then
+     reads the token out of the address itself. */
+  const wanted = /^\/me(\/|$)/.test(url.pathname) ? "/programme.html" : url.pathname;
+
+  e.respondWith(
+    (async () => {
+      const cache = await caches.open(SHELL);
+      const hit = await cache.match(wanted);
+
+      /* ASKED EVERY TIME, and deliberately not awaited when there
+         is a cached copy — that is what keeps the app instant. */
+      const fresh = fetch(wanted, { cache: "no-store" })
+        .then(async (res) => {
+          if (!res || !res.ok) return null;
+          const copy = res.clone();
+          if (changed(hit, res)) {
+            await cache.put(wanted, copy);
+            announce(wanted);
+          } else {
+            await cache.put(wanted, copy);
+          }
+          return res;
+        })
+        .catch(() => null);
+
+      /* Cache first for speed, network as the fallback — and on a
+         cold start with no cache, the network IS the answer. */
+      return hit || (await fresh) || cache.match("/programme.html");
+    })()
+  );
+});

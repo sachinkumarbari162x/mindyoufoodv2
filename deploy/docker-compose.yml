@@ -1,0 +1,108 @@
+# ============================================================
+#  The v2 stack, on a box of its own
+#
+#      docker compose -f deploy/docker-compose.yml up -d --build
+#
+#  TWO SERVICES AND NO DATABASE.
+#
+#  The box has been cleared, so this owns 80 and 443 and brings
+#  its own Caddy. The previous arrangement — no Caddy here, join
+#  the backend stack's network, let its Caddy reach us by name —
+#  is kept as docker-compose.shared-box-superseded.yml.
+#
+#  Postgres is not here because the database is Supabase, in
+#  Mumbai. That is a deliberate trade: about twenty-five dollars
+#  a month for point-in-time recovery of a database holding
+#  allergies, diagnoses and medication lists. Losing that is not
+#  an outage, it is an incident.
+#
+#  Run from the project root; the build context is the directory
+#  above this file.
+# ============================================================
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: myf-caddy
+    restart: unless-stopped
+
+    # THE ONLY THING ON THIS BOX THAT PUBLISHES PORTS. 80 has to
+    # stay open even though it only redirects: it is where the
+    # ACME challenge is answered, and without it there is no
+    # certificate and therefore no installable app.
+    ports:
+      - "80:80"
+      - "443:443"
+
+    env_file: ../.env.prod
+    environment:
+      TZ: Asia/Kolkata
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # The certificate and the ACME account key. WITHOUT THIS
+      # VOLUME a restart throws the certificate away and asks
+      # Let's Encrypt for another one — which is fine twice and a
+      # rate-limit lockout by the fifth time in a week.
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+
+    depends_on:
+      - v2
+
+    networks: [myf]
+
+  v2:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: myf-v2
+    restart: unless-stopped
+
+    env_file: ../.env.prod
+    environment:
+      TZ: Asia/Kolkata
+      NODE_ENV: production
+      # Behind Caddy, so the visitor's address arrives in a
+      # header. Without this the rate limiter sees one IP —
+      # Caddy's — and treats every visitor as the same person.
+      TRUST_PROXY: "1"
+
+    # Deliberately NOT published to the host. The only way in is
+    # through Caddy, which is where the password lives. On a
+    # Lightsail box with a public IP, `ports:` here would put the
+    # CRM on the internet with no password at all.
+    expose:
+      - "5501"
+    volumes:
+      # Client progress photographs, clinical documents, and the
+      # paid-model budget counter. Without this they live inside the
+      # container and a rebuild destroys them -- which is every
+      # deploy. storage/providers/local.js says as much in its own
+      # comments; this is the mount it asks for.
+      - myf_var:/app/var
+
+    networks: [myf]
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5501/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # The Go service applies the schema, then the migrations,
+      # then the configuration before it answers. Against Supabase
+      # rather than a socket on the same box that is a couple of
+      # hundred statements over the network — the first boot is
+      # slow and it is not a fault.
+      start_period: 90s
+
+networks:
+  myf:
+    name: myf
+
+volumes:
+  myf_var:
+  caddy_data:
+  caddy_config:
+  caddy_logs:

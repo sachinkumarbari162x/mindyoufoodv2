@@ -1,0 +1,54 @@
+/* ============================================================
+   SETTINGS FIELD — a rule, what it does, and its control
+   ------------------------------------------------------------
+   Every field states its consequence underneath. These four
+   numbers decide the shape of every slot the system will ever
+   offer, and a bare label like "Buffer" tells her nothing about
+   what changing it will do to next week.
+   ============================================================ */
+
+.fields {
+  display: grid;
+  gap: .5rem;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: .8rem 1.1rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+  background: var(--raise);
+}
+
+.field-label {
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.field-note {
+  margin-top: .1rem;
+  color: var(--soft);
+  font-size: 12.5px;
+}
+
+.field input[type="number"],
+.field select {
+  width: 6.5rem;
+  padding: .35rem .5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--ground);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .field {
+    grid-template-columns: 1fr;
+  }
+}

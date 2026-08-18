@@ -1,0 +1,88 @@
+# ============================================================
+#  WHAT MUST NOT GO INTO A BUILD
+# ------------------------------------------------------------
+#  There was no .dockerignore at all, which meant the build
+#  context was the entire project: every secret, every client
+#  photograph and the whole git history were uploaded to the
+#  Docker daemon on every build.
+#
+#  Nothing was ending up in the published image — the Dockerfile
+#  copies named directories rather than `COPY . .` — so this is
+#  not a breach that happened. It is the fence that stops the
+#  next person adding one line and shipping a database password
+#  in a layer that is then pushed to a registry. Layers are
+#  forever and are readable by anyone who can pull the image.
+#
+#  It is also the difference between a fast build and a slow one
+#  on a 911 MB box: .git alone is most of what was being sent.
+#
+#  ORDER MATTERS. The secrets come first so that nothing below
+#  can accidentally re-include them.
+# ============================================================
+
+# ---- secrets. Never, under any circumstances ----------------
+#  EVERY PATTERN HERE IS `**/` PREFIXED, AND THAT IS THE WHOLE
+#  POINT. A .dockerignore pattern is matched against the full path
+#  relative to the context root, and `*` does not cross a slash --
+#  so a bare `.env` excludes ONLY the .env in the root. The
+#  Dockerfile copies whole directories (`COPY services/ ./services/`),
+#  so the day somebody adds services/node-bff/.env because it is
+#  convenient for local work, a bare pattern would let it straight
+#  into an image layer. Layers are forever and are readable by
+#  anyone who can pull the image.
+#
+#  Today every secret in this repo happens to sit at the top level,
+#  so nothing was leaking. This is the fence, not a repair.
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/keys.txt
+**/.session-secret
+**/caddy.env
+
+# ---- a client's own data --------------------------------------
+# var/uploads holds progress photographs and clinical documents.
+# They belong on the box's disk and in nothing else, least of all
+# in an image layer.
+var/
+
+# ---- history and tooling --------------------------------------
+.git
+.gitignore
+.github
+node_modules
+**/node_modules
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+
+# ---- build output ---------------------------------------------
+# The Go binary is built inside the image. A godata.exe from a
+# Windows laptop is the wrong architecture entirely, and the
+# Dockerfile already deletes it — this stops it being sent.
+services/go-data/godata
+services/go-data/*.exe
+services/go-data/*.exe~
+
+# ---- things with no business in a runtime image ---------------
+docs/
+scratchpad/
+# trial/ carries an entire Python .venv — thousands of files — and
+# the Dockerfile has never copied it, so production has never
+# served /trial. Excluding it is most of the build-speed win.
+trial/
+*.md
+!BUILT.md
+*.log
+.DS_Store
+Thumbs.db
+
+# NOT deploy/ — the Dockerfile itself lives there, and excluding
+# the directory a build is reading its own Dockerfile from is a
+# way to spend an afternoon on "cannot locate Dockerfile". The
+# Caddyfile beside it is mounted from the host at run time rather
+# than baked in, which is why a Caddy change is a restart and not
+# a rebuild.

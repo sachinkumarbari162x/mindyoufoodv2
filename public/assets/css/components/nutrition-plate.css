@@ -1,0 +1,160 @@
+/* ============================================================
+   THE PLATE — macros · plate · micros
+   The three-column anchor at the top of the Nutrients section.
+   Grown from skeleton.html, rebuilt on the site's own tokens
+   (--serif / --sans / --ink / --line) instead of the sketch's
+   hard-coded greys, so it sits in the page rather than on it and
+   follows the theme toggle without a second set of rules.
+
+   Text in the side columns points INWARD, toward the plate: the
+   macros column is right-aligned, the micros column left. That is
+   what makes the three parts read as one object.
+   ============================================================ */
+
+.plate-grid {
+  display: grid;
+  /* Side columns share what is left after the plate takes its
+     share; the plate itself is bounded so it never dominates on a
+     wide monitor. */
+  grid-template-columns: 1fr minmax(260px, 380px) 1fr;
+  gap: clamp(20px, 4vw, 54px);
+  align-items: center;
+  margin: clamp(28px, 5vw, 56px) 0 clamp(36px, 6vw, 72px);
+}
+
+.plate-col-title {
+  margin: 0 0 18px;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.plate-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plate-list li {
+  padding-bottom: 15px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.plate-list li:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.plate-list h4 {
+  margin: 0 0 5px;
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.42rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.plate-list p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ---- the two side columns face the plate ---- */
+.plate-col-macros {
+  text-align: right;
+}
+
+.plate-col-micros {
+  text-align: left;
+}
+
+/* ---- the plate ----
+   Round, lifted, with a translucent rim. The ring is a box-shadow
+   spread rather than a border so it does not take part in layout
+   and cannot push the grid around. */
+.plate-figure {
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* A CIRCLE, never an ellipse.
+
+   The source photograph is portrait (506 × 616), so `border-radius:
+   50%` on its natural box would round it into an oval. The box has
+   to be square first:
+
+     width  — bounded, so it never outgrows its column
+     height — `auto` + `aspect-ratio: 1/1` makes it equal the width
+     object-fit: cover — crops the portrait photo INTO that square
+                         instead of squashing it out of proportion
+
+   With border-box sizing (set in base/reset.css) the aspect ratio
+   applies to the border box, so the 12px rim stays even all the way
+   round and 50% resolves to a true circle at every viewport width. */
+.plate-figure img {
+  display: block;
+  width: min(100%, 380px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  padding: 12px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  box-shadow:
+    0 25px 50px -12px rgba(33, 26, 21, 0.2),
+    0 0 0 15px var(--glass-tint),
+    inset 0 4px 10px rgba(33, 26, 21, 0.05);
+  transition: transform 0.55s var(--ease), box-shadow 0.55s var(--ease);
+}
+
+.plate-figure img:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow:
+    0 40px 70px -18px rgba(33, 26, 21, 0.28),
+    0 0 0 20px var(--glass-tint-hi),
+    inset 0 4px 10px rgba(33, 26, 21, 0.05);
+}
+
+/* ---- stacked ----
+   Below the three-column threshold the plate goes first: it is the
+   image the section is built around, and reading four macros before
+   seeing what they are on top of gets the order backwards. */
+@media (max-width: 900px) {
+  .plate-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(24px, 6vw, 40px);
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  .plate-col-macros,
+  .plate-col-micros {
+    text-align: center;
+  }
+
+  .plate-figure {
+    order: -1;
+  }
+
+  .plate-figure img {
+    width: min(100%, 300px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate-figure img,
+  .plate-figure img:hover {
+    transform: none;
+    transition: none;
+  }
+}

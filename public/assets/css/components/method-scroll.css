@@ -1,0 +1,217 @@
+/* ============================================================
+   METHOD — pinned title, steps that arrive with the scroll
+
+   The four steps used to sit side by side in an auto-fit grid and
+   reveal together, which meant the whole section resolved in one
+   glance. It reads better as a sequence: the title holds still as
+   a heading while each step comes up past it in turn.
+
+   Two mechanisms, layered:
+
+     1. STICKY TITLE — `.sec-head` is sticky in its own column, so
+        it stays put for exactly as long as the section is on
+        screen and then releases. No JS, no scroll listener.
+
+     2. SCROLL-DRIVEN FADE — `animation-timeline: view()` ties each
+        step's opacity to its own position in the viewport, so the
+        fade is genuinely controlled by the scroll rather than
+        triggered by it: scroll back up and it fades back out.
+
+   Where scroll-driven animations are unsupported (Safari, older
+   Firefox) NONE of section 2 applies and the site's existing
+   `.reveal` IntersectionObserver handles the steps as before — a
+   one-shot fade instead of a scrubbable one. The sticky title works
+   everywhere either way.
+   ============================================================ */
+
+/* ---- 1 · layout: title beside the steps -------------------- */
+@media (min-width: 900px) {
+  #method {
+    display: grid;
+    /* Title column is bounded so a long heading cannot squeeze the
+       steps; the steps take whatever is left. */
+    grid-template-columns: minmax(15rem, 21rem) 1fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  #method .sec-head {
+    position: sticky;
+    /* Clears the fixed nav. Anything smaller and the heading slides
+       under the glass bar as it pins. */
+    top: clamp(6rem, 14vh, 8.5rem);
+    margin-bottom: 0;
+  }
+
+  /* Stacked, not columnar. The steps need vertical distance to
+     travel through — four across resolves in one glance and leaves
+     the scroll nothing to control. */
+  #method .steps {
+    grid-template-columns: 1fr;
+    gap: clamp(4.5rem, 13vh, 9rem);
+    /* Trailing space so the last step can reach the middle of the
+       viewport before the section releases the title. */
+    padding-bottom: clamp(2rem, 10vh, 7rem);
+  }
+
+  #method .step {
+    max-width: 42rem;
+  }
+
+  #method .step h3 {
+    font-size: clamp(1.7rem, 1.3rem + 1.1vw, 2.3rem);
+  }
+
+  /* 60ch, not 46 — the steps now carry two paragraphs each, and the
+     tighter measure left the column looking half empty while forcing
+     the copy into a narrow ribbon. This is still inside the
+     comfortable 45–75ch reading range. */
+  #method .step p {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    max-width: 60ch;
+  }
+}
+
+/* Each step now runs to two paragraphs — the second usually carries
+   the "and here is why" — so they need air between them at every
+   width, not only in the two-column layout above. */
+#method .step p + p {
+  margin-top: .85rem;
+}
+
+/* On narrow screens the title pins to the top of the viewport
+   instead, so it needs a ground of its own — the steps pass behind
+   it, and without a background the two sets of type collide. */
+@media (max-width: 899px) {
+  /* Not sticky here. A pinned heading needs an opaque ground so the
+     content can pass behind it, and on a tablet that ground is a
+     full-width slab sitting across the page — which is exactly the
+     wrong impression: it reads as a box that is part of the section
+     rather than as a heading. The pin earns its place in the
+     two-column desktop layout, where the title has a column of its
+     own and never covers anything. Between 561px and 899px — every
+     iPad, portrait or landscape — the heading simply scrolls with
+     its section, as headings normally do. */
+  #method .sec-head {
+    position: static;
+    background: none;
+    box-shadow: none;
+    margin-bottom: 1.6rem;
+  }
+
+  #method .steps {
+    grid-template-columns: 1fr;
+    gap: clamp(2.4rem, 7vh, 3.6rem);
+  }
+
+  /* Stacked, the steps lose the column gutters that separated them
+     and run together as one long ribbon of text. A coloured rule
+     under each one restores the boundary — rose rather than --line
+     so it reads as a deliberate divider and not as a hairline the
+     layout happened to leave behind. */
+  #method .step {
+    padding-bottom: clamp(1.6rem, 5vh, 2.4rem);
+    border-bottom: 2px solid var(--rose);
+  }
+
+  /* Nothing follows the last one, so a rule there would be closing a
+     section that is already closed. */
+  #method .step:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* ---- 2 · scroll-driven reveal ------------------------------ */
+@supports (animation-timeline: view()) {
+  /* The observer's one-shot classes are neutralised here — the
+     scroll timeline owns opacity and transform from now on, and
+     leaving both systems live makes the first fade fight itself. */
+  #method .step.reveal,
+  #method .step.reveal.in {
+    transition: none;
+  }
+
+  #method .step {
+    animation: method-step linear both;
+    animation-timeline: view();
+    /* Fully in by the time the step is a third of the way up the
+       viewport; starts fading as it leaves the bottom. */
+    animation-range: entry 8% cover 38%;
+  }
+
+  /* The number leads. It resolves on a slightly earlier range than
+     its step, so "Step 01" lands a beat before the words it labels
+     — which is what makes the sequence feel like it is counting. */
+  #method .step .no {
+    animation: method-no linear both;
+    animation-timeline: view();
+    animation-range: entry 4% cover 26%;
+  }
+
+  /* The rule above each step draws itself in as the step arrives. */
+  #method .step {
+    border-top-color: transparent;
+  }
+}
+
+@keyframes method-step {
+  from {
+    opacity: 0;
+    transform: translateY(2.2rem);
+    border-top-color: var(--line-soft);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    border-top-color: var(--line);
+  }
+}
+
+@keyframes method-no {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+    letter-spacing: .34em;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    letter-spacing: .2em;
+  }
+}
+
+/* ---- motion ------------------------------------------------
+   A scroll-linked fade is motion the visitor drives, but it is
+   still motion. Under reduced-motion everything is simply present:
+   no timeline, no transform, no sticky pin travelling up the page. */
+@media (prefers-reduced-motion: reduce) {
+  #method .step,
+  #method .step .no {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    border-top-color: var(--line);
+  }
+
+  #method .sec-head {
+    position: static;
+  }
+}
+
+/* Phones only: the pin comes back, because on a 390px screen a sticky
+   section header is a familiar pattern rather than an odd slab. The
+   heavy shadow is replaced by a hairline so it reads as a rule under
+   the title, not as a raised panel. */
+@media (max-width: 560px) {
+  #method .sec-head {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding-block: .85rem;
+    margin-bottom: 1.2rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line-soft);
+  }
+}

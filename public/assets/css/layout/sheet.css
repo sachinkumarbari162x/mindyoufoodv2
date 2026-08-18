@@ -1,0 +1,345 @@
+/* ============================================================
+   6 · THE SHEET — main body pulls up over the hero
+   ============================================================ */
+.sheet {
+  position: relative;
+  z-index: 10;
+  background: var(--bg);
+  border-radius: 34px 34px 0 0;
+  box-shadow: 0 -24px 60px -20px rgba(0, 0, 0, .55);
+  transition: background-color .5s var(--ease);
+}
+
+/* the little grab-handle that says "this panel moves" */
+.sheet::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 4px;
+  border-radius: 100px;
+  background: var(--line);
+}
+
+.band {
+  padding-block: clamp(5rem, 11vw, 8.5rem);
+}
+
+.band + .band {
+  border-top: 1px solid var(--line-soft);
+}
+
+/* --- approach split --- */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+}
+
+.word {
+  font-size: clamp(2.6rem, 5.4vw, 4.2rem);
+  color: var(--rose-deep);
+  font-style: italic;
+}
+
+.split-body p + p {
+  margin-top: 1.1rem;
+}
+
+.split-body p {
+  font-size: 1.06rem;
+  color: var(--ink-soft);
+  max-width: 40rem;
+}
+
+.split-body em {
+  font-style: italic;
+  color: var(--rose-deep);
+}
+
+/* --- marquee --- */
+.marquee {
+  overflow: hidden;
+  border-block: 1px solid var(--line-soft);
+  background: var(--bg-deep);
+  padding-block: 1.1rem;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: slide 44s linear infinite;
+}
+
+.marquee span {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--brown);
+  white-space: nowrap;
+}
+
+.marquee span::after {
+  content: "·";
+  margin-left: 3rem;
+  color: var(--rose);
+}
+
+@keyframes slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* --- nutrient cards --- */
+.nut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 1.1rem;
+}
+
+.nut-card {
+  position: relative;
+  padding: 2.2rem 1.9rem 1.9rem;
+  border-radius: 22px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  overflow: hidden;
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease), border-color .5s var(--ease);
+}
+
+.nut-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--line);
+  box-shadow: var(--shadow-md);
+}
+
+.nut-card .idx {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.6rem;
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  color: var(--rose-wash);
+  line-height: 1;
+}
+
+.tag {
+  display: inline-block;
+  font-size: .62rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  background: var(--rose-wash);
+  padding: .28rem .7rem;
+  border-radius: 100px;
+}
+
+.nut-card h3 {
+  font-size: 1.9rem;
+  margin: .85rem 0 .6rem;
+}
+
+.nut-card p {
+  color: var(--ink-soft);
+  font-size: .96rem;
+}
+
+.nut-num {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  font-size: .86rem !important;
+  letter-spacing: .01em;
+}
+
+.nut-num b {
+  font-weight: 500;
+  color: var(--rose-deep);
+}
+
+.disclaimer {
+  margin-top: 2.5rem;
+  font-size: .84rem;
+  color: var(--ink-soft);
+  max-width: 46rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rose);
+}
+
+/* --- focus areas --- */
+.focus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1px;
+  background: var(--line-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.focus-card {
+  padding: 2.4rem 1.9rem;
+  background: var(--bg);
+  transition: background .45s var(--ease);
+}
+
+.focus-card:hover {
+  background: var(--paper);
+}
+
+.focus-card .ic {
+  width: 2rem;
+  height: 2rem;
+  color: var(--rose-deep);
+  margin-bottom: 1.2rem;
+}
+
+.focus-card h3 {
+  font-size: 1.55rem;
+  margin-bottom: .5rem;
+}
+
+.focus-card p {
+  color: var(--ink-soft);
+  font-size: .95rem;
+}
+
+/* --- method steps --- */
+.steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 2.2rem;
+}
+
+.step {
+  padding-top: 1.4rem;
+  border-top: 2px solid var(--line);
+  transition: border-color .45s var(--ease);
+}
+
+.step:hover {
+  border-top-color: var(--rose-deep);
+}
+
+.step .no {
+  font-size: .68rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  margin-bottom: .8rem;
+}
+
+.step h3 {
+  font-size: 1.6rem;
+  margin-bottom: .5rem;
+}
+
+.step p {
+  color: var(--ink-soft);
+  font-size: .95rem;
+}
+
+/* --- myths --- */
+.myth-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.myth {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.6rem;
+  align-items: start;
+  padding: 1.9rem;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+}
+
+.myth-tag {
+  font-size: .62rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  border: 1px solid var(--rose);
+  padding: .3rem .7rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* No strike-through, no fade. Both lines are set as plain, legible
+   type; the "Myth" pill beside them is what marks the claim as the
+   false one. A line drawn through 1.5rem serif was doing more damage
+   to readability than it was doing work.
+
+   The truth carries full ink and body-copy size so the correction
+   reads as the point of the section rather than as a footnote to
+   the myth it corrects. */
+.claim {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.truth {
+  margin-top: .75rem;
+  padding-left: .95rem;
+  border-left: 2px solid var(--rose);
+  color: var(--ink);
+  font-size: 1.02rem;
+  line-height: 1.62;
+}
+
+/* --- quote band --- */
+.attention {
+  background: var(--band-bg);
+  color: var(--band-text);
+  padding-block: clamp(4.5rem, 10vw, 7.5rem);
+  text-align: center;
+}
+
+.attention blockquote {
+  font-size: clamp(1.7rem, 3.9vw, 3rem);
+  line-height: 1.25;
+  max-width: 26ch;
+  margin-inline: auto;
+}
+
+.attention cite {
+  display: block;
+  margin-top: 1.6rem;
+  font-style: normal;
+  font-size: .74rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .55;
+}
+
+/* --- consult --- */
+.consult-card {
+  padding: clamp(2.5rem, 6vw, 4.5rem);
+  border-radius: 26px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.consult-card .sec-sub {
+  margin-inline: auto;
+}
+
+.consult-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .8rem;
+  margin-top: 2.2rem;
+}

@@ -1,0 +1,84 @@
+/* ============================================================
+   BASE — reset, page ground, and the three type roles
+   ------------------------------------------------------------
+   Noto Serif for display, Noto Sans for everything read, and Noto
+   Sans Mono wherever digits line up in a column. All three are
+   self-hosted in ./assets/fonts and reached through the --font-*
+   tokens, so no rule here names a typeface directly.
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Deliberately NOT set here. Anchor targets carry their own
+     scroll-margin-top instead (see .panel), because the two ADD
+     when both are present — a jump would land a whole header's
+     height past the thing it was aimed at. */
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -.015em;
+}
+
+p {
+  margin: 0;
+}
+
+b {
+  font-weight: 650;
+}
+
+a {
+  color: var(--amber);
+}
+
+/* Anywhere numbers stack, they line up. */
+.mono,
+.pip,
+.when,
+.fn-tally b {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 2px;
+  border-radius: var(--edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

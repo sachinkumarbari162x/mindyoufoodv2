@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>The practice · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, like the console. crm.css brings
+       function-section.css, which pins a 19rem header column down
+       the left of every page — a dashboard wants the whole width. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/layout/dashboard.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <div class="dash">
+
+      <!-- ============================================================
+           THE PRACTICE, MEASURED
+
+           How the whole thing is going, over a period, from the first
+           thing this system records to somebody ninety days into a
+           plan.
+
+           NOT A HOME, AND THAT IS THE POINT. It was built as one of
+           three front doors and it lost, correctly: at three sessions
+           a day a funnel of 4 → 3 → 3 → 2 → 1 is five numbers standing
+           in a row pretending to be an analysis, and one cancellation
+           swings it thirty per cent. Dashboards earn their keep when
+           volume makes patterns visible and individual rows invisible.
+           Here the opposite holds — she can name all fifteen people on
+           a plan, and reading the list beats reading a chart of it.
+
+           So it lives behind the More button, with the machinery. "How
+           is the practice going" is a monthly question, and asking it
+           of a Tuesday gets the answer "seven sessions, same as last
+           Tuesday".
+
+           THIS ONE IS FOR THINKING, NOT FOR DOING. There is not a
+           single action on it. Every number links to the page that
+           owns the thing it counts, and nothing is edited here — a
+           dashboard that also accepts input is two screens fighting
+           for one purpose.
+           ============================================================ -->
+      <div class="dash-head">
+        <div class="dash-id">
+          <p class="dash-eyebrow">The practice, measured</p>
+          <h2 data-headline>Reading the system…</h2>
+        </div>
+
+        <div class="dash-acts">
+          <div class="periods" data-periods role="group" aria-label="Time period">
+            <button type="button" data-period="7d" aria-pressed="true">7 days</button>
+            <button type="button" data-period="30d" aria-pressed="false">30 days</button>
+            <button type="button" data-period="90d" aria-pressed="false">90 days</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+
+        <!-- ── THE FUNNEL ──────────────────────────────────────────
+             The whole practice as one shape: a stranger arrives, some
+             of them ask, some of those book, some are seen, some
+             leave with a plan, some follow it.
+
+             ONE HUE, LIGHT TO DARK. These are stages of a single
+             pipeline, not five different things — colouring them
+             separately would claim a difference in kind that is not
+             there. The number is on the bar because position and a
+             label beat colour for everybody, and are the only thing
+             that works for a reader who cannot separate two of them.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card dash-wide" aria-labelledby="h-funnel">
+          <div class="dash-card-head">
+            <h3 id="h-funnel">From stranger to plan</h3>
+            <span class="dash-note" data-funnel-note></span>
+          </div>
+          <div class="funnel" data-funnel>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- ── WHAT HAPPENED TO THE SESSIONS ──────────────────────
+             Four outcomes, which is more identities than colour can
+             carry here — see the note in tokens.css. So they are a
+             list of labelled bars in one hue, sorted by size. The
+             ranking is the information.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card" aria-labelledby="h-outcomes">
+          <div class="dash-card-head">
+            <h3 id="h-outcomes">How sessions ended</h3>
+            <a class="dash-link" href="./history.html">History</a>
+          </div>
+          <div class="bars" data-outcomes>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- ── PROGRAMMES ─────────────────────────────────────────
+             Everybody currently following a plan, and how far through
+             they are. The one panel on this page about individual
+             people rather than totals, because "three clients are on
+             day 2 of 90" and "three clients are on day 88 of 90" are
+             the same number and completely different weeks.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card" aria-labelledby="h-prog">
+          <div class="dash-card-head">
+            <h3 id="h-prog">Following a plan</h3>
+            <a class="dash-link" href="./programme-monitor.html">Monitor</a>
+          </div>
+          <div class="progs" data-progs>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- ── THE WEEK ───────────────────────────────────────────
+             Her hours against what is booked into them. Two series,
+             which is exactly what the palette was validated for.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card dash-wide" aria-labelledby="h-week">
+          <div class="dash-card-head">
+            <h3 id="h-week">The week</h3>
+            <div class="legend" data-week-legend></div>
+            <span class="grow"></span>
+            <a class="dash-link" href="./hours.html">Hours</a>
+          </div>
+          <div class="week" data-week>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- ── THE MACHINERY ──────────────────────────────────────
+             Four services, a desk, a mailer and a model. Status
+             colour is reserved and never used for a series, and every
+             line carries a WORD as well as a colour — a red dot on
+             its own is not a message.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card" aria-labelledby="h-machine">
+          <div class="dash-card-head">
+            <h3 id="h-machine">The machinery</h3>
+            <a class="dash-link" href="./bots.html">Bots</a>
+          </div>
+          <div class="health" data-health>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- ── THE ASSISTANT ──────────────────────────────────────
+             How often it reads her writing correctly. The whole
+             justification for letting one near a clinical document,
+             and the only number on this page that judges the
+             software rather than the practice.
+             ────────────────────────────────────────────────────── -->
+        <section class="dash-card" aria-labelledby="h-model">
+          <div class="dash-card-head">
+            <h3 id="h-model">The assistant</h3>
+            <a class="dash-link" href="./plan.html">Plans</a>
+          </div>
+          <div class="model" data-model>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- EVERY CHART HAS A TABLE. Not a fallback for a broken
+           browser — a second way to read the same rows, for a screen
+           reader, for a copy-paste into an email, and for the case
+           where somebody simply wants the number rather than the
+           picture. -->
+      <details class="dash-table">
+        <summary>The same figures as a table</summary>
+        <div data-table></div>
+      </details>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/practice.js"></script>
+</body>
+
+</html>

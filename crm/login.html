@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sign in · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+  <link rel="stylesheet" href="./assets/css/components/login.css" />
+</head>
+
+<body class="login-page">
+  <main class="login">
+    <div class="login-card">
+      <p class="eyebrow">Mind Your Food</p>
+      <h1>Front desk</h1>
+
+      <!-- One panel at a time. Which one is decided by the server's
+           answer to /auth/me, never by the page guessing. -->
+      <div data-panel="loading">
+        <p class="login-note">One moment…</p>
+      </div>
+
+      <form data-panel="setup" hidden>
+        <p class="login-note">
+          No account yet. This is the first and only one — it is what
+          stands between the internet and every client record here.
+        </p>
+        <label for="s-email">Email</label>
+        <input id="s-email" name="email" type="text" inputmode="email" autocomplete="username" required />
+
+        <label for="s-pass">Password</label>
+        <input id="s-pass" name="password" type="password" autocomplete="new-password" required />
+        <p class="login-hint">Twelve characters or more. A phrase you can remember beats a short one you cannot.</p>
+
+        <button class="btn primary" type="submit">Create the account</button>
+      </form>
+
+      <form data-panel="login" hidden>
+        <label for="l-email">Email</label>
+        <input id="l-email" name="email" type="text" inputmode="email" autocomplete="username" required />
+
+        <label for="l-pass">Password</label>
+        <input id="l-pass" name="password" type="password" autocomplete="current-password" required />
+
+        <button class="btn primary" type="submit">Sign in</button>
+      </form>
+
+      <form data-panel="totp" hidden>
+        <p class="login-note">The six digits from your authenticator app.</p>
+        <label for="t-code">Code</label>
+        <input id="t-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+          pattern="[0-9]*" maxlength="6" required />
+        <button class="btn primary" type="submit">Continue</button>
+      </form>
+
+      <div data-panel="enrol" hidden>
+        <p class="login-note">
+          Add an authenticator app. Until you do, your password is the
+          only thing in the way.
+        </p>
+
+        <!-- Manual entry rather than a QR. Google Authenticator
+             supports it fully, and a hand-written QR encoder is a lot
+             of code whose only failure mode is a square that quietly
+             scans to the wrong thing. -->
+        <ol class="login-steps">
+          <li>Open <b>Google Authenticator</b></li>
+          <li>Tap <b>+</b>, then <b>Enter a setup key</b></li>
+          <li>Account name: <code>Mind Your Food</code></li>
+          <li>Key: paste the one below</li>
+          <li>Type of key: <b>Time based</b></li>
+        </ol>
+
+        <p class="login-secret" data-secret></p>
+        <p class="login-hint">
+          Then enter the six digits it shows. The spaces are only for
+          reading — type it with or without them.
+        </p>
+        <form data-enrol-confirm>
+          <label for="e-code">Code</label>
+          <input id="e-code" name="code" type="text" inputmode="numeric" maxlength="6" required />
+          <button class="btn primary" type="submit">Confirm</button>
+        </form>
+        <button class="btn" type="button" data-skip>Not now</button>
+      </div>
+
+      <p class="login-err" data-err hidden></p>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/login.js"></script>
+</body>
+
+</html>

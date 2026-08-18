@@ -1,0 +1,41 @@
+/* ============================================================
+   FRONT DESK · CRM — stylesheet manifest
+   ------------------------------------------------------------
+   One scrolling workspace. No sidebar, no search box: every
+   function is a section whose PINNED header carries its own
+   controls, so whatever you are scrolled to, the actions that
+   belong to it are already beside you.
+
+   Imports are inlined depth-first, in place, so this order IS
+   the cascade. Same arrangement as public/assets/css/main.css,
+   and flattenable by scripts/build-css.js for production.
+   ============================================================ */
+
+/* ---- base: tokens first, since everything reads them ---- */
+@import url("./css/base/tokens.css");
+@import url("./css/base/base.css");
+
+/* ---- layout ---- */
+@import url("./css/layout/masthead.css");
+@import url("./css/layout/subnav.css");
+@import url("./css/layout/more-panel.css");
+@import url("./css/layout/function-section.css");
+
+/* ---- components ---- */
+@import url("./css/components/stat.css");
+@import url("./css/components/assistant.css");
+@import url("./css/components/row.css");
+@import url("./css/components/tag.css");
+@import url("./css/components/outcome.css");
+@import url("./css/components/assessment.css");
+@import url("./css/components/button.css");
+@import url("./css/components/week.css");
+@import url("./css/components/calendar.css");
+@import url("./css/components/settings.css");
+@import url("./css/components/editor.css");
+@import url("./css/components/knowledge.css");
+@import url("./css/components/datatable.css");
+@import url("./css/components/lanes.css");
+@import url("./css/components/officer.css");
+@import url("./css/components/state.css");
+@import url("./css/components/payments.css");

@@ -1,0 +1,132 @@
+/* ============================================================
+   TOKENS — the beige palette, and only the one
+   ------------------------------------------------------------
+   ONE THEME. Off-white, decided rather than offered. There is no
+   toggle, no dark set, and nothing that follows the operating
+   system — so what is on screen while this is being built is
+   exactly what she sees.
+
+   That is the whole reason for the rule. Two themes means every
+   colour has to be chosen twice and checked twice, and the second
+   one is always the one nobody looked at.
+
+   Every colour in the CRM comes from a name below. No component
+   may declare a colour of its own: a value written into a
+   component is a value that cannot be changed here, which defeats
+   the point of having this file at all.
+   ============================================================ */
+
+:root {
+  /* type */
+  --ink: #1b1610;
+  --ink-2: #3d3427;
+  --soft: #7a6c58;
+  --faint: #a2937c;
+
+  /* grounds — warm, never neutral grey */
+  --ground: #fbfaf8;
+  --raise: #ffffff;
+  --sink: #f3f1ed;
+  --line: #e3e0d9;
+  --line-soft: #eeebe5;
+
+  /* amber · her voice, and the one primary action */
+  --amber: #9a6712;
+  --amber-bright: #c88a24;
+  --amber-wash: rgba(200, 138, 36, 0.13);
+
+  /* sage · confirmed, valid, sent */
+  --sage: #4f6344;
+  --sage-wash: rgba(125, 144, 112, 0.18);
+
+  /* rust · needs attention, failed, cancelled */
+  --rust: #8d3a1e;
+  --rust-wash: rgba(168, 73, 42, 0.13);
+
+  --shadow: 0 1px 2px rgba(27, 22, 16, .05);
+
+  /* ============================================================
+     CHARTS — and there are only two of them
+     ------------------------------------------------------------
+     Declared here rather than in the dashboard's own stylesheet,
+     because the rule above holds: a colour written into a
+     component is a colour that cannot be changed from this file.
+
+     TWO SERIES HUES, AND THAT IS A FINDING RATHER THAN A
+     SHORTAGE. The palette was checked with a validator rather
+     than by eye, across every pair and under protanopia,
+     deuteranopia and tritanopia on this exact beige ground.
+
+       four hues  the best set still failed — violet against
+                  blue came out at ΔE 3.1 under deuteranopia,
+                  which is indistinguishable
+       three      every combination failed on one pair or another;
+                  amber against rust is ΔE 11.9 even to full
+                  colour vision
+       two        amber against blue: ΔE 20.8 at the worst, 25.4
+                  normal. Comfortable.
+
+     So colour carries at most two identities anywhere on that
+     page. Everything with more categories than that — outcomes,
+     the funnel — is encoded by POSITION AND A DIRECT LABEL
+     instead, which is stronger than colour for anybody and the
+     only thing that works for everybody.
+
+     The practice's own --amber is one of the two, at working
+     chroma. #a86a00 rather than #9a6712: the softer one reads as
+     grey once it is a 4px bar. */
+  --chart-1: #a86a00;
+  --chart-2: #0b6ea8;
+
+  /* A single-hue ramp, light to dark, for magnitude — the stages
+     of one funnel are not four different things.
+
+     DARKER THAN IT LOOKS IT SHOULD BE, and the validator is why.
+     The pretty version started at #e8d3ac, which is 1.4:1 against
+     this beige: on paper a pale first step, on screen an invisible
+     bar. Every step here clears 3:1, so each one is a mark you can
+     actually see rather than a suggestion of one. */
+  --chart-ramp-1: #b8862a;
+  --chart-ramp-2: #a87211;
+  --chart-ramp-3: #96600a;
+  --chart-ramp-4: #7d4d02;
+  --chart-ramp-5: #5f3a06;
+
+  /* Recessive by design: the marks are the data, the grid is not. */
+  --chart-grid: #e8e4dc;
+  --chart-track: #efece5;
+
+  /* ---- type ----
+     Noto, self-hosted from ./assets/fonts — nothing is fetched from
+     a font host, so the CRM renders its own text at the same speed
+     on a bad connection as on a good one.
+
+     Noto is the choice because of who uses this: names arrive from
+     India, the Gulf and the UK, and Noto covers Devanagari, Greek,
+     Cyrillic and Vietnamese from the same design. A name that falls
+     back to a different face mid-list looks like a broken record
+     rather than a foreign one.
+
+     The fallbacks after each are per-platform, so a device that has
+     not finished downloading Noto still shows something close: Segoe
+     on Windows, the system face on Apple, Roboto on Android. */
+  --font-sans: "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Noto Serif", Georgia, "Times New Roman", serif;
+  --font-mono: "Noto Sans Mono", ui-monospace, "Cascadia Mono", Consolas,
+    "SF Mono", Menlo, monospace;
+
+  /* ---- edges ----
+     Square. Every corner in the CRM reads this one value, so the
+     whole surface is a single line to change.
+
+     Deliberately 0: softly rounded cards everywhere are the house
+     style of generated interfaces, and a square edge reads as a
+     tool rather than a consumer app. Structure here comes from
+     the hairline rules and the type, not from radii. */
+  --edge: 0px;
+
+  /* How far below the masthead a pinned section header settles. */
+  --pin-top: clamp(5.2rem, 12vh, 7rem);
+}
+

@@ -1,0 +1,207 @@
+/* ============================================================
+   PAYMENTS
+   ------------------------------------------------------------
+   Three figures, then the lines behind them.
+
+   THE CRM'S OWN BEIGE, not the marketing site's glass. That was
+   settled by measurement — the glass surfaces rendered at 37fps
+   against 60 on a long list, and this is a page that will be a
+   long list by next year. Flat, opaque, and it scrolls.
+
+   The colour on this page carries meaning and is used nowhere
+   decoratively: a payment that came in, one still waiting, one
+   that went back. Everything else is ink on paper.
+   ============================================================ */
+
+/* ---- the three figures -------------------------------------- */
+
+.pay-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.pay-tile {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  /* THE TOKEN, NOT A NUMBER. --edge is 0px and every other
+     component in this CRM reads it — the 10px and 999px this file
+     used to hardcode are exactly why the page sat oddly against
+     the rest. Reading the token also means the day she wants
+     softer corners, this page follows without being touched. */
+  border-radius: var(--edge);
+}
+.pay-tile[hidden] { display: none; }
+
+.pay-tile-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.pay-tile-figure {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--ink);
+  /* Figures she compares down a column have to line up. */
+  font-variant-numeric: tabular-nums;
+}
+
+.pay-tile-note {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* ---- one payment -------------------------------------------- */
+
+.pay-list {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  overflow: hidden;
+}
+
+.pay-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1.4fr) minmax(8rem, 1fr) 7rem 9rem 8rem;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--raise);
+}
+
+.pay-who b {
+  display: block;
+  font-weight: 500;
+  color: var(--ink);
+}
+.pay-email {
+  display: block;
+  font-size: 12px;
+  color: var(--faint);
+  /* An address is one line or it is a layout problem. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pay-for {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.pay-for-label {
+  color: var(--faint);
+  margin-right: 4px;
+}
+
+.pay-amount {
+  text-align: right;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pay-state {
+  display: grid;
+  gap: 3px;
+  justify-items: start;
+}
+
+.pay-pill {
+  font-size: 12px;
+  padding: 2px 9px;
+  /* Square, like .tag — the CRM has no pills except on the
+     calendar key, and a lozenge here would be the only one on a
+     page of straight edges. */
+  border-radius: var(--edge);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  background: var(--sink);
+  white-space: nowrap;
+}
+
+/* THE ONLY COLOUR ON THE PAGE, and it is doing a job. `paid` is
+   deliberately the quiet one: it is the normal outcome and does
+   not need celebrating every line. What earns colour is the one
+   she might want to look twice at. */
+.pay-row[data-tone="wait"] .pay-pill {
+  background: #fdf4e3;
+  border-color: #e8d5a8;
+  color: #7a5a12;
+}
+.pay-row[data-tone="back"] .pay-pill {
+  background: #f6eef0;
+  border-color: #e3ccd2;
+  color: #8a4356;
+}
+.pay-row[data-tone="no"] .pay-pill {
+  color: var(--faint);
+}
+
+.pay-when {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.pay-ref {
+  display: grid;
+  gap: 3px;
+  justify-items: end;
+  text-align: right;
+}
+
+.pay-receipt {
+  font-size: 12px;
+  color: var(--soft);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Said out loud, always. Nobody should ever have to work out
+   afterwards whether a payment was real. */
+.pay-test {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+  padding: 0 5px;
+}
+
+/* ---- narrow ------------------------------------------------- */
+
+@media (max-width: 860px) {
+  /* The five columns become two: who and how much on the first
+     line, the rest underneath. A five-column grid on a phone is
+     five columns of nothing. */
+  .pay-row {
+    grid-template-columns: 1fr auto;
+    row-gap: 6px;
+  }
+  .pay-who { grid-column: 1; }
+  .pay-amount { grid-column: 2; }
+  .pay-for,
+  .pay-state,
+  .pay-ref {
+    grid-column: 1 / -1;
+    justify-items: start;
+    text-align: left;
+  }
+  .pay-state {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pay-ref {
+    display: flex;
+    gap: 8px;
+  }
+}

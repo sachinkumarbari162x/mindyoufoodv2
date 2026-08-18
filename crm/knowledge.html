@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Knowledge · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="knowledge">
+      <div class="fn-head">
+        <p class="eyebrow">What the desk knows</p>
+        <h2>Knowledge</h2>
+        <p class="fn-note">
+          The answers the desk gives, and the ways it recognises a question.
+          Changes take effect within a minute — no restart, and nothing to
+          deploy.
+        </p>
+        <p class="fn-tally"><b data-count="missed">·</b> not understood</p>
+      </div>
+
+      <div class="fn-body">
+
+        <!-- The queue comes FIRST because it is the only part with
+             anything waiting. Answers and phrasings are reference; this
+             is work. -->
+        <h3 class="sub">Not understood — what people asked and the desk could not place</h3>
+        <div data-list="missed">
+          <p class="empty">Nothing outstanding. Anything the desk cannot place appears here.</p>
+        </div>
+
+        <h3 class="sub">Answers</h3>
+        <p class="hint">
+          <code>{hours}</code>, <code>{presence}</code>, <code>{focusAreas}</code>,
+          <code>{email}</code> and <code>{replyWindow}</code> are filled in when the
+          answer is given, so they never go stale.
+        </p>
+        <div data-list="answers"></div>
+
+        <!-- A topic from nothing, rather than only from a question
+             somebody happened to ask. -->
+        <form class="new-topic" data-new-topic>
+          <p class="new-topic-title">Add a topic</p>
+
+          <label for="nt-label">What is it about?</label>
+          <input id="nt-label" name="label" type="text" maxlength="80" required
+                 placeholder="Do you offer follow-up plans?" />
+
+          <label for="nt-answer">What should the desk say?</label>
+          <textarea id="nt-answer" name="answer" rows="3" maxlength="600" required
+                    placeholder="Follow-ups run every two to four weeks at first, then less often as things settle."></textarea>
+          <p class="custom-count" data-nt-count>0 / 50 words</p>
+
+          <p class="hint">
+            The desk will not offer this until it can recognise a question that
+            matches. Add a phrasing or two below once it is saved.
+          </p>
+
+          <div class="new-topic-acts">
+            <button class="btn go" type="submit">Add the topic</button>
+            <span class="new-topic-said" data-nt-said></span>
+          </div>
+        </form>
+
+        <h3 class="sub">Phrasings</h3>
+        <p class="hint">
+          Extra ways of asking. These only ever help the desk recognise more —
+          a wrong one cannot stop it understanding what it already does.
+        </p>
+        <div data-list="phrasings"></div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/knowledge.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+/* Empty on purpose.
+   The CRM's stylesheets live in assets/workspace.css and
+   assets/css/components/*.css — this path was created by
+   mistake and the rules that landed here now sit in
+   components/plan.css, which is the file the plan page loads. */

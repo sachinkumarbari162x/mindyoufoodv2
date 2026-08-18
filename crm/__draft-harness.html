@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Fetch and create · harness</title>
+
+  <!-- ============================================================
+       WHAT THIS IS FOR
+       ------------------------------------------------------------
+       The plan page sits behind a password and a TOTP code, which
+       is right and makes it awkward to LOOK at while building. This
+       renders the composer's button row and the safety panel from
+       the real stylesheet, with real strings, so the two pieces
+       added for "Fetch and create" can be seen and screenshotted
+       without signing in.
+
+       It has no script and reaches no API. Nothing here can change
+       anything; it is a picture of the markup.
+       ============================================================ -->
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/components/plan.css" />
+  <style>
+    body { padding: 1.5rem; background: var(--ground); }
+    .harness-h { margin: 1.6rem 0 .5rem; font-size: 12px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--soft); font-family: var(--font-mono); }
+    .harness-h:first-child { margin-top: 0; }
+    .frame { max-width: 46rem; }
+  </style>
+</head><body>
+<div class="frame">
+
+  <p class="harness-h">The button row · nothing pressed yet</p>
+  <div class="pad-acts">
+    <button class="btn" type="button">Generate plan</button>
+    <button class="btn" type="button">Fetch and create</button>
+    <button class="btn quiet is-drop" type="button" disabled>Clear rows</button>
+    <button class="btn go" type="button" disabled>Build plan</button>
+  </div>
+
+  <p class="harness-h">No finalised assessment yet</p>
+  <div class="pad-acts">
+    <button class="btn" type="button" disabled>Generate plan</button>
+    <button class="btn" type="button" disabled
+            title="No finalised assessment for this client yet. Finish the assessment and mark it final.">Fetch and create</button>
+    <button class="btn quiet is-drop" type="button" disabled>Clear rows</button>
+    <button class="btn go" type="button" disabled>Build plan</button>
+  </div>
+
+  <p class="harness-h">Two drafts written, one left</p>
+  <div class="pad-acts">
+    <button class="btn" type="button">Generate plan</button>
+    <button class="btn" type="button">Fetch and create · 1 left</button>
+    <button class="btn quiet is-drop" type="button">Clear rows</button>
+    <button class="btn go" type="button">Build plan</button>
+  </div>
+
+  <p class="harness-h">The review panel, as it comes back from a draft</p>
+  <div class="rewrite">
+    <div class="rewrite-head">
+      <h4>Written from the assessment sofiadsouza0_0</h4>
+      <span class="grow"></span>
+      <button class="btn quiet" type="button">Keep mine</button>
+      <button class="btn go" type="button">Use this</button>
+    </div>
+
+    <div class="warns">
+      <p class="warns-h">Check these before you use it</p>
+      <ul>
+        <li>“Paneer with sautéed spinach” — the record lists an allergy or intolerance to paneer, recorded as “cow's milk”</li>
+        <li>“Replace two teas with water or homemade buttermilk” — the record lists an allergy or intolerance to buttermilk, recorded as “cow's milk”</li>
+      </ul>
+      <p class="warns-why">
+        The assistant was told what this client must avoid. This is
+        the check that does not take its word for it — read each one
+        and decide.
+      </p>
+    </div>
+
+    <div class="rewrite-pair">
+      <div class="rewrite-side">
+        <p class="rewrite-l">What you wrote</p>
+        <pre class="rewrite-text">Nothing yet — pad is empty.</pre>
+      </div>
+      <div class="rewrite-side">
+        <p class="rewrite-l">What it would become</p>
+<pre class="rewrite-text is-new">- Mixed bean salad with chickpeas (1 bowl) : midnight break
+- Paneer with sautéed spinach (1 plate) : 3am
+- Low-GI vegetable soup with lentils (1 bowl) : 6am
+- Vitamin D 60,000 IU (60000 IU) : weekly, Sunday
+- Water (2500 ml) : through the day
+- Replace two teas with water or homemade buttermilk (2 cups) : daily
+- Brisk walking (20 minutes) : after waking, daily
+- Bed with curtains closed (7 hours) : daily</pre>
+      </div>
+    </div>
+
+    <p class="rewrite-why">
+      8 rows written · the pad is empty, so nothing would be lost ·
+      nothing is saved until you press Build.
+    </p>
+  </div>
+
+</div>
+</body></html>

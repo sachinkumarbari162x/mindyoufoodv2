@@ -1,0 +1,111 @@
+/* ============================================================
+   ROW — one booking, one person, one message
+   ------------------------------------------------------------
+   The unit the whole CRM is made of, and the reason there is no
+   drill-down: everything needed to act is on the row, and so is
+   the action. Nothing here opens a detail page.
+   ============================================================ */
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .8rem 1rem;
+  align-items: start;
+  padding: .95rem 1.1rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+  background: var(--raise);
+  box-shadow: var(--shadow);
+}
+
+.row-main {
+  min-width: 0;
+}
+
+.row-top {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.who {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.when {
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.row-sub {
+  margin-top: .2rem;
+  color: var(--soft);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.row-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  justify-content: flex-end;
+}
+
+/* A request waiting on her is the only thing on this page that
+   is genuinely blocked, so it is the only thing given an edge.
+   If everything is highlighted, nothing is. */
+.row.is-waiting {
+  border-color: var(--amber-bright);
+}
+
+.row.is-failed {
+  border-color: var(--rust);
+}
+
+/* ============================================================
+   OFFERING A TIME, INSIDE THE ROW
+   ------------------------------------------------------------
+   Her free hours open underneath the request that asked for
+   one. They live in `.row-main` rather than beside the buttons
+   so a long list wraps across the full width of the row instead
+   of squeezing itself into the action column.
+
+   HIDDEN UNTIL ASKED FOR. A queue of review requests with every
+   week expanded would be unreadable, and she is answering one
+   at a time.
+   ============================================================ */
+.row-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .65rem;
+  padding-top: .65rem;
+  border-top: 1px dashed var(--line-soft);
+}
+
+/* Deliberately the quietest button on the row: there are a
+   dozen of them and none is more right than the others, so
+   none of them shouts. */
+.row-slots .slot {
+  font-size: 12.5px;
+  padding: .38rem .6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.row-slots .empty {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--soft);
+}
+
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .row-acts {
+    justify-content: flex-start;
+  }
+}

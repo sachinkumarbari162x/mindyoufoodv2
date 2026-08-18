@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Bots · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="bots">
+      <div class="fn-head">
+        <p class="eyebrow">Under the bonnet</p>
+        <h2>Bots</h2>
+        <p class="fn-note">
+          Which bot answered what, how long it took, and whether a model
+          was reached for at all. The switches take effect on the next
+          message — nothing needs restarting.
+        </p>
+      </div>
+
+      <div class="fn-body">
+        <!-- The live state of the orchestrator, which is code and not
+             a reading of the log. -->
+        <div class="panel" id="p-lanes">
+          <div class="panel-head">
+            <h3>The lanes</h3>
+            <span class="more" data-breaker>—</span>
+          </div>
+          <div data-switches></div>
+        </div>
+
+        <div class="panel" id="p-counts">
+          <div class="panel-head">
+            <h3>Last 30 days</h3>
+            <span class="more" data-verdict>—</span>
+          </div>
+          <div class="scroll"><table class="dt" data-stats></table></div>
+        </div>
+
+        <div class="panel" id="p-turns">
+          <div class="panel-head">
+            <h3>Recent turns</h3>
+            <a class="more" href="./knowledge.html">Teach it an answer →</a>
+          </div>
+          <div class="scroll"><table class="dt" data-turns></table></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/bots.js"></script>
+</body>
+
+</html>

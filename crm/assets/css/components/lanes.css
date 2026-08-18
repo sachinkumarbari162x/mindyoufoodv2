@@ -1,0 +1,57 @@
+/* ============================================================
+   LANES — the master panel's switches
+   ------------------------------------------------------------
+   One block per bot, and the lane it belongs to is said in words
+   rather than implied by a colour: "deterministic" and "agentic"
+   is the whole distinction this page exists to make legible.
+   ============================================================ */
+
+.lane {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .3rem 1rem;
+  align-items: start;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.lane:last-child { border-bottom: none; }
+
+.lane-id {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.lane-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* The lane that needs nothing is the one that always works, and it
+   should be readable as such at a glance. */
+.lane[data-lane="deterministic"] .lane-tag { color: var(--sage); }
+.lane[data-lane="agentic"] .lane-tag { color: var(--amber); }
+
+.lane-needs {
+  font-size: 11.5px;
+  color: var(--rust);
+}
+
+.lane-what {
+  grid-column: 1;
+  margin: 0;
+  font-size: 13px;
+  color: var(--soft);
+}
+
+.lane button { grid-row: 1 / span 2; }
+
+.lane button[aria-pressed="false"] {
+  color: var(--rust);
+  border-color: var(--rust);
+}

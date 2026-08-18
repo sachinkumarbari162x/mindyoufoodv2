@@ -1,0 +1,925 @@
+/* ============================================================
+   THE PLAN PAD
+   ------------------------------------------------------------
+   A doctor's prescription pad is the right ergonomic model and
+   the wrong legal word: one surface, write fast, hand it over.
+   So the page is mostly one very large text box, and everything
+   round it is kept quiet enough that the eye goes straight there.
+
+   THE TWO BOXES MUST NOT BE CONFUSABLE. The plan is given to the
+   client; the note underneath never is. They are told apart by
+   three things at once — a warm ground against a cool one, a
+   label that says which, and a rule between them — because the
+   cost of the mistake is a client reading a note about
+   themselves.
+   ============================================================ */
+
+.plan-blank {
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+  text-align: center;
+}
+
+.plan-blank h3 { margin: 0 0 .3rem; font-size: 1rem; color: var(--soft); }
+.plan-blank p { margin: 0; color: var(--faint); font-size: 13px; }
+
+.plan-sheet { min-width: 0; display: flex; flex-direction: column; gap: .9rem; }
+.plan-sheet[hidden] { display: none; }
+
+/* .sheet-line, .versions and .superseded are NOT defined here. They
+   already exist in assessment.css, which workspace.css imports, and
+   a second copy would be two rules for one control that drift the
+   first time either page is touched. The only adjustment this page
+   needs is the margin, because the sheet is a flex column with a gap
+   and the assessment's is not. */
+.plan-sheet .sheet-line { margin-bottom: 0; }
+
+/* ---- the figures she wrote against -----------------------------
+   A snapshot, not a live reading. Set in mono and kept small: it is
+   reference material she glances at, not something to act on. */
+
+.targets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem .9rem;
+  padding: .6rem .8rem;
+  background: var(--sink);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+}
+
+.targets[hidden] { display: none; }
+
+.targets-l {
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.target { display: inline-flex; align-items: baseline; gap: .35rem; }
+.target-k { color: var(--soft); font-size: 12px; }
+
+.target-v {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- the pad ---------------------------------------------------- */
+
+.pad-wrap { display: flex; flex-direction: column; gap: .35rem; }
+
+.pad-l {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.pad-hint { color: var(--faint); font-weight: 400; font-size: 11.5px; }
+
+.pad-wrap textarea {
+  width: 100%;
+  min-height: 22rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* A shade larger than the rest of the CRM. She is composing here,
+     not filling a field, and this is the text a client reads back. */
+  font-size: 15px;
+  line-height: 1.75;
+  resize: vertical;
+}
+
+.pad-wrap textarea::placeholder { color: var(--faint); }
+
+.pad-wrap textarea:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 3px var(--amber-wash);
+}
+
+/* ---- the strip under the pad ---------------------------------
+   WHAT MAY APPEAR IN A PLAN, said once and quietly.
+
+   Sticky to the foot of the pad rather than sitting below it: the
+   pad is twenty-two rems tall and this is a rule about what she is
+   typing, so it has to survive scrolling to the bottom of a long
+   plan. It clings inside .pad-wrap, which means it releases as soon
+   as the private note comes up — the rule stops applying there and
+   the strip should stop following.
+
+   Faint, tabular, and one line. It is a caption, not a warning: the
+   moment this looks like an error message she starts reading it
+   every time instead of writing. */
+.pad-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: .3rem .1rem .35rem;
+  background: var(--ground);
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .2rem .9rem;
+  color: var(--faint);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+/* The marks themselves, spaced so they read as a set rather than as
+   a word. */
+.pad-foot-marks { letter-spacing: .18em; white-space: nowrap; }
+
+/* THE SHAPE, NOT A RULE. A leading dash is the strongest signal the
+   assistant has that a line is one instruction, and no list of
+   punctuation marks can say that on its own. Monospaced so it reads
+   as an example of typing rather than as a sentence. */
+.pad-foot-eg {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  opacity: .85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Having just dropped something. Still grey — it says what happened
+   and nothing more. Only the weight changes, which is enough to
+   catch an eye already on the pad and not enough to interrupt one
+   that is not. */
+.pad-foot[data-said="true"] {
+  color: var(--soft);
+  font-weight: 600;
+}
+
+/* ---- the long version -----------------------------------------
+   Shut on load, and shut again every time the page opens. It is
+   read once and then never again, which is what <details> is for —
+   a panel she has to dismiss would be read once and resented
+   daily. */
+
+.pad-guide {
+  margin-top: -.15rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.pad-guide > summary {
+  padding: .3rem .1rem .45rem;
+  color: var(--soft);
+  font-size: 11.5px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+/* Safari draws its own triangle through a different property. */
+.pad-guide > summary::-webkit-details-marker { display: none; }
+
+.pad-guide > summary::before {
+  content: "▸ ";
+  color: var(--faint);
+}
+
+.pad-guide[open] > summary::before { content: "▾ "; }
+
+.pad-guide > summary:hover { color: var(--ink-2); }
+
+.pad-guide > summary:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 1px;
+}
+
+.pad-guide-in {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+  padding: .3rem 0 .8rem;
+}
+
+.pg-item {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: .7rem;
+  padding: .55rem 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.pg-item:first-child { border-top: 0; }
+
+/* The mark itself, big enough to be the thing you scan down. */
+.pg-mark {
+  margin: 0;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.pg-text { min-width: 0; }
+
+.pg-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.pg-body {
+  margin: .12rem 0 0;
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* THE SAME INSTRUCTION, BOTH WAYS. "Use a colon" is advice; seeing
+   the two lines side by side is a reason. Monospaced so they read
+   as typing rather than as prose about typing. */
+.pg-eg {
+  margin: .3rem 0 0;
+  padding: .2rem .45rem;
+  border-left: 2px solid var(--line);
+  background: var(--sink);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pg-eg[data-tone="good"] { border-left-color: var(--sage); }
+
+/* Not wrong, just harder to read — so it is dimmed rather than
+   marked in the failure colour. She writes like this today and
+   nothing about it is a mistake. */
+.pg-eg[data-tone="poor"] {
+  border-left-color: var(--faint);
+  color: var(--soft);
+  text-decoration: line-through;
+  text-decoration-color: var(--line);
+}
+
+/* HERS, NOT THEIRS. A cooler ground and a shorter box, so the two
+   never read as one continuous surface. */
+.pad-wrap.is-private textarea {
+  min-height: 8rem;
+  background: var(--sink);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.pad-wrap.is-private .pad-l { color: var(--soft); }
+
+/* ---- read-only, once it has gone -------------------------------
+   Not `disabled`: she must still be able to select the text and
+   read it comfortably. Only the ability to change it goes. */
+body[data-readonly="true"] .pad-wrap textarea {
+  background: var(--sink);
+  color: var(--ink-2);
+  cursor: default;
+}
+
+body[data-readonly="true"] .pad-wrap textarea:focus {
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+/* How long the programme runs, chosen before it starts. Sits with
+   the actions because it is part of one decision, not a setting. */
+.prog-len {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: var(--soft);
+  font-size: 12px;
+}
+
+.prog-len select {
+  padding: .18rem .3rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.plan-foot {
+  margin: 0;
+  color: var(--sage);
+  font-size: 12.5px;
+}
+
+.plan-foot[hidden] { display: none; }
+
+/* ---- printing ---------------------------------------------------
+   WHAT SHE HANDS OVER: a reference, a date, the figures and the
+   plan. The nav, the client list, the version bar and the save
+   state all go.
+
+   THE PRIVATE NOTE IS HIDDEN HERE, NOT REMOVED, and that difference
+   is worth stating plainly rather than glossing. `display: none` in
+   a print stylesheet keeps the text in the document — it is still
+   there in the DOM, in a Save-as-HTML, and in any tool that ignores
+   print styles. For a sheet of paper handed across a desk that is
+   enough. For anything that leaves as a FILE it is not, and when
+   phase 2 renders a plan for the client to open, that page must be
+   built without the note in it at all rather than with the note
+   styled away. */
+@media print {
+  .masthead,
+  .work-bar,
+  .work-aside,
+  .work-veil,
+  .work-aside-btn,
+  .foot,
+  .versions,
+  .superseded,
+  .pad-wrap.is-private { display: none !important; }
+
+  .work-split { display: block !important; }
+
+  .pad-wrap textarea {
+    min-height: 0;
+    height: auto;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: #000;
+    font-size: 12pt;
+    line-height: 1.6;
+    resize: none;
+  }
+
+  .pad-l { color: #000; }
+  .pad-hint { display: none; }
+  /* Notes to the person typing. Neither has any business on the
+     sheet that reaches the client. */
+  .pad-foot, .pad-guide { display: none; }
+  .targets { border: 1px solid #999; background: none; }
+  .sheet-line { color: #000; }
+}
+
+/* ---- giving it to them ------------------------------------------
+   Appears only once the plan is issued, so the panel's presence is
+   itself the signal that the document is finished. */
+
+.handover {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  padding: .9rem 1rem 1rem;
+  background: var(--sage-wash);
+  border: 1px solid color-mix(in srgb, var(--sage) 35%, transparent);
+  border-radius: var(--edge);
+}
+
+.handover[hidden] { display: none; }
+
+.handover-head { display: flex; align-items: center; gap: .5rem; }
+.handover-head .grow { flex: 1; }
+
+.handover-head h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+.handover-opened { color: var(--faint); font-size: 11.5px; }
+
+.handover-why { margin: 0; color: var(--ink-2); font-size: 12.5px; line-height: 1.5; }
+
+.handover-link {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding: .5rem .65rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+/* The URL is opaque and long by design. What matters is that all of
+   it is selectable and that Copy never wraps away from it. */
+.handover-link a {
+  flex: 1 1 16rem;
+  min-width: 0;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.handover-link .btn { flex: 0 0 auto; padding: .15rem .6rem; font-size: 11.5px; white-space: nowrap; }
+
+.handover-acts { display: flex; gap: .5rem; flex-wrap: wrap; }
+.handover-acts .btn[hidden] { display: none; }
+
+/* Nothing in this panel belongs on the printed sheet. */
+@media print {
+  .handover { display: none !important; }
+}
+
+/* ---- what the assistant read ------------------------------------
+   A PROPOSAL, AND IT MUST NEVER LOOK LIKE THE PLAN. The pad above is
+   on white with an amber focus; this sits on a cooler ground behind
+   a dashed edge, because a panel that looked authoritative is a
+   panel she would stop reading carefully — and reading it carefully
+   is the entire job.
+
+   Present only while the plan is a draft. Once it is issued the rows
+   are settled and re-reading would rewrite the structure underneath
+   a document somebody is already following. */
+
+.reading {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  padding: .9rem 1rem 1rem;
+  background: var(--sink);
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+}
+
+.reading[hidden] { display: none; }
+
+.reading-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.reading-head .grow { flex: 1; }
+
+.reading-head h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.reading-tally {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.reading-why { margin: 0; color: var(--soft); font-size: 12.5px; line-height: 1.55; max-width: 62ch; }
+
+.reading-rows { display: flex; flex-direction: column; gap: .5rem; }
+
+.reading-rows .empty { margin: 0; padding: .6rem 0; color: var(--faint); font-size: 13px; }
+.reading-rows .empty.is-bad { color: var(--rust); }
+
+/* ---- one proposed row -------------------------------------------- */
+
+/* ---- writing it out, and reading it first ----------------------
+   Both versions side by side, because the pad holds the document
+   somebody receives and a button that silently replaces it asks
+   her to spot the difference in a wall of text she was just
+   looking at. Keep is the quiet button and Use is the loud one,
+   but Keep is what happens if she does nothing — the default is
+   always the one that changes nothing. */
+
+.rewrite {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-top: .6rem;
+  padding: .7rem .8rem .8rem;
+  background: var(--sink);
+  border: 1px solid var(--line);
+}
+
+.rewrite[hidden] { display: none; }
+
+.rewrite-head { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.rewrite-head .grow { flex: 1; }
+
+.rewrite-head h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.rewrite-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: .6rem;
+}
+
+.rewrite-side { min-width: 0; display: flex; flex-direction: column; gap: .25rem; }
+
+.rewrite-l {
+  margin: 0;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* <pre>, so the shape she is being shown is the shape she gets.
+   Rendering the proposal as flowing prose would hide the one thing
+   it is being judged on — where the line breaks fall. */
+.rewrite-text {
+  margin: 0;
+  max-height: 18rem;
+  overflow: auto;
+  padding: .55rem .65rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rewrite-text.is-new {
+  border-left: 2px solid var(--sage);
+  color: var(--ink);
+}
+
+.rewrite-why {
+  margin: 0;
+  color: var(--soft);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   WHERE THE ASSISTANT DISAGREED WITH THE RECORD
+   ------------------------------------------------------------
+   Shown when a written draft contains something the client's own
+   assessment says to avoid — a food they are allergic to, meat in
+   a vegetarian plan, something they told her they will not eat.
+
+   RUST, WHICH IS THE PRACTICE'S "NEEDS ATTENTION" AND NOT A NEW
+   COLOUR. Nothing on this page has invented a hue and this must
+   not be the first: the palette carries three meanings and this
+   is squarely the third.
+
+   IT IS NOT A DIALOGUE AND IT DOES NOT BLOCK. She can still use
+   the draft — she is the clinician, the check is a seatbelt, and
+   half of what it catches will be goat cheese flagged against a
+   cow's-milk allergy. A modal here would train her to dismiss it
+   without reading, which is worse than not having it.
+   ============================================================ */
+.warns {
+  padding: .6rem .75rem .7rem;
+  border: 1px solid var(--rust);
+  background: var(--rust-wash);
+}
+
+.warns[hidden] { display: none; }
+
+.warns-h {
+  margin: 0 0 .35rem;
+  color: var(--rust);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.warns ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.warns li {
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.warns-why {
+  margin: .45rem 0 0;
+  color: var(--ink-2);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+/* A draft in the plan bar reads differently from an issued one.
+   The bar lists every plan this person has had, and "which of
+   these is finished" is the question she asks of it — a dotted
+   edge answers that without a word. .ver itself is defined in
+   assessment.css, which this page already loads. */
+.ver[data-state="draft"] {
+  border-style: dashed;
+  color: var(--soft);
+}
+
+/* ---- what Build could not read ---------------------------------
+   Listed rather than swallowed. A line silently dropped is how a
+   client loses an instruction while she is looking at a table that
+   seems complete — she counts eleven rows, the plan had twelve, and
+   nothing anywhere says which one went.
+
+   Amber, not red. Nothing is broken: the plan is fine and these
+   lines are still in it as prose. It is a "you may have meant
+   this to be a row", which is a suggestion and should look like
+   one. */
+
+.probs {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-top: .5rem;
+  padding: .55rem .7rem .65rem;
+  background: var(--amber-wash);
+  border: 1px solid color-mix(in srgb, var(--amber-bright) 40%, transparent);
+}
+
+.probs[hidden] { display: none; }
+
+.probs-l {
+  margin: 0 0 .1rem;
+  color: var(--amber);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.prob { display: flex; flex-direction: column; gap: .1rem; }
+
+.prob-why { margin: 0; color: var(--ink-2); font-size: 12px; }
+
+/* Her line, exactly as she typed it. Monospaced, because what is
+   wrong with it is usually a character. */
+.prob-text {
+  margin: 0;
+  padding: .15rem .4rem;
+  background: var(--raise);
+  border-left: 2px solid var(--amber-bright);
+  color: var(--soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* ---- the rows, as a table -------------------------------------
+   These were cards. That reads well for three rows and badly for
+   twelve: a plan is a list of COMPARABLE things, and the question
+   she answers is "is this right" twelve times running. A table puts
+   the same field of every row in the same column, so the eye runs
+   down 2 eggs / 15 almonds / 1 cup instead of hunting for the
+   amount inside each card.
+
+   A real <table>, so a screen reader announces the column when the
+   cell is reached — which is how somebody who cannot see the layout
+   still checks a plan. */
+
+.rows-scroll { overflow-x: auto; }
+
+.rows-tbl {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+}
+
+.rows-tbl th {
+  padding: .3rem .45rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.rows-tbl td {
+  padding: .3rem .45rem;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+
+.item {
+  background: var(--raise);
+}
+
+/* The verdict is carried by the left edge of the row, so a scan
+   down the table shows what is still outstanding without reading a
+   word. A border-left on a <td> rather than the <tr>, because a row
+   in a collapsed table has no border of its own to paint. */
+.item > td:first-child { border-left: 3px solid var(--line); }
+
+/* The verdict is carried by the left edge, so a scan down the panel
+   shows what is still outstanding without reading a word. */
+.item[data-status="confirmed"] > td:first-child,
+.item[data-status="edited"] > td:first-child { border-left-color: var(--sage); }
+/* WRONG, AND OUT OF THE WAY. A row she marked wrong has done its
+   job: it stays because it is the evidence the assistant got
+   something wrong, and it stops taking up the space of a row she
+   still has to think about. So it collapses — the boxes go, the
+   label remains readable, and the panel above it is the work.
+
+   This is the alternative to letting her delete it, which would
+   walk the accuracy figure upwards every time the assistant was
+   wrong enough to annoy her. */
+.item[data-status="rejected"] > td:first-child { border-left-color: var(--rust); }
+.item[data-status="rejected"] > td { opacity: .55; }
+
+.item[data-status="rejected"]:hover > td,
+.item[data-status="rejected"]:focus-within > td { opacity: 1; }
+
+.item[data-status="rejected"] .item-src { display: none; }
+
+/* The label alone, and not as a box: there is nothing left to type
+   into a row that has been ruled out. The other three cells empty
+   out rather than showing dead inputs. */
+.item[data-status="rejected"] input:not(.item-label) { visibility: hidden; }
+
+.item[data-status="rejected"] .item-label {
+  display: block;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--soft);
+  text-decoration: line-through;
+  text-decoration-color: var(--rust);
+}
+.item[data-status="proposed"] > td:first-child { border-left-color: var(--amber-bright); }
+
+/* HER SENTENCE, ABOVE ITS READING. This is what makes the panel
+   checkable: she compares a row against the line it came from rather
+   than against her memory of what she meant. */
+.item-src {
+  margin: 0;
+  color: var(--soft);
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.rows-tbl input {
+  min-width: 0;
+  padding: .32rem .45rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+.rows-tbl input:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-wash);
+}
+
+.rows-tbl input { width: 100%; }
+.cell-label { min-width: 14rem; }
+.cell-n { width: 5rem; }
+.cell-kind { width: 6rem; }
+.cell-acts { width: 1%; white-space: nowrap; }
+.item-qty { font-variant-numeric: tabular-nums; text-align: right; }
+
+.item-acts { display: flex; align-items: center; gap: .4rem; }
+.item-acts .grow { flex: 1; }
+.item-acts .btn { padding: .18rem .7rem; font-size: 12px; }
+
+/* A settled row keeps its buttons so the verdict stays visible and
+   reversible, but they stop LOOKING like the thing to do next —
+   a filled amber Confirm on a row she confirmed ten minutes ago
+   reads as work outstanding. */
+.item-acts .btn[disabled] {
+  background: none;
+  border-color: var(--line);
+  color: var(--faint);
+  opacity: 1;
+  cursor: default;
+}
+
+.item-kind {
+  padding: .05rem .4rem;
+  border-radius: 999px;
+  background: var(--sink);
+  color: var(--faint);
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* DELETE IS NOT AN ACTION SHE SHOULD REACH FOR. It sits with the
+   other quiet buttons and only picks up the warning colour under the
+   cursor — enough to say what it is at the moment of pressing it,
+   and not enough to draw the eye away from Confirm. */
+.item-acts .btn.is-drop { color: var(--faint); }
+
+.item-acts .btn.is-drop:hover,
+.item-acts .btn.is-drop:focus-visible {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+.item-verdict { font-size: 11.5px; }
+.item-verdict[data-tone="yes"] { color: var(--sage); }
+.item-verdict[data-tone="no"] { color: var(--rust); }
+
+@media (max-width: 720px) {
+  /* SIX COLUMNS IS A DESKTOP SHAPE, and a table does not stack
+     gracefully. Rather than pretending, the table keeps its shape
+     and scrolls inside its own box — the row stays readable across,
+     which is the whole reason it is a table. Only the page must not
+     scroll sideways, and .rows-scroll is what stops it. */
+  .rows-tbl { min-width: 34rem; }
+  .item-src { display: none; }
+}
+
+/* None of this is part of the plan, so none of it is on the paper. */
+@media print {
+  .reading { display: none !important; }
+}
+
+/* The programme link, shown once and never again. */
+.prog { display: flex; flex-direction: column; gap: .35rem; }
+.prog[hidden] { display: none; }
+
+.prog-l {
+  margin: 0;
+  color: var(--rust);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+
+/* ---- the shape of a plan she is about to generate --------------
+   Two controls sitting in the button row: how many meals, and
+   whether to include between-meal options. They are next to
+   "Fetch and create" because they are part of that press, not
+   settings somewhere else.
+
+   Deliberately small and quiet. A dietitian pressing this has
+   already made the clinical decision; these are for saying what it
+   was, not for deliberating over. */
+
+.shape-field,
+.shape-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.shape-field select {
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--raise);
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.shape-field select:focus-visible,
+.shape-check input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.shape-check {
+  cursor: pointer;
+}
+.shape-check input {
+  /* The native box, sized up to something a finger can hit. */
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--ink);
+}

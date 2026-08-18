@@ -1,0 +1,284 @@
+/* ============================================================
+   BMI CALCULATOR
+
+   Built on the SITE's tokens (serif/sans, espresso/rose), not the
+   receptionist's — this is a page of the marketing site, and the
+   desk it hands off to is a separate surface.
+
+   The result is the page's whole reason to exist, so it is the
+   loudest thing on it: a single large number, a named band, and a
+   scale the number sits on. The inputs are quiet by comparison.
+   ============================================================ */
+
+.bmi-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+}
+
+@media (max-width: 880px) {
+  .bmi-shell {
+    grid-template-columns: 1fr;
+    gap: clamp(1.8rem, 6vw, 2.6rem);
+  }
+}
+
+/* ---- inputs ---- */
+.bmi-form {
+  display: grid;
+  gap: 1.3rem;
+}
+
+.bmi-units {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-deep);
+  width: fit-content;
+}
+
+.bmi-units button {
+  padding: .5rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--sans);
+  font-size: .84rem;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background .3s var(--ease), color .3s var(--ease);
+}
+
+.bmi-units button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bmi-field label {
+  display: block;
+  margin-bottom: .45rem;
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.bmi-row {
+  display: flex;
+  gap: .6rem;
+}
+
+.bmi-input {
+  flex: 1;
+  min-width: 0;
+  padding: .85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.05rem;
+  /* Digits in a row of inputs should line up as the value changes. */
+  font-variant-numeric: tabular-nums;
+  transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
+}
+
+.bmi-input:focus {
+  outline: none;
+  border-color: var(--rose-deep);
+  box-shadow: 0 0 0 3px var(--rose-wash);
+}
+
+.bmi-input[aria-invalid="true"] {
+  border-color: var(--rose-deep);
+  background: var(--rose-wash);
+}
+
+.bmi-suffix {
+  align-self: center;
+  font-family: var(--sans);
+  font-size: .82rem;
+  color: var(--ink-soft);
+  min-width: 2.4rem;
+}
+
+.bmi-help {
+  margin: .4rem 0 0;
+  font-size: .8rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.bmi-help[data-error="true"] {
+  color: var(--rose-deep);
+}
+
+/* ---- result ---- */
+.bmi-result {
+  padding: clamp(1.6rem, 3vw, 2.4rem);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: var(--shadow-md);
+}
+
+/* Empty until there is something to say — an emphatic "—" reads as
+   a broken value rather than as "waiting". */
+.bmi-result[data-state="empty"] .bmi-value,
+.bmi-result[data-state="empty"] .bmi-band,
+.bmi-result[data-state="empty"] .bmi-scale,
+.bmi-result[data-state="empty"] .bmi-cta {
+  display: none;
+}
+
+.bmi-result[data-state="ready"] .bmi-placeholder {
+  display: none;
+}
+
+.bmi-placeholder {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.bmi-value {
+  font-family: var(--serif);
+  font-size: clamp(3.4rem, 2.5rem + 4vw, 5.4rem);
+  line-height: .95;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+  color: var(--ink);
+}
+
+.bmi-value small {
+  display: block;
+  margin-top: .5rem;
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+.bmi-band {
+  display: inline-block;
+  margin: 1rem 0 0;
+  padding: .35rem .85rem;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  border: 1px solid currentColor;
+}
+
+/* Bands are a scale, not a verdict — the colours run cool to warm
+   rather than good to bad, and nothing here is red. A number on a
+   health page should inform, not alarm. */
+.bmi-band[data-band="underweight"] { color: #6E7FA3; }
+.bmi-band[data-band="healthy"]     { color: #5C7A5E; }
+.bmi-band[data-band="at risk"],
+.bmi-band[data-band="overweight"]  { color: #97753B; }
+.bmi-band[data-band^="obese"]      { color: var(--rose-deep); }
+
+/* ---- scale ---- */
+.bmi-scale {
+  margin-top: 1.6rem;
+}
+
+.bmi-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(90deg,
+    #6E7FA3 0%, #6E7FA3 18%,
+    #5C7A5E 18%, #5C7A5E 46%,
+    #97753B 46%, #97753B 66%,
+    #B07178 66%, #B07178 100%);
+}
+
+.bmi-marker {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px var(--paper);
+  transform: translate(-50%, -50%);
+  transition: left .5s var(--ease);
+}
+
+.bmi-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: .5rem;
+  font-family: var(--sans);
+  font-size: .68rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+/* ---- CTA ---- */
+.bmi-cta {
+  margin-top: 1.8rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.bmi-cta p {
+  margin: 0 0 1rem;
+  font-size: .95rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.bmi-cta .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.bmi-cta .btn[aria-busy="true"] {
+  opacity: .6;
+  pointer-events: none;
+}
+
+/* ---- the standing caveat ----
+   Not a footnote. BMI does not distinguish muscle from fat and was
+   never designed for individuals, and a page that prints a number
+   this large has an obligation to say so where it will be read. */
+.bmi-caveat {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: 1.2rem 1.4rem;
+  border-left: 2px solid var(--rose);
+  background: var(--bg-deep);
+  border-radius: 0 12px 12px 0;
+}
+
+.bmi-caveat p {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+
+.bmi-caveat p + p {
+  margin-top: .7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bmi-marker {
+    transition: none;
+  }
+}

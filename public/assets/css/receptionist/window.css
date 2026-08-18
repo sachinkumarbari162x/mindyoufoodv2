@@ -1,0 +1,289 @@
+/* ============================================================
+   RECEPTIONIST · THE WINDOW
+   A frosted pane floating over the ambient stage. Three rows:
+   header / transcript / composer, with only the transcript
+   scrolling — so the header and composer never leave the screen
+   mid-conversation.
+   ============================================================ */
+
+.rcp-window {
+  position: fixed;
+  right: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: var(--rcp-z-window);
+
+  display: grid;
+  /* head · notice · log · foot. Every child is pinned to its own row
+     below, because the notice comes and goes: with rows assigned by
+     source order instead, hiding it would shift the log onto the
+     header's track and hand the 1fr to the wrong element. */
+  grid-template-rows: auto auto 1fr auto;
+  width: min(420px, calc(100vw - 28px));
+  /* Cap against the viewport so the composer is always reachable
+     on a short laptop screen; dvh so mobile URL-bar collapse does
+     not leave the composer under the browser chrome. */
+  height: min(620px, calc(100dvh - 110px));
+
+  border: 1px solid var(--rcp-glass-rim);
+  border-radius: var(--rcp-r-lg);
+  overflow: hidden;
+  isolation: isolate;
+
+  background: var(--rcp-glass);
+  -webkit-backdrop-filter: blur(var(--rcp-blur)) saturate(150%);
+  backdrop-filter: blur(var(--rcp-blur)) saturate(150%);
+  box-shadow: var(--rcp-shadow);
+
+  font-family: var(--rcp-sans);
+  color: var(--rcp-text);
+
+  /* Closed by default. `visibility` (not display) so the open
+     transition has something to animate from, and so the pane is
+     out of the tab order while closed. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px) scale(0.97);
+  transform-origin: 100% 100%;
+  transition: opacity 0.42s var(--rcp-ease), transform 0.52s var(--rcp-ease-out),
+    visibility 0s linear 0.52s;
+}
+
+.rcp[data-open="true"] .rcp-window {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+/* The inner light-catch: a hairline highlight along the top edge
+   that makes the pane read as glass rather than as a flat tint. */
+.rcp-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border-top: 1px solid var(--rcp-glass-edge);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    transparent 22%,
+    transparent 78%,
+    rgba(20, 16, 12, 0.07) 100%
+  );
+}
+
+/* Browsers without backdrop-filter (older Firefox with the flag
+   off) get an opaque pane instead of unreadable transparency. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .rcp-window {
+    background: var(--rcp-cream);
+  }
+}
+
+/* Visually hidden, still announced. Used for the composer label —
+   the placeholder is a hint, not a name, and a textarea with no
+   accessible name is unusable with a screen reader. */
+.rcp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- header ---- */
+/* ---- fixed rows ----
+   See the note on .rcp-window: the notice is conditional, so nothing
+   here may depend on source order. Each rule sits with its own
+   component below; only .rcp-notice needs a block of its own. */
+
+/* ---- the status notice ----
+   What the desk says about itself — closed, shut for a holiday, or
+   having a slow moment. Deliberately quiet: it is context, not a
+   message, so it must not compete with the conversation below it.
+   Server-authored; `kind` only chooses the colour. */
+.rcp-notice {
+  grid-row: 2;
+  margin: 0;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--rcp-line);
+  background: var(--rcp-amber-wash);
+  /* The semantic token, not --rcp-ink-soft: the raw palette value is
+     never re-themed, so using it directly paints dark brown text on
+     the dark ground. */
+  color: var(--rcp-text-soft);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* Trouble behind the desk reads as attention-worthy; being closed for
+   the evening is merely a fact, so it stays neutral. */
+.rcp-notice[data-kind="degraded"] {
+  background: var(--rcp-rust-wash);
+}
+
+.rcp-notice[data-kind="closing_soon"] {
+  background: var(--rcp-sage-wash);
+}
+
+.rcp-head {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 14px 14px 18px;
+  border-bottom: 1px solid var(--rcp-line);
+  background: var(--rcp-glass-hi);
+  -webkit-backdrop-filter: blur(var(--rcp-blur-strong));
+  backdrop-filter: blur(var(--rcp-blur-strong));
+}
+
+.rcp-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--rcp-amber-hi), var(--rcp-rust));
+  color: var(--rcp-cream-hi);
+  font-family: var(--rcp-display);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variation-settings: "opsz" 14;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.rcp-ident {
+  min-width: 0;
+  flex: 1;
+}
+
+.rcp-name {
+  margin: 0;
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-1);
+  font-weight: 600;
+  font-variation-settings: "opsz" 20;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Presence line — mono, because it carries status, not prose. */
+.rcp-presence {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px 0 0;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  letter-spacing: 0.04em;
+  color: var(--rcp-text-soft);
+}
+
+.rcp-presence::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rcp-sage);
+  box-shadow: 0 0 0 3px var(--rcp-sage-wash);
+}
+
+/* Outside business hours the dot goes amber and the copy changes
+   — set by JS from the server's `officeOpen` flag, never from the
+   browser clock (see receptionist/rules/hours.js). */
+.rcp[data-office="closed"] .rcp-presence::before {
+  background: var(--rcp-amber);
+  box-shadow: 0 0 0 3px var(--rcp-amber-wash);
+}
+
+.rcp-head-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.rcp-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rcp-text-soft);
+  cursor: pointer;
+  transition: background 0.25s var(--rcp-ease), color 0.25s var(--rcp-ease);
+}
+
+.rcp-icon-btn:hover {
+  background: rgba(20, 16, 12, 0.07);
+  color: var(--rcp-text);
+}
+
+.rcp-icon-btn:focus-visible {
+  outline: 2px solid var(--rcp-amber);
+  outline-offset: 1px;
+}
+
+.rcp-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- transcript ---- */
+.rcp-log {
+  grid-row: 3;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 16px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rcp-ink-soft) transparent;
+}
+
+.rcp-log::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rcp-log::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  background-color: rgba(20, 16, 12, 0.24);
+  border-radius: 99px;
+}
+
+/* ---- phone: full-bleed sheet ---- */
+@media (max-width: 780px) {
+  .rcp-window {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    transform: translateY(3%);
+  }
+}
+
+/* A tall-enough desktop can afford a taller pane. */
+@media (min-height: 900px) and (min-width: 781px) {
+  .rcp-window {
+    height: min(720px, calc(100dvh - 140px));
+  }
+}

@@ -1,0 +1,134 @@
+/* ============================================================
+   SIGN IN — the one page that is not the workspace
+   ------------------------------------------------------------
+   No masthead, no nav, no counts. There is exactly one thing to
+   do here and everything else would be a distraction from it.
+   ============================================================ */
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--ground);
+}
+
+.login {
+  width: 100%;
+  padding: 2rem 1.25rem;
+}
+
+.login-card {
+  max-width: 22rem;
+  margin: 0 auto;
+  padding: 1.6rem 1.5rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+}
+
+.login-card h1 {
+  margin: 0 0 1.1rem;
+  font-size: 20px;
+  letter-spacing: -.015em;
+}
+
+/* MUST come before the flex rule below, and must out-specify it.
+
+   `hidden` only sets display:none in the browser's own stylesheet,
+   so ANY author display rule beats it — and the first version of
+   this file drew all four panels at once, one under another, with
+   two Email fields and two passwords on screen together. */
+.login-card [hidden] {
+  display: none;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.login-card label {
+  margin-top: .5rem;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.login-card input {
+  padding: .5rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.login-card input:focus-visible {
+  outline: none;
+  border-color: var(--amber-bright);
+}
+
+.login-card .btn {
+  margin-top: .9rem;
+}
+
+.login-note {
+  margin: 0 0 .3rem;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+
+.login-hint {
+  margin: .25rem 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--faint);
+}
+
+/* The TOTP secret, set in the monospace face and allowed to wrap.
+   Thirty-two characters typed by hand is the fallback when a QR
+   cannot be scanned, and a proportional font makes that miserable. */
+.login-secret {
+  margin: .6rem 0 0;
+  padding: .55rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--sink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .06em;
+  word-break: break-all;
+  user-select: all;
+}
+
+.login-err {
+  margin: .9rem 0 0;
+  padding: .5rem .65rem;
+  border-left: 3px solid var(--rust);
+  background: var(--rust-wash);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.login-err[hidden] {
+  display: none;
+}
+
+/* The enrolment steps. Numbered because they genuinely are a
+   sequence — tap this, then this — and the order matters. */
+.login-steps {
+  margin: .7rem 0 .2rem;
+  padding-left: 1.1rem;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.login-steps code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--sink);
+  padding: .05rem .3rem;
+}

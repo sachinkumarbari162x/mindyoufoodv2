@@ -1,0 +1,68 @@
+/* ============================================================
+   TAG — how a session happens, and whether a message landed
+   ------------------------------------------------------------
+   Every tag carries its own WORD. The colour is reinforcement,
+   never the message itself: a tag that only differs by hue is
+   unreadable to a colourblind reader, in print, and in forced-
+   colours mode.
+   ============================================================ */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .12rem .45rem;
+  border-radius: var(--edge);
+  background: var(--sink);
+  color: var(--soft);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---- how the session happens ---- */
+.tag.video {
+  background: var(--amber-wash);
+  color: var(--amber);
+}
+
+.tag.audio {
+  background: var(--sage-wash);
+  color: var(--sage);
+}
+
+.tag.in_person {
+  background: var(--rust-wash);
+  color: var(--rust);
+}
+
+/* ---- what kind of request this is ----
+   A DIFFERENT AXIS from the three above, which say how a session
+   happens. This one says the client asked rather than booked, and
+   a review request has no mode yet precisely because it has no
+   hour yet. Outlined rather than filled, so it is legible as
+   belonging to another family and does not read as a fourth way
+   of meeting. */
+.tag.review {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+/* ---- whether a message got there ---- */
+.tag.sent {
+  background: var(--sage-wash);
+  color: var(--sage);
+}
+
+.tag.queued {
+  background: var(--sink);
+  color: var(--soft);
+}
+
+.tag.failed {
+  background: var(--rust-wash);
+  color: var(--rust);
+}

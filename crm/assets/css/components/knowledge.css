@@ -1,0 +1,215 @@
+/* ============================================================
+   KNOWLEDGE — editing what the desk says
+   ------------------------------------------------------------
+   These are sentences a visitor will read, so the field they are
+   written in is generous and set in the reading face rather than
+   the interface one. A cramped input encourages cramped copy.
+   ============================================================ */
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  margin-bottom: .6rem;
+  padding: .85rem 1.1rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--edge);
+  background: var(--raise);
+}
+
+.answer-head {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+}
+
+.answer-topic {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* The intent id, kept visible: it is the key the phrasings attach
+   to, and hiding it makes the two lists look unrelated. */
+.answer-intent {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  color: var(--faint);
+}
+
+.answer textarea {
+  width: 100%;
+  padding: .6rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--ground);
+  color: var(--ink);
+  /* The reading face, not the interface one — this text is prose a
+     visitor sees, and writing it in a UI font misrepresents how it
+     will land. */
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.answer textarea:focus-visible {
+  border-color: var(--amber-bright);
+}
+
+.answer-foot {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+}
+
+.answer-note {
+  font-size: 12.5px;
+  color: var(--sage);
+}
+
+/* ---- the hint lines above each block ---- */
+.hint {
+  margin: -.2rem 0 .6rem;
+  color: var(--soft);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.hint code {
+  padding: .05rem .3rem;
+  border-radius: var(--edge);
+  background: var(--sink);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--amber);
+}
+
+/* The topic picker sits inside a row of buttons, so it has to match
+   their height rather than the browser's default select. */
+select.btn {
+  padding: .34rem .5rem;
+  font-size: 12.5px;
+  max-width: 11rem;
+}
+
+/* ---- a topic she writes herself ----
+   Appears under the row when "Write a new answer…" is chosen. Set in
+   the reading face, like the answers above it, because it is prose a
+   visitor will be shown rather than a field in a form. */
+.custom-answer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  margin: .6rem 0 .1rem;
+  padding: .7rem .85rem;
+  border-left: 3px solid var(--amber);
+  background: var(--sink);
+}
+
+.custom-answer[hidden] { display: none; }
+
+.custom-answer label {
+  font-size: 12px;
+  color: var(--soft);
+}
+
+.custom-answer textarea {
+  width: 100%;
+  padding: .5rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.custom-answer textarea:focus-visible {
+  outline: none;
+  border-color: var(--amber-bright);
+}
+
+/* The count, not a truncation. Cutting her sentence off mid-word is
+   a worse answer than telling her it has run long. */
+.custom-count {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.custom-count[data-over="true"] {
+  color: var(--rust);
+  font-weight: 600;
+}
+
+/* ---- a topic from nothing ----
+   Sits under the answers it will join. Bordered rather than boxed,
+   so it reads as the next entry in the list rather than a separate
+   tool bolted to the page. */
+.new-topic {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  margin: 1rem 0 .4rem;
+  padding: .9rem 1.1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+}
+
+.new-topic-title {
+  margin: 0 0 .3rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.new-topic label {
+  margin-top: .35rem;
+  font-size: 12px;
+  color: var(--soft);
+}
+
+.new-topic input,
+.new-topic textarea {
+  width: 100%;
+  padding: .5rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.new-topic textarea { resize: vertical; }
+
+.new-topic input:focus-visible,
+.new-topic textarea:focus-visible {
+  outline: none;
+  border-color: var(--amber-bright);
+}
+
+.new-topic .hint { margin: .5rem 0 0; }
+
+.new-topic-acts {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin-top: .7rem;
+  flex-wrap: wrap;
+}
+
+.new-topic-said {
+  font-size: 12.5px;
+  color: var(--soft);
+}
+
+.new-topic-said[data-tone="ok"] { color: var(--sage); }
+.new-topic-said[data-tone="warn"] { color: var(--rust); }

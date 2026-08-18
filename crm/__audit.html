@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>audit</title>
+<style>html,body{margin:0;background:#666}iframe{border:0;display:block;background:#fff}</style></head>
+<body><iframe id="f"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +(q.get("w") || 390), H = +(q.get("h") || 844);
+const f = document.getElementById("f");
+f.width = W; f.height = H;
+f.src = q.get("page");
+f.addEventListener("load", () => setTimeout(() => {
+  let out;
+  try {
+    const d = f.contentDocument, w = f.contentWindow;
+    const vw = w.innerWidth;
+    const bad = [];
+    for (const el of d.querySelectorAll("body *")) {
+      const b = el.getBoundingClientRect();
+      if (b.width < 1 && b.height < 1) continue;
+      const st = w.getComputedStyle(el);
+      if (st.display === "none" || st.visibility === "hidden") continue;
+      // Inside something that scrolls sideways on purpose? Then it
+      // is allowed to be wider than the window.
+      let inScroller = false;
+      for (let a = el.parentElement; a && a !== d.body; a = a.parentElement) {
+        const as = w.getComputedStyle(a);
+        if (as.overflowX === "auto" || as.overflowX === "scroll" || as.overflowX === "hidden") { inScroller = true; break; }
+      }
+      if (inScroller) continue;
+      if (b.right > vw + 1 || b.width > vw + 1) {
+        const name = el.tagName.toLowerCase()
+          + (el.id ? "#" + el.id : "")
+          + (typeof el.className === "string" && el.className ? "." + el.className.trim().split(/\s+/)[0] : "");
+        bad.push(name + "[" + Math.round(b.width) + "w," + Math.round(b.right) + "r]");
+      }
+    }
+    const seen = [...new Set(bad)];
+    out = `vw=${vw} scrollW=${d.documentElement.scrollWidth} hScroll=${d.documentElement.scrollWidth > vw + 1 ? "YES" : "no"}`
+      + ` offenders=${seen.length}` + (seen.length ? " :: " + seen.slice(0, 6).join(" ") : "");
+  } catch (e) { out = "ERR " + e.message; }
+  document.title = out;
+}, 1400));
+</script></body></html>

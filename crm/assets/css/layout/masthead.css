@@ -1,0 +1,229 @@
+/* ============================================================
+   MASTHEAD — who, where, and the theme
+   ------------------------------------------------------------
+   Thin on purpose. The work is below; this says where you are,
+   lets you jump, and carries the theme control.
+
+   The jump row is a ROW, not a rail. It scrolls sideways on a
+   narrow screen rather than folding into a menu nobody opens,
+   and it doubles as a position indicator — which is the one job
+   a sidebar would otherwise be doing.
+   ============================================================ */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* Without backdrop-filter, an opaque ground beats unreadable text. */
+@supports not (backdrop-filter: blur(1px)) {
+  .masthead {
+    background: var(--ground);
+  }
+}
+
+.mast-in {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: .7rem clamp(1rem, 3vw, 2.2rem);
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* Name only — no monogram until there is a real name to make one
+   from. The type carries the identity on its own. */
+.mast-id {
+  flex: none;
+}
+
+.mast-id h1 {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+.mast-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--soft);
+}
+
+/* ---- jump row ---------------------------------------------- */
+/* Four entries now, not thirteen — the rest are behind the More
+   button. It no longer needs to scroll, so it no longer does: a bar
+   that scrolls is a bar with things hidden off the end of it, which
+   is the problem this split exists to remove. */
+.jump {
+  display: flex;
+  gap: .15rem;
+  margin-right: auto;
+}
+
+.jump::-webkit-scrollbar {
+  display: none;
+}
+
+.jump a {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .38rem .7rem;
+  border-radius: var(--edge);
+  color: var(--soft);
+  font-size: 13.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.jump a:hover {
+  background: var(--sink);
+  color: var(--ink);
+}
+
+/* Which page you are on. Set in the markup by masthead.js, so it
+   is correct in the HTML before any script measures anything. */
+.jump a[aria-current="page"] {
+  background: var(--amber-wash);
+  color: var(--amber);
+}
+
+/* ---- counts ------------------------------------------------
+   A pip only earns colour when it is not zero. A permanent red
+   badge showing "0" trains you to stop looking at it. */
+.pip {
+  min-width: 1.15rem;
+  padding: 0 .3rem;
+  border-radius: var(--edge);
+  background: var(--sink);
+  color: var(--soft);
+  font-size: 10.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.pip[data-live="true"] {
+  background: var(--rust);
+  color: var(--ground);
+}
+
+.theme {
+  flex: none;
+  padding: .38rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: transparent;
+  color: var(--soft);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.theme:hover {
+  border-color: var(--amber-bright);
+  color: var(--ink);
+}
+
+/* ---- who is signed in, and the way out ---------------------
+   Far right, past the nav's `margin-right: auto`, and quiet.
+   It is not a destination — she should be able to stop seeing
+   it — but it has to be findable the one time she wants it, so
+   it stays visible rather than hiding behind a menu.
+
+   `flex: none` because the nav scrolls: without it this block
+   is the thing that gets squeezed, and the way out of the
+   system is the last thing that should shrink. */
+.mast-auth {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.auth-who {
+  color: var(--faint);
+  font-size: 12px;
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn.auth-out {
+  font-size: 12.5px;
+  padding: .3rem .6rem;
+}
+
+/* The address is the part that goes when there is no room for
+   both. The button never does. */
+@media (max-width: 720px) {
+  .auth-who {
+    display: none;
+  }
+}
+
+/* ---- narrow ---------------------------------------------------
+   THE JUMP ROW IS WHAT BREAKS THE WHOLE SYSTEM ON A PHONE.
+
+   Six entries and their counts measure about 554px. In a 390px
+   viewport that made the document 795px wide — and because the
+   masthead is on every page in the CRM, one unhandled row meant
+   every page scrolled sideways. Everything else was fine; this was
+   the whole of it.
+
+   The row wraps onto a line of its own and scrolls THERE. A strip
+   she can swipe keeps the six places she actually goes one tap
+   away; folding them into the More panel would cost a tap on every
+   navigation to save a line of screen. The rule that matters is the
+   one underneath: the strip may run off the end of itself, and it
+   may never make the page run off the end of the viewport.
+   ============================================================ */
+@media (max-width: 860px) {
+  .mast-in {
+    flex-wrap: wrap;
+    gap: .5rem .8rem;
+    padding: .5rem clamp(.7rem, 3vw, 1.4rem);
+  }
+
+  .mast-id { flex: 1 1 auto; min-width: 0; }
+  .more-btn, .mast-auth, .theme { flex: none; }
+
+  .jump {
+    /* Last in the visual order, so the first line is brand + menu +
+       the way out and the second is the strip. */
+    order: 3;
+    flex: 1 0 100%;
+    min-width: 0;
+    margin-right: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+
+  .jump a {
+    flex: none;
+    scroll-snap-align: start;
+    padding: .34rem .6rem;
+  }
+
+  /* A tap target, not a pointer target. 13.5px links at .34rem of
+     padding come to about 30px tall; a thumb wants 40. */
+  .jump a,
+  .more-btn,
+  .btn.auth-out { min-height: 2.4rem; }
+}
+
+/* Smaller still. The clock under the name is the first thing to go
+   — it is a nicety, and the name it sits under is the anchor. */
+@media (max-width: 420px) {
+  .mast-sub { display: none; }
+  .mast-id h1 { font-size: 1rem; }
+  .jump a { font-size: 13px; }
+}

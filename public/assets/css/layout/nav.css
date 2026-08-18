@@ -1,0 +1,206 @@
+/* ============================================================
+   4 · LIQUID-GLASS NAVIGATION
+   ------------------------------------------------------------
+   Two states. Over the video (top of page) the glass is dark-
+   backed with light text; once the sheet has pulled up under it
+   the glass inherits the page theme instead.
+   ============================================================ */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Full-bleed glass bar: spans the viewport edge to edge. */
+.nav-glass {
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+  padding: .7rem clamp(1rem, 3.5vw, 2.5rem);
+  isolation: isolate;
+
+  /* the glass itself */
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .06));
+  border-bottom: 1px solid rgba(255, 255, 255, .16);
+
+  /* Deliberately cheap while the video is behind it. A backdrop-filter
+     over moving pixels is re-computed every single frame, and blur cost
+     scales with the radius — 22px + saturate over a full-width bar was
+     the single most expensive thing on the page. 12px reads almost
+     identically through the gradient tint. */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  /* no top rim — the bar should dissolve into the video, not outline itself */
+  box-shadow: 0 18px 45px -30px rgba(0, 0, 0, .7);
+  color: #fff;
+  transition: background .55s var(--ease), border-color .55s var(--ease),
+    box-shadow .55s var(--ease), color .55s var(--ease), padding .45s var(--ease);
+}
+
+/* Inner row stays capped so a wide monitor doesn't fling the
+   brand and the CTA to opposite ends of the screen. */
+.nav-inner {
+  position: relative;
+  width: min(100%, var(--maxw));
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* scrolled past the hero → tighten up and adopt the page theme */
+/* Past the hero the backdrop is static page content, so the richer
+   blur costs nothing per frame — spend it here instead. */
+.nav.is-scrolled .nav-glass {
+  padding-block: .45rem;
+  background: var(--glass-tint);
+  border-bottom-color: var(--line-soft);
+  color: var(--glass-text);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: 0 16px 40px -30px var(--glass-rim);
+}
+
+/* graceful fallback where backdrop-filter is unsupported */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav-glass {
+    background: rgba(20, 15, 12, .78);
+  }
+
+  .nav.is-scrolled .nav-glass {
+    background: var(--glass-tint-hi);
+  }
+}
+
+.brand {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.brand i {
+  font-style: italic;
+  opacity: .82;
+}
+
+.brand b {
+  font-weight: 600;
+}
+
+/* --- links + sliding pill --- */
+.nav-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .15rem;
+  list-style: none;
+  margin-inline: auto;
+}
+
+.nav-links a {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding: .5rem .95rem;
+  border-radius: 100px;
+  font-size: .84rem;
+  letter-spacing: .05em;
+  opacity: .82;
+  white-space: nowrap;
+  transition: opacity .3s var(--ease);
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  opacity: 1;
+}
+
+/* No pill, no fill, no underline — the links carry themselves on
+   weight alone. The element stays in the DOM (and the JS keeps
+   tracking it) so the affordance is one line away if we want it back. */
+.nav-pill {
+  display: none;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .1);
+  transition: background .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
+}
+
+.nav.is-scrolled .icon-btn {
+  border-color: var(--line);
+  background: transparent;
+}
+
+.icon-btn:hover {
+  transform: rotate(-18deg);
+}
+
+.icon-btn svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.nav-cta {
+  padding: .6rem 1.15rem;
+  font-size: .8rem;
+}
+
+.nav.is-scrolled .nav-cta {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: transparent;
+}
+
+/* --- burger (mobile) --- */
+.burger {
+  display: none;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .18);
+  padding: .6rem .55rem;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav.is-scrolled .burger {
+  border-color: var(--line);
+}
+
+.burger span {
+  display: block;
+  height: 1.5px;
+  width: 100%;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform .4s var(--ease), opacity .3s var(--ease);
+}
+
+.burger[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.burger[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.burger[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Plan · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, like the assessment and the room. She sits
+       inside this page; it is not a list with a caption. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/components/plan.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <div class="work">
+
+      <div class="work-bar">
+        <button class="work-aside-btn" type="button" data-aside-btn
+                aria-expanded="false" aria-controls="plan-clients">
+          <span class="more-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          Clients
+        </button>
+
+        <h2>Plan</h2>
+
+        <p class="work-who" data-bar-who></p>
+
+        <div class="work-acts" data-acts hidden>
+          <span class="saved" data-saved>Saved</span>
+
+          <!-- THE ONLY PLACE A NEW PLAN IS CREATED.
+
+               Choosing a client used to create one as a side
+               effect, which left an abandoned draft behind every
+               time she looked somebody up and pushed the plan they
+               are actually following out of sight. Selecting shows;
+               this creates, and says so. -->
+          <button class="btn" type="button" data-new-plan
+                  title="Start the next plan for this client">New plan</button>
+
+          <button class="btn" type="button" data-print>Print</button>
+          <!-- One filled action at a time: Issue while it is a draft,
+               Amend once it has gone. The label says which. -->
+          <button class="btn go" type="button" data-issue>Issue</button>
+        </div>
+      </div>
+
+      <div class="work-veil" data-aside-veil hidden></div>
+
+      <div class="work-body work-split">
+
+        <aside class="work-aside" id="plan-clients" data-aside>
+          <label class="find">
+            <input type="search" placeholder="Find a client…" data-find />
+          </label>
+          <div class="list" data-list>
+            <p class="empty">Loading…</p>
+          </div>
+        </aside>
+
+        <div class="work-main">
+
+          <!-- Nothing chosen yet. -->
+          <div class="plan-blank" data-blank>
+            <h3>Choose a client</h3>
+            <p>Their plan opens where you left it, or starts a new one.</p>
+          </div>
+
+          <div class="plan-sheet" data-sheet hidden>
+
+            <p class="sheet-line">
+              <span data-ref>—</span>
+              <span class="sheet-line-meta" data-meta></span>
+            </p>
+
+            <!-- Every version of this plan. Hidden until there is more
+                 than one, because a version bar with one entry is a
+                 control that has never done anything. -->
+            <div class="versions" data-versions hidden></div>
+            <p class="superseded" data-superseded hidden></p>
+
+            <!-- WHAT THE FIGURES WERE WHEN SHE WROTE IT. A snapshot
+                 taken at the moment the plan opened, not a live read —
+                 a plan issued in March should still show March when
+                 the April weight arrives. -->
+            <div class="targets" data-targets hidden></div>
+
+            <!-- THE PAD. One surface, and the largest thing on the
+                 page. Everything else here is chrome around it. -->
+            <div class="pad-wrap">
+              <label class="pad-l" for="plan-body">
+                The plan
+                <span class="pad-hint">This is what they are given.</span>
+              </label>
+              <textarea id="plan-body" data-body spellcheck="true"
+                placeholder="Breakfast: …&#10;Lunch: …&#10;Evening: …&#10;&#10;Movement, sleep, anything else she should do."></textarea>
+
+              <!-- WHAT MAY APPEAR IN A DOCUMENT THAT LEAVES.
+
+                   Quiet on purpose, and stuck to the foot of the pad
+                   so it is still there when she has scrolled to the
+                   bottom of a long plan. It states the rule rather
+                   than policing it: curly quotes and em dashes are
+                   turned back silently as she types, because they
+                   mean the plain marks and arrive by the hundred out
+                   of Word. Only genuine noise is dropped, and then
+                   this line says so for a moment.
+
+                   Filled by plan-punctuation.js, so the marks named
+                   here can never fall out of step with the rule. -->
+              <p class="pad-foot" data-punct aria-live="polite"></p>
+
+              <!-- THE LONG VERSION, FOLDED AWAY.
+
+                   The strip above is one line because it is read
+                   every day. This is read once, and then never
+                   again — which is exactly what <details> is for,
+                   and why it is shut on load rather than being a
+                   panel she has to dismiss.
+
+                   Filled from plan-punctuation.js so the guidance
+                   and the rule are the same object. A help text
+                   that drifts from what the code does is worse than
+                   no help text: she follows it, it does not work,
+                   and she stops believing the page. -->
+              <details class="pad-guide" data-punct-guide>
+                <summary>What these marks do to the assistant's reading</summary>
+                <div class="pad-guide-in" data-punct-guide-body></div>
+              </details>
+            </div>
+
+            <!-- HERS, AND NOT THEIRS. Kept visibly apart from the pad
+                 above rather than in a collapsed panel, so there is
+                 never a moment where she is unsure which box she is
+                 typing into. -->
+            <div class="pad-wrap is-private">
+              <label class="pad-l" for="plan-note">
+                Your note
+                <span class="pad-hint">Not given to them. Never printed.</span>
+              </label>
+              <textarea id="plan-note" data-note spellcheck="true"
+                placeholder="Why this plan, what to watch, what to check next time."></textarea>
+            </div>
+
+            <!-- WHAT A MODEL THINKS THIS SAYS. A reading of the text
+                 above, and nothing more than that until she rules on
+                 each row. Nothing downstream uses these yet — this
+                 exists to find out how often it is right. -->
+            <div class="reading" data-reading hidden>
+              <div class="reading-head">
+                <h3>What the assistant read</h3>
+                <span class="grow"></span>
+                <span class="reading-tally" data-tally></span>
+
+                <!-- WRITE THE TEXT OUT FROM THE ROWS.
+
+                     The second half of the round trip. She writes
+                     prose, the assistant reads it into rows, she
+                     rules on each one — and this lays those rows
+                     back out as the plan itself, in the shape the
+                     strip under the pad describes.
+
+                     IT CALLS NOTHING AND DECIDES NOTHING. No model,
+                     no network: it takes rows she has already
+                     confirmed and formats them. It cannot add an
+                     instruction or change an amount.
+
+                     Disabled until there is something confirmed to
+                     write out, because a button that produces an
+                     empty plan is a button that has to be explained.
+                     Nothing is overwritten — the result appears
+                     beside what she wrote and she chooses. -->
+                <!-- GENERATE — the only model call on this page.
+
+                     Her prose goes to the assistant, comes back as
+                     structured lines, and lands beside what she
+                     wrote for her to accept or discard. It writes no
+                     rows: rows are Build's job, from the text she
+                     accepts, so nothing exists for wording she never
+                     agreed to.
+
+                     Three per version. The count is on the label
+                     rather than discovered on the fourth press. -->
+                <button class="btn" type="button" data-generate disabled>Generate plan</button>
+
+                <!-- FETCH AND CREATE — the other direction entirely.
+
+                     Generate reads what she has written. This writes
+                     the first draft FOR her, out of the nutrition
+                     assessment she has already finalised, and it is
+                     the only place in this system where the assistant
+                     composes clinical advice rather than reading hers
+                     back.
+
+                     ONLY FROM A FINALISED ASSESSMENT, and the button
+                     says so when there is not one rather than
+                     offering itself and then refusing. A plan written
+                     from a half-filled record would be confidently
+                     wrong, which is the worst kind.
+
+                     WHAT COMES BACK IS A PROPOSAL. It lands in the
+                     same review panel as Generate's, beside whatever
+                     is in the pad, and she presses Use this to bring
+                     it into the editor. No row exists until Build,
+                     and no client sees it until Issue. Three human
+                     steps between a model and a person's food, on
+                     purpose.
+
+                     Three per version, on its own budget — see
+                     migration 0029 for why it does not share
+                     Generate's. -->
+                <!-- HOW MANY MEALS IS HERS TO SAY.
+
+                     Left to itself the assistant wrote whatever the
+                     assessment happened to describe, which for a
+                     client who eats twice was two — and once, one.
+                     That is the machine deciding a clinical
+                     question. She has looked at this person; she
+                     knows whether they can manage four.
+
+                     One select, no units, no jargon, and it
+                     remembers what she picked last time. -->
+                <label class="shape-field">
+                  <span>Meals a day</span>
+                  <select data-shape-meals>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                  </select>
+                </label>
+                <label class="shape-check">
+                  <input type="checkbox" data-shape-fillers checked>
+                  <span>Something for in between</span>
+                </label>
+
+                <button class="btn" type="button" data-draft disabled>Fetch and create</button>
+
+                <!-- CLEAR THE READING AND START AGAIN.
+
+                     When a reading comes back wrong it is usually
+                     wrong throughout, and deleting six rows one at a
+                     time to get a clean one is the sort of chore that
+                     ends with somebody issuing a plan they never
+                     properly checked.
+
+                     WHAT IT KEEPS IS WHAT SHE KEPT. Rows she
+                     confirmed or edited are her plan and stay; the
+                     assistant's suggestions and the ones she marked
+                     wrong go, because between them they are the
+                     reading she is throwing away.
+
+                     It used to keep the rejected ones too — they
+                     count as "ruled on" — so the ordinary sequence
+                     of reading a bad plan, marking the wrong rows
+                     wrong, then pressing this, left a table of
+                     rejections and a button with nothing to do.
+                     They are now swept off the table and still
+                     counted in the assistant's score, which is what
+                     that rule was actually protecting. See
+                     migration 0006.
+
+                     "Start again" rather than "Clear rows",
+                     because rows are the database's word for it and
+                     starting again is hers. -->
+                <button class="btn quiet is-drop" type="button" data-clear disabled
+                        title="Throw this reading away and start again">Start again</button>
+
+                <!-- BUILD — not a model.
+
+                     It reads the syntax of the text as it stands and
+                     turns it into the rows below, reporting any line
+                     that looked like an instruction and could not be
+                     read. No network beyond the database, nothing
+                     generative, and no limit.
+
+                     OFF UNTIL THERE IS STRUCTURE TO READ. On raw
+                     prose it would find nothing, so it says so by
+                     being disabled rather than by failing when
+                     pressed. Generate is what puts the dashes in. -->
+                <button class="btn go" type="button" data-read disabled>Build plan</button>
+              </div>
+
+              <!-- WHAT BUILD COULD NOT READ. Listed rather than
+                   swallowed: a line silently dropped is how a client
+                   loses an instruction while she is looking at a
+                   table that seems complete. -->
+              <div class="probs" data-problems hidden></div>
+
+              <!-- BOTH VERSIONS, SIDE BY SIDE, AND SHE PICKS.
+
+                   The alternative was to rewrite the pad and offer an
+                   undo. That is worse for the one thing this page
+                   exists to protect: the pad holds the document the
+                   client receives, and a button that silently
+                   replaces it asks her to notice what changed in a
+                   wall of text she has just been looking at.
+
+                   So nothing is replaced until she has read the
+                   replacement. Keep is the default — the button that
+                   does nothing is the safe one. -->
+              <div class="rewrite" data-rewrite hidden>
+                <div class="rewrite-head">
+                  <!-- Named by where it came from. "Written out from
+                       your rows" and "Written from her assessment"
+                       are two very different claims, and she has to
+                       be able to tell at a glance which one she is
+                       reading — the second is the assistant's own
+                       words about somebody's food. -->
+                  <h4 data-rewrite-title>Written out from your rows</h4>
+                  <span class="grow"></span>
+                  <button class="btn quiet" type="button" data-rewrite-keep>Keep mine</button>
+                  <button class="btn go" type="button" data-rewrite-use>Use this</button>
+                </div>
+
+                <!-- WHAT THE SAFETY CHECK FOUND, above the text
+                     rather than below it.
+
+                     Every row the assistant writes is re-read against
+                     the recorded allergies, the dietary pattern and
+                     the dislikes — because the prompt is told about
+                     them and a prompt is a request, not a guarantee.
+                     A collision is shown, never silently removed: a
+                     row deleted behind her back leaves a plan with a
+                     hole in it and no way to know there had been one.
+
+                     It sits above because if there is anything here,
+                     it is the most important thing on the screen. -->
+                <div class="warns" data-warns hidden>
+                  <p class="warns-h">Check these before you use it</p>
+                  <ul data-warns-list></ul>
+                  <p class="warns-why">
+                    The assistant was told what this client must avoid. This is
+                    the check that does not take its word for it — read each one
+                    and decide.
+                  </p>
+                </div>
+
+                <div class="rewrite-pair">
+                  <div class="rewrite-side">
+                    <p class="rewrite-l">What you wrote</p>
+                    <pre class="rewrite-text" data-rewrite-was></pre>
+                  </div>
+                  <div class="rewrite-side">
+                    <p class="rewrite-l">What it would become</p>
+                    <pre class="rewrite-text is-new" data-rewrite-now></pre>
+                  </div>
+                </div>
+
+                <p class="rewrite-why" data-rewrite-why></p>
+              </div>
+
+              <p class="reading-why" data-reading-why>
+                It proposes; you decide. Nothing here is part of the plan until
+                you confirm it, and the plan itself is the text above — if the
+                two ever disagree, the text is right.
+              </p>
+
+              <div class="reading-rows" data-rows></div>
+            </div>
+
+            <p class="plan-foot" data-issued hidden></p>
+
+            <!-- GIVING IT TO THEM. Only here once the plan is issued,
+                 because a draft has no link and offering one would
+                 mean handing over a half-written plan. -->
+            <div class="handover" data-handover hidden>
+              <div class="handover-head">
+                <h3>Give it to them</h3>
+                <span class="grow"></span>
+                <span class="handover-opened" data-opened></span>
+              </div>
+
+              <p class="handover-why">
+                One link, and it always shows the current version — if you
+                amend this plan later, the same address updates itself.
+              </p>
+
+              <div class="handover-link">
+                <a data-plan-url href="#" target="_blank" rel="noopener noreferrer">—</a>
+                <button class="btn quiet" type="button" data-copy-plan>Copy</button>
+              </div>
+
+              <div class="handover-acts">
+                <a class="btn" data-wa href="#" target="_blank" rel="noopener noreferrer" hidden>Send on WhatsApp</a>
+
+                <!-- HOW LONG IT RUNS, chosen before it starts.
+
+                     A programme is a course of treatment with an end,
+                     not a rolling window — the client's calendar draws
+                     exactly this span, and "day 12 of 90" is the thing
+                     somebody on a long plan actually wants to know.
+
+                     Set once. Starting is mint-or-return, so pressing
+                     the button again with a different length gives
+                     back the programme already running rather than
+                     moving a window somebody has been following for a
+                     fortnight. -->
+                <label class="prog-len">
+                  <span>Runs for</span>
+                  <select data-prog-days aria-label="How long the programme runs">
+                    <option value="30" selected>30 days</option>
+                    <option value="60">60 days</option>
+                    <option value="90">90 days</option>
+                  </select>
+                </label>
+
+                <button class="btn" type="button" data-start-programme>Start the daily programme</button>
+              </div>
+
+              <!-- THE PROGRAMME LINK IS SHOWN ONCE. It accepts writes
+                   for weeks, so it is not something the CRM lists on
+                   every visit — if it is lost, stop it and start
+                   another. -->
+              <div class="prog" data-prog hidden>
+                <p class="prog-l" data-prog-l>Their daily app — copy this now, it is not shown again</p>
+                <div class="handover-link">
+                  <a data-prog-url href="#" target="_blank" rel="noopener noreferrer">—</a>
+                  <button class="btn quiet" type="button" data-copy-prog>Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/plan.js"></script>
+</body>
+
+</html>

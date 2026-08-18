@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Database · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="database">
+      <div class="fn-head">
+        <p class="eyebrow">Everything stored</p>
+        <h2>Database</h2>
+        <p class="fn-note">
+          Every table in the database, shown exactly as stored — nothing
+          formatted, rounded or tidied. This is the page for answering
+          "what is actually in that row".
+        </p>
+        <p class="fn-tally"><b data-count="tables">·</b> tables</p>
+        <div class="fn-acts">
+          <a class="btn quiet" href="./crm-tables.html">CRM tables only →</a>
+        </div>
+      </div>
+
+      <div class="fn-body">
+        <p class="pii">
+          This page shows every name, email address, date of birth and health
+          note held. Read-only, but do not leave it open on a shared screen.
+        </p>
+
+        <div class="tables" data-tables></div>
+
+        <h3 class="sub" data-title>—</h3>
+        <div data-rows></div>
+        <div class="pager" data-pager></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/database.js"></script>
+</body>
+
+</html>

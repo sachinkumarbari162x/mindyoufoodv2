@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>frame</title>
+<style>html,body{margin:0;background:#666}iframe{border:0;display:block;background:#fff}</style></head>
+<body><iframe id="f"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +(q.get("w")||390), H = +(q.get("h")||844), S = +(q.get("scroll")||0);
+const f = document.getElementById("f"); f.width=W; f.height=H; f.src=q.get("page")||"./__harness-room.html";
+f.addEventListener("load", () => setTimeout(() => {
+  const d=f.contentDocument, w=f.contentWindow;
+  const se = d.scrollingElement || d.documentElement;
+  const target = S === -1 ? se.scrollHeight : S;
+  if (S) { w.scrollTo(0, target); se.scrollTop = target; d.body.scrollTop = target;
+           d.querySelector("main")?.scrollTo?.(0, target); }
+  setTimeout(() => {
+    const r=(s)=>{const e=d.querySelector(s); if(!e) return "none"; const b=e.getBoundingClientRect();
+      return Math.round(b.width)+"x"+Math.round(b.height)+"@"+Math.round(b.top);};
+    const bb=d.querySelector(".work-bar")?.getBoundingClientRect();
+    const tb=d.querySelector(".stage")?.getBoundingClientRect();
+    document.title = `vw=${w.innerWidth} hScroll=${d.documentElement.scrollWidth>w.innerWidth+1?"YES":"no"}`
+      + ` stage=${r(".stage")} panel=${r(".panel")}`
+      + ` stagePos=${w.getComputedStyle(d.querySelector(".stage")).position}`
+      + ` scrolled=${Math.round((d.scrollingElement||d.documentElement).scrollTop)}/${(d.scrollingElement||d.documentElement).scrollHeight}`
+      + ` stickyTop=${w.getComputedStyle(d.querySelector(".stage")).top}`
+      + ` mastH=${w.getComputedStyle(d.documentElement).getPropertyValue("--mast-h").trim()}`
+      + ` barH=${w.getComputedStyle(d.documentElement).getPropertyValue("--work-bar-h").trim()}`
+      + ` barsBottom=${Math.round((d.querySelector(".work-bar")?.getBoundingClientRect().bottom)||0)}`
+      + ` htmlOverflow=${w.getComputedStyle(d.documentElement).overflowY}/${w.getComputedStyle(d.body).overflowY}`
+      + ` atPoint=${(() => {
+        const els = d.elementsFromPoint(347, 800) || [];
+        return els.slice(0,4).map(e => e.tagName.toLowerCase() + (e.className && typeof e.className==="string" ? "."+e.className.trim().split(/\s+/)[0] : "")
+          + "[" + Math.round(e.getBoundingClientRect().width) + "x" + Math.round(e.getBoundingClientRect().height) + "]").join(">");
+      })()}`
+      + ` linkRow=${(() => { const dd = d.querySelector(".brief-link dd");
+        return [...dd.children].map(c => c.tagName.toLowerCase() + "[" + Math.round(c.getBoundingClientRect().width) + "x" + Math.round(c.getBoundingClientRect().height) + "]").join(","); })()}`
+      + ` stageOnScreen=${tb && bb ? (tb.top >= Math.round(bb.bottom)-3 && tb.bottom>0) : "?"}`;
+  }, 600);
+}, 1500));
+</script></body></html>

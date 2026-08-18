@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Never indexed. Every one of these URLs is about a real
+       person's appointment, and a search engine holding them is a
+       leak that outlives the link's own expiry. -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <!-- And no token in the Referer header if the page links out. -->
+  <meta name="referrer" content="no-referrer" />
+  <title>Consultation · Mind Your Food</title>
+
+  <!-- ROOT-RELATIVE, AND IT HAS TO BE. This one file is served from
+       two different depths: /consultation.html, and /c/<token> —
+       which is the URL that actually reaches a client, because every
+       path under /c/ serves this page so that a token is never used
+       to look up a filename.
+
+       That is also what breaks "./": a browser at /c/<token> resolves
+       ./assets/css/consultation.css to /c/assets/css/consultation.css,
+       which /c/ dutifully answers with this HTML file. The stylesheet
+       is then refused for its MIME type and the module script never
+       runs, so the client gets an unstyled page that does not connect.
+       Leading slash, and it is right from both. -->
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/consultation.css" />
+</head>
+
+<body>
+
+  <main class="room">
+
+    <!-- WHOSE PRACTICE THIS IS, before anything else. An opaque link
+         is, unavoidably, the shape of a scam — this is the first
+         thing that says where they have landed. -->
+    <header class="mark">
+      <p>Mind Your Food</p>
+      <span class="state" data-state-chip data-state="loading">
+        <span class="pip"></span><span data-state-text>Connecting…</span>
+      </span>
+    </header>
+
+    <!-- 1 · checking the link ---------------------------------- -->
+    <section class="card" data-view="loading">
+      <p class="quiet">One moment…</p>
+    </section>
+
+    <!-- 2 · the link is dead. The same words whether it never
+             existed or has expired — telling them apart would let
+             somebody with a stale token learn it was once real. -->
+    <section class="card" data-view="gone" hidden>
+      <h1>This link is no longer active</h1>
+      <p class="quiet">
+        Consultation links stop working after the session. If you were
+        expecting to use this one, reply to the message it came in and
+        Khadija will sort it out.
+      </p>
+    </section>
+
+    <!-- 3 · in the room, waiting ------------------------------- -->
+    <section class="stage" data-view="room" hidden>
+
+      <div class="waiting" data-waiting>
+        <div class="inner">
+          <!-- WHOSE APPOINTMENT THIS IS, ABOVE THE FOLD AND BEFORE
+               THE CAMERA IS ASKED FOR.
+
+               This link arrives in a message with no account and no
+               password behind it, and the next thing that happens is
+               a browser asking to turn on a camera. "Is this mine, or
+               did I open somebody else's" has to be settled first.
+
+               The plan link and the programme app both say the name;
+               this was the one that did not, and it is the one that
+               opens a camera. First name only — a surname identifies
+               somebody to whoever is sitting beside them on a train. -->
+          <p class="whose" data-whose></p>
+
+          <h1>You're in the waiting room</h1>
+          <p class="quiet">Khadija will start the consultation when she's ready.</p>
+          <p class="when" data-when></p>
+          <!-- STARTS AS THE ASK, NOT AS THE ANSWER. This line used to
+               say the camera was set up from the first paint, which
+               was a claim the page had not yet earned — and read as a
+               lie to anybody looking at an unanswered permission
+               prompt. The script rewrites it once it knows. -->
+          <p class="quiet ready" data-ready>
+            Your browser will ask for your camera and microphone.
+          </p>
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </div>
+      </div>
+
+      <video class="far" data-far autoplay playsinline></video>
+      <video class="near" data-near autoplay playsinline muted></video>
+
+      <div class="notice" data-fallback hidden>
+        <b>Could not connect</b>
+        Khadija will call you on the phone instead — nothing to do.
+      </div>
+
+      <!-- Their own camera and microphone, and nothing else. There is
+           no start and no end in this document: those belong to her,
+           and they are ABSENT rather than hidden. -->
+      <div class="bar">
+        <button class="ctl" type="button" data-mic aria-label="Mute microphone">
+          <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        </button>
+        <button class="ctl" type="button" data-cam aria-label="Turn camera off">
+          <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"/><path d="m14 11 7-4v10l-7-4z"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4 · afterwards. Asked once, and never during — a rating on
+             screen while somebody is being seen changes what they
+             say in the consultation. -->
+    <section class="card" data-view="ended" hidden>
+      <h1>That's the end of the session</h1>
+      <p class="quiet">Khadija will follow up by email.</p>
+
+      <div class="rate" data-rate>
+        <p class="ask">How was it?</p>
+
+        <div class="stars" data-stars role="radiogroup" aria-label="Rating out of five">
+          <button type="button" data-star="1" aria-label="1 star">★</button>
+          <button type="button" data-star="2" aria-label="2 stars">★</button>
+          <button type="button" data-star="3" aria-label="3 stars">★</button>
+          <button type="button" data-star="4" aria-label="4 stars">★</button>
+          <button type="button" data-star="5" aria-label="5 stars">★</button>
+        </div>
+
+        <textarea data-comment rows="3" maxlength="1000"
+          placeholder="Anything you'd like her to know (optional)"></textarea>
+
+        <div class="rate-acts">
+          <button class="go" type="button" data-send>Send</button>
+          <button class="plain" type="button" data-skip>No thanks</button>
+        </div>
+      </div>
+
+      <p class="thanks" data-thanks hidden></p>
+    </section>
+
+    <!-- 5 · opened somewhere else ------------------------------- -->
+    <section class="card" data-view="elsewhere" hidden>
+      <h1>Opened on another screen</h1>
+      <p class="quiet">
+        This link is now open somewhere else. Only one screen can use it
+        at a time — close the other one and reload this page.
+      </p>
+    </section>
+
+  </main>
+
+  <script type="module" src="/assets/js/consultation.js"></script>
+</body>
+
+</html>

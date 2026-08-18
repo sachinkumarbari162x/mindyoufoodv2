@@ -1,0 +1,20 @@
+# The AI service has NO third-party dependencies.
+#
+# app.py runs on the standard library (http.server + urllib), and
+# groq_client.py calls the Groq REST API directly rather than
+# through the SDK. `python app.py` works on a clean Python 3.10+
+# with nothing installed — which is the point: this deploys onto a
+# 512 MB box that is already running Postgres, Node and Caddy.
+#
+# Everything below is optional and only needed if you swap a piece
+# out. Nothing imports them today.
+
+# --- if you move the HTTP layer to FastAPI ---
+# fastapi>=0.110
+# uvicorn[standard]>=0.29
+
+# --- if you prefer the official SDK to the raw REST call ---
+# groq>=0.11
+
+# --- if you add the test suite noted in docs/receptionist-spec.md ---
+# pytest>=8.0

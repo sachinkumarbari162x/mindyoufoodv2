@@ -1,0 +1,68 @@
+/* ============================================================
+   ACCOUNT · TOKENS
+   ------------------------------------------------------------
+   The client's own screen, and the one place in this project
+   that is deliberately LIGHT.
+
+   Everything else the visitor meets is the warm dark room: the
+   marketing site, the front desk, the checkout. This is not that
+   and should not pretend to be. It is a health record somebody
+   opens in daylight, at a kitchen table, next to a plate — the
+   same situation an Apple Health or a bank statement is read in,
+   and both of those are white for the same reason. Ink on paper
+   survives a phone held at arm's length in a bright room; a dark
+   glass panel does not.
+
+   The CRM's beige is not right here either. That palette is for
+   somebody working a list all day; this is somebody reading four
+   things and closing the tab.
+
+   ONE ACCENT, and it is doing a job everywhere it appears:
+   something is complete, or something is the next thing to
+   press. Nothing here is blue for decoration.
+   ============================================================ */
+
+.account {
+  /* ---- ground ---- */
+  --paper: #f5f5f7; /* the room */
+  --card: #ffffff; /* anything raised off it */
+  --line: #e6e6e9; /* a hairline, never a border with weight */
+
+  /* ---- ink, in three weights ----
+     Body, secondary, and the one used for labels and units. The
+     third is deliberately light: it is for words that are there
+     to be found rather than read. */
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --ink-3: #aeaeb2;
+
+  /* ---- the accent ---- */
+  --accent: #0071e3;
+  --accent-soft: #eaf3fd;
+
+  /* Not a state colour with a palette of its own — the one thing
+     on this screen that is red is signing out, and it is red so
+     it is never pressed by accident. */
+  --danger: #d70015;
+
+  /* ---- lift ----
+     Two shadows, both barely there. A card here is a sheet of
+     paper a millimetre off the desk, not a floating panel. */
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.05), 0 18px 48px rgba(0, 0, 0, 0.08);
+
+  --r: 20px;
+  --r-sm: 12px;
+
+  /* The system stack, as the mockup had it. No webfont: this page
+     is read on a phone on mobile data and a font file is a blank
+     paragraph while it loads. */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", system-ui, "Segoe UI", sans-serif;
+}
+
+/* THE PAGE IS LIGHT WHATEVER THE PHONE IS SET TO. A health record
+   that renders differently at night is a health record somebody
+   screenshots and cannot read later. This is a decision, not an
+   omission — the tokens above are the whole palette and there is
+   no second set. */

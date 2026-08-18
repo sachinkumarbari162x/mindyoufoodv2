@@ -1,0 +1,124 @@
+# ============================================================
+#  THE WHOLE FRONT DOOR
+# ------------------------------------------------------------
+#  This is now a Caddyfile of its own, not a block to append to
+#  somebody else's. The box has been cleared: v2 is the only
+#  thing on it, so it owns 80 and 443 and there is no other Caddy
+#  to collide with. The previous arrangement — one Caddy owned by
+#  the backend stack, this one publishing no ports — is kept as
+#  Caddyfile.shared-box-superseded in case the box is ever shared
+#  again.
+#
+#  Postgres is not here either. The database is Supabase, in
+#  Mumbai, reached over the network — so there is nothing to
+#  proxy to it and nothing to back up on this box.
+#
+#  TLS IS AUTOMATIC AND IT IS NOT OPTIONAL HERE. A progressive
+#  web app will not install, and a service worker will not
+#  register, over anything but https. Caddy gets a certificate
+#  from Let's Encrypt on first request; the only prerequisites
+#  are that the A record points here and that 80 and 443 are open
+#  in the Lightsail firewall. Port 80 must stay open even though
+#  everything redirects off it — that is where the ACME challenge
+#  is answered.
+# ============================================================
+
+{
+	# Where the certificate problems get reported. Change it.
+	email khadija@mindyourfood.co.in
+}
+
+trialcrm.mindyourfood.co.in {
+	encode gzip zstd
+
+	# ---- what the client's app needs, and only that ----------
+	#
+	# WHY THIS IS NOT BEHIND THE PASSWORD.
+	#
+	# The client app already has authentication of its own: an
+	# HttpOnly session cookie, minted either by a six-digit code
+	# sent to the address on their record or by their own
+	# programme link. Putting a shared basic-auth password in
+	# front of that would mean every client typing a password
+	# that is the same for all of them — which is not security,
+	# it is a shared secret in a WhatsApp thread.
+	#
+	# It also breaks the app: a service worker registering and
+	# precaching behind a basic-auth realm is fragile, and the
+	# install prompt is worse. The point of this release is that
+	# a client can add it to their home screen.
+	#
+	# Everything else on this host stays locked. This list is
+	# deliberately explicit rather than a prefix wildcard —
+	# nothing is exempt unless it is named here.
+	# ONE `path` directive with many values, which is an OR. Writing
+	# `path` on several lines inside a named matcher does not mean
+	# "any of these" — matchers in a named block combine, and the
+	# result would match nothing at all.
+	@clientapp path /account.html /me /me/* /api/client/* /account-sw.js /assets/account.webmanifest /assets/css/account/* /assets/js/account/* /assets/js/shared/* /assets/img/account-icon* /assets/fonts/*
+
+	handle @clientapp {
+		header {
+			# A client's own health record. Nothing in between
+			# keeps a copy — but the SHELL is versioned by the
+			# service worker and safe to cache, so this is not a
+			# blanket no-store the way the CRM's is.
+			Cache-Control "private, max-age=0, must-revalidate"
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "no-referrer"
+			X-Robots-Tag "noindex, nofollow, noarchive"
+		}
+		reverse_proxy v2:5501
+	}
+
+	# ---- everything else, behind one password ----------------
+	#
+	# The CRM, the marketing site and the front desk. The CRM
+	# holds every client's name, diagnosis and medication list,
+	# and this is still a trial that is not open to the public.
+	#
+	# One lock over everything that is left cannot be defeated by
+	# getting a route in the wrong order — which is exactly why
+	# the exemption above is a named list and not a pattern.
+	handle {
+		basic_auth {
+			khadija {$TRIAL_BASIC_HASH}
+		}
+
+		header {
+			X-Robots-Tag "noindex, nofollow, noarchive"
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "no-referrer"
+			# Every CRM page is PII.
+			Cache-Control "no-store"
+		}
+
+		reverse_proxy v2:5501
+	}
+
+	# NOTE: X-Forwarded-For is set by `reverse_proxy` itself. It was
+	# written out here as a site-level `header_up`, which is not a
+	# site-level directive at all and would have refused to start.
+	# TRUST_PROXY=1 in the compose file is the half that matters.
+
+	log {
+		output file /var/log/caddy/trialcrm.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+		# The session cookie does not belong in a log file that is
+		# rolled and kept.
+		#
+		# The PROGRAMME TOKEN IS STILL LOGGED, because it is in the
+		# path — /me/<token> — and a path is what an access log is
+		# for. Worth knowing rather than hiding: anyone who can read
+		# these files can open a client's plan. They are inside the
+		# container, on a box only you have.
+		format filter {
+			wrap console
+			fields {
+				request>headers>Cookie delete
+			}
+		}
+	}
+}

@@ -1,0 +1,478 @@
+/* ============================================================
+   THE CLIENT'S CONSULTING ROOM
+   ------------------------------------------------------------
+   Opened from a link in a message, usually on a phone, often on
+   mobile data in somebody's kitchen. Two consequences run through
+   everything here:
+
+     IT LOADS FAST. One stylesheet, one script, no framework and
+     no imported cascade. A page that takes three seconds after an
+     opaque link is a page people close.
+
+     IT SAYS WHOSE IT IS, IMMEDIATELY. An unexplained link is the
+     shape of a scam, so the practice name is the first thing
+     painted and the first thing read.
+
+   Dark, like her side, and warm for the same reason: the brand
+   ink is a brown-black, and a room built from pure black would
+   look like a different product to the emails that led here.
+   ============================================================ */
+
+:root {
+  --pitch: #14100d;
+  --deep: #1a1613;
+  --raise: #221d19;
+  --edge: #2e2822;
+  --line: #3a332c;
+
+  --ink: #f6f3ee;
+  --soft: #b3a798;
+  --faint: #7d7263;
+
+  --amber: #d79a34;
+  --sage: #86a56f;
+  --rust: #c96b45;
+
+  /* THE FACES THIS PAGE ACTUALLY LOADS.
+     It asked for Noto — which is the CRM's set, served from
+     /crm/assets/fonts and therefore behind her session, unreachable
+     from a public page. So every one of these fell through to the
+     system stack while the browser downloaded the site's real faces
+     and used none of them: the client got Times and Arial over
+     somebody's mobile data, which is exactly why this side did not
+     look like the rest of the system.
+
+     These three are what /assets/fonts/fonts.css serves, and what
+     the marketing site and the emails that led here are set in. */
+  --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --mono: "Spline Sans Mono", ui-monospace, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--pitch);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.room {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: clamp(.75rem, 2vw, 1.25rem);
+  gap: .9rem;
+}
+
+/* ---- who this is ---------------------------------------------- */
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+}
+
+.mark p {
+  margin: 0;
+  flex: 0 0 auto;
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+/* The state's words, truncated rather than overflowing. The pip
+   beside them keeps its full size — colour is the part read at a
+   glance, and it is the part that must not be the bit that goes. */
+.state [data-state-text] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  /* Allowed to shrink. "Getting your camera…" is a long state, and
+     beside the practice name on a 390px phone it ran off the edge —
+     the one page in this system that is guaranteed to be read on a
+     phone. It gives ground before the brand does. */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  padding: .25rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--soft);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.state .pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex: none;
+}
+
+.state[data-state="waiting"] .pip { background: var(--amber); }
+.state[data-state="ended"] .pip { background: var(--rust); }
+
+.state[data-state="live"] { color: var(--sage); border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); }
+
+/* The only moving thing on a still screen, and it earns its place:
+   it is what says the room is running rather than frozen. */
+.state[data-state="live"] .pip {
+  background: var(--sage);
+  animation: breathe 2.6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
+}
+
+/* ---- the cards ------------------------------------------------- */
+
+.card {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: .55rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+}
+
+.card[hidden] { display: none; }
+
+h1 {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 4.5vw, 1.65rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.012em;
+  text-wrap: balance;
+}
+
+.quiet {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--soft);
+  font-size: 14px;
+}
+
+/* ---- the stage ------------------------------------------------- */
+
+.stage {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  border-radius: 6px;
+  border: 1px solid var(--edge);
+  background: radial-gradient(120% 80% at 50% 0%, var(--deep) 0%, var(--pitch) 70%);
+  overflow: hidden;
+}
+
+.stage[hidden] { display: none; }
+
+/* Black from the first paint, and never stretched. The same two
+   rules as her side of the room: a surface that starts pale and
+   fills in reads as a page still loading, and `cover` pays for
+   filling the frame by cropping — a 4:3 camera into a wide slot
+   loses the top of somebody's head. */
+.far {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.near {
+  position: absolute;
+  right: .9rem;
+  bottom: 5rem;
+  width: clamp(5.5rem, 22vw, 8.5rem);
+  /* 16:9, matching her side and matching what a laptop camera
+     actually produces. A 3:4 slot letterboxed every self-view. */
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+  /* Mirrored — everybody expects to see themselves the way a mirror
+     shows them, and unmirrored self-view reads as subtly wrong
+     without anybody being able to say why. */
+  transform: scaleX(-1);
+}
+
+.near[data-off="true"] { display: none; }
+
+/* ---- waiting --------------------------------------------------- */
+
+.waiting {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  text-align: center;
+  /* Covers the video rather than replacing it, so their camera is
+     already running and already permitted by the time she starts.
+     Nobody should be granting permissions while somebody waits for
+     them to appear. */
+  background: color-mix(in srgb, var(--deep) 96%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.waiting[hidden] { display: none; }
+.waiting .inner { display: grid; justify-items: center; gap: .5rem; max-width: 26rem; }
+/* WHOSE APPOINTMENT THIS IS. Above the heading and quieter than it:
+   the heading says what the screen is, this says who it belongs to,
+   and it is the answer to the question somebody asks before letting
+   a page turn their camera on. Small caps rather than large type —
+   reassurance, not a greeting card. */
+.waiting .whose {
+  margin: 0;
+  color: var(--soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.waiting .whose[hidden] { display: none; }
+
+.waiting .when { margin: 0; color: var(--amber); font-family: var(--mono); font-size: 13px; }
+.waiting .ready { margin-top: .4rem; font-size: 13px; }
+
+/* Three dots that are not a spinner. A spinner says "working"; this
+   says "waiting", which is the truth — nothing is loading, somebody
+   simply has not started yet. */
+.dots { display: inline-flex; gap: .35rem; margin-top: .6rem; }
+
+.dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--faint);
+  animation: pulse 1.6s infinite;
+}
+
+.dots i:nth-child(2) { animation-delay: .22s; }
+.dots i:nth-child(3) { animation-delay: .44s; }
+
+@keyframes pulse {
+  0%, 60%, 100% { opacity: .25; }
+  30% { opacity: 1; }
+}
+
+/* ---- controls -------------------------------------------------- */
+
+.bar {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: flex;
+  gap: .45rem;
+  padding: .4rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--raise) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .4);
+}
+
+/* Lifted off the pill they sit in, same as her side. A near-black
+   fill inside a near-black pill left two controls to hunt for — and
+   this side is read in a kitchen, on a phone, by somebody who has
+   never seen the page before. */
+.ctl {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--soft);
+  background: var(--edge);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .18s, background .18s;
+}
+
+.ctl:hover:not([disabled]) {
+  background: color-mix(in srgb, var(--edge) 70%, #fff);
+  border-color: var(--ink);
+}
+.ctl:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.ctl[data-off="true"] { background: var(--rust); border-color: var(--rust); color: #fff; }
+
+/* Off is a slash as well as a colour — legible to an eye that cannot
+   tell this red from that brown, and on a phone in daylight where
+   both read as dark. */
+.ctl[data-off="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Dimmed, not vanished. At .35 on this ground the control read as
+   "there is no button" rather than "this button has no device". */
+.ctl[disabled] { opacity: .6; cursor: default; border-style: dashed; }
+
+.ctl svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- when it cannot connect ------------------------------------ */
+
+.notice {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 3;
+  max-width: 22rem;
+  padding: .75rem .9rem;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--rust) 60%, transparent);
+  background: color-mix(in srgb, var(--raise) 94%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.notice[hidden] { display: none; }
+
+.notice b {
+  display: block;
+  margin-bottom: .1rem;
+  color: var(--rust);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ---- how it went ----------------------------------------------- */
+
+.rate { display: grid; justify-items: center; gap: .6rem; margin-top: .5rem; }
+.rate[hidden] { display: none; }
+
+.ask {
+  margin: 0;
+  color: var(--soft);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.stars { display: flex; gap: .15rem; }
+
+.stars button {
+  padding: 0 .12rem;
+  border: 0;
+  background: none;
+  color: var(--edge);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .12s, transform .12s;
+}
+
+.stars button:hover { transform: translateY(-1px); }
+.stars button:hover,
+.stars button[data-lit="true"] { color: var(--amber); }
+.stars button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.rate textarea {
+  width: min(26rem, 78vw);
+  padding: .55rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--pitch);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.rate textarea::placeholder { color: var(--faint); }
+.rate textarea:focus { outline: none; border-color: var(--amber); }
+
+.rate-acts { display: flex; align-items: center; gap: .9rem; margin-top: .2rem; }
+
+.go {
+  padding: .5rem 1.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--sage);
+  color: #101408;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.go:hover { background: color-mix(in srgb, var(--sage) 88%, #fff); }
+
+.plain {
+  border: 0;
+  background: none;
+  color: var(--soft);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.plain:hover { color: var(--ink); }
+
+.thanks { margin: .4rem 0 0; color: var(--sage); font-size: 14px; font-weight: 600; }
+.thanks[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dots i, .state .pip { animation: none; opacity: .6; }
+  .stars button:hover { transform: none; }
+}

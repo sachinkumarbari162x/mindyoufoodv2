@@ -1,0 +1,1361 @@
+/* ============================================================
+   ACCOUNT · COMPONENTS
+   ------------------------------------------------------------
+   The pieces every screen is built from. Nine screens share
+   eight components, which is the reason the panel reads as one
+   thing rather than as nine pages that happen to be adjacent.
+   ============================================================ */
+
+/* ---- card ----------------------------------------------------
+   A sheet of paper. No border — the shadow is what separates it
+   from the ground, and a card with both reads as a box. */
+
+.card {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 26px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 22px;
+  }
+}
+
+/* ---- a figure ------------------------------------------------
+   Light weight and large, which is what makes a number read as
+   data rather than as a heading. The unit is smaller and grey so
+   the eye lands on the digits. */
+
+.metric .k {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.metric .n {
+  font-size: 46px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-top: 14px;
+  /* Figures that sit in a row and change on a tick have to keep
+     their width, or the row jitters every time one lands. */
+  font-variant-numeric: tabular-nums;
+}
+.metric .n .u {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink-2);
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+.metric .s {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 10px;
+}
+
+.today-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 34px;
+}
+.today-stats .metric {
+  padding: 0 30px;
+}
+.today-stats .metric:first-child {
+  padding-left: 0;
+}
+.today-stats .metric + .metric {
+  border-left: 1px solid var(--line);
+}
+
+@media (max-width: 900px) {
+  .today-stats {
+    grid-template-columns: 1fr;
+  }
+  .today-stats .metric {
+    padding: 22px 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .today-stats .metric:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+/* ---- pill ---------------------------------------------------- */
+
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: var(--paper);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.pill.on {
+  background: var(--accent);
+  color: #fff;
+}
+/* A programme past its last day. Stated, not alarming — the
+   account still works and the copy beside it says so. */
+.pill.over {
+  background: #fdeeee;
+  color: var(--danger);
+}
+
+/* ---- buttons ------------------------------------------------- */
+
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 100px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 13px 24px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: filter 0.15s, transform 0.05s;
+}
+.btn:hover {
+  filter: brightness(1.06);
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  background: var(--paper);
+  color: var(--accent);
+  cursor: default;
+  filter: none;
+  transform: none;
+}
+.btn:focus-visible,
+.icon-btn:focus-visible,
+.acc-head:focus-visible,
+.switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---- a tickable line ----------------------------------------
+   THE WHOLE ROW IS THE TARGET, not the circle. A 23px circle is
+   under the 44px a thumb actually hits, and this is a screen
+   used one-handed at a table with a plate on it. */
+
+.items {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  min-height: 46px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.item:last-child {
+  border-bottom: 0;
+}
+
+.box {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 auto;
+  border: 1.8px solid var(--ink-3);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: background 0.16s, border-color 0.16s;
+}
+.box svg {
+  width: 13px;
+  height: 13px;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.16s, transform 0.16s;
+}
+.item.checked .box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.item.checked .box svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.item .label {
+  font-size: 16px;
+  font-weight: 450;
+  color: var(--ink);
+}
+.item .label small {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+/* Done goes grey rather than struck through: this is a list of
+   what was eaten, and a line through food reads as cancelled. */
+.item.checked .label {
+  color: var(--ink-3);
+}
+.item .reps {
+  margin-left: auto;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.item.checked .reps {
+  color: var(--ink-3);
+}
+
+/* A tick that has not reached the server yet. It shows as ticked
+   immediately — waiting for a round trip before the circle fills
+   makes the app feel broken on a slow connection — and this says
+   quietly that it is still in flight. */
+.item.saving {
+  opacity: 0.55;
+}
+.item.failed .box {
+  border-color: var(--danger);
+}
+
+/* ---- card head ----------------------------------------------- */
+
+.c-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.c-head h3 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.c-head .sub {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+
+/* ---- a note the client writes -------------------------------- */
+
+.note {
+  margin-top: 18px;
+  width: 100%;
+  min-height: 42px;
+  resize: vertical;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14.5px;
+  padding: 11px 14px;
+  line-height: 1.4;
+}
+.note::placeholder {
+  color: var(--ink-3);
+}
+.note:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ---- progress ------------------------------------------------ */
+
+.track {
+  height: 6px;
+  border-radius: 6px;
+  background: var(--line);
+  overflow: hidden;
+}
+.track i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+  transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.day-progress {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 30px;
+  padding: 22px 26px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.day-progress .ring {
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+}
+.day-progress .pt {
+  flex: 1;
+  min-width: 0;
+}
+.day-progress .pt b {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.day-progress .pt b span {
+  color: var(--ink-2);
+  font-weight: 400;
+}
+.day-progress .pt .kc {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+
+/* ---- accordion ----------------------------------------------
+   Her plan, and the questions. Built on a button and a class
+   rather than <details> because the max-height transition is
+   what makes it feel like one panel opening rather than the page
+   jumping — and every head is still a real button, reachable by
+   keyboard and announced as expanded. */
+
+.acc {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.acc-head {
+  width: 100%;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 26px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  text-align: left;
+}
+.acc-head .idx {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-3);
+  width: 20px;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.acc-head .chev {
+  margin-left: auto;
+  color: var(--ink-3);
+  flex: 0 0 auto;
+  transition: transform 0.25s;
+}
+.acc.open .acc-head .chev {
+  transform: rotate(90deg);
+}
+.acc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+/* Generous, because a plan section is prose of unknown length
+   and a clipped paragraph is worse than a slower animation. */
+.acc.open .acc-body {
+  max-height: 1400px;
+}
+.acc-inner {
+  padding: 0 26px 24px 62px;
+}
+.acc-inner p {
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  max-width: 66ch;
+}
+.acc-inner p:last-child {
+  margin-bottom: 0;
+}
+.acc-inner ul {
+  margin: 4px 0 12px 20px;
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.75;
+  list-style: disc;
+}
+.acc-inner b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .acc-head {
+    padding: 18px 20px;
+    font-size: 16.5px;
+  }
+  .acc-inner {
+    padding: 0 20px 20px 20px;
+  }
+}
+
+/* ---- sessions ------------------------------------------------ */
+
+.session {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 26px;
+  margin-bottom: 14px;
+}
+.date-badge {
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+  border-radius: 16px;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.date-badge .m {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.date-badge .d {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  margin-top: 2px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.session .sm {
+  flex: 1;
+  min-width: 0;
+}
+.session .sm b {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.session .sm small {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+.session.done {
+  opacity: 0.65;
+}
+
+.req {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px;
+  flex-wrap: wrap;
+}
+.req .rt b {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.req .rt p {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin-top: 5px;
+  max-width: 46ch;
+}
+
+/* ---- records ------------------------------------------------- */
+
+.dropzone {
+  display: block;
+  width: 100%;
+  border: 1.5px dashed var(--ink-3);
+  border-radius: var(--r);
+  padding: 44px 24px;
+  text-align: center;
+  color: var(--ink-2);
+  background: var(--card);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.dropzone:hover,
+.dropzone.drag {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.dropzone .di {
+  margin-bottom: 14px;
+  color: var(--ink-3);
+}
+.dropzone:hover .di,
+.dropzone.drag .di {
+  color: var(--accent);
+}
+.dropzone b {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.dropzone.drag b {
+  color: var(--accent);
+}
+.dropzone p {
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.rec {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  margin-bottom: 12px;
+}
+.rec .fi {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+}
+.rec .rm-meta {
+  flex: 1;
+  min-width: 0;
+}
+.rec .rm-meta b {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rec .rm-meta small {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* ---- sleep ---------------------------------------------------- */
+
+.win {
+  display: flex;
+  gap: 36px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.win .w b {
+  display: block;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.win .w small {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.week {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  height: 130px;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+.week .col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.week .bar {
+  width: 52%;
+  max-width: 20px;
+  background: var(--accent);
+  border-radius: 100px;
+}
+/* Short of target. A paler blue rather than a second hue: it is
+   the same measurement, not a different kind of thing. */
+.week .bar.miss {
+  background: #c9e1f9;
+}
+.week .dl {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* ---- account ------------------------------------------------- */
+
+.acct-hero {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 28px;
+}
+.avatar {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #c7c7cc, #8e8e93);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+.acct-hero h3 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.acct-hero p {
+  color: var(--ink-2);
+  font-size: 15px;
+  margin-top: 3px;
+}
+.acct-hero .tag {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.row-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 22px 26px 2px;
+}
+.rows {
+  padding: 8px 26px;
+}
+.info-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 16px;
+}
+.info-row:last-child {
+  border-bottom: 0;
+}
+.info-row .k {
+  color: var(--ink-2);
+  flex: 0 0 auto;
+}
+.info-row .v {
+  font-weight: 500;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sign-out {
+  width: 100%;
+  margin-top: 18px;
+  background: var(--card);
+  border: 0;
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  color: var(--danger);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sign-out:hover {
+  background: #fff0f0;
+}
+
+/* ---- summary focus rows -------------------------------------- */
+
+.focus-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 26px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.focus-row:last-child {
+  border-bottom: 0;
+}
+.focus-row:hover {
+  background: var(--paper);
+}
+.focus-row .fl {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.focus-row .fl .fic {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+}
+.focus-row .fl b {
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.focus-row .fl small {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 1px;
+}
+.focus-row .chev {
+  color: var(--ink-3);
+  flex: 0 0 auto;
+}
+
+/* ---- a lab result the client can read ------------------------ */
+
+.lab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.lab:last-child {
+  border-bottom: 0;
+}
+.lab .lk {
+  font-size: 16px;
+  font-weight: 450;
+}
+.lab .lk small {
+  display: block;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 2px;
+}
+.lab .lv {
+  font-size: 18px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.lab .lv u {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-2);
+  text-decoration: none;
+  margin-left: 3px;
+}
+/* THE WORD, NOT JUST THE COLOUR. "Below range" is written out
+   beside every result — a coloured number alone is unreadable to
+   anyone who cannot see the colour, and unexplained to everyone
+   else. */
+.band {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: var(--ink-3);
+}
+.band.below,
+.band.above {
+  color: var(--danger);
+}
+.band.within {
+  color: #1d7a3f;
+}
+
+/* ---- empty ---------------------------------------------------
+   Said plainly. An empty screen that apologises reads as an
+   error; this is usually just a client who has not been given
+   that thing yet. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--ink-3);
+  gap: 14px;
+}
+.empty h2 {
+  font-size: 22px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.empty p {
+  font-size: 16px;
+  max-width: 38ch;
+  line-height: 1.5;
+}
+
+/* ---- motion --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .account *,
+  .account *::before,
+  .account *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- the calendar ---------------------------------------------
+   The programme, month by month, with one mark per day.
+
+   THIS IS NOT A BOOKING CALENDAR and must not look like one. It
+   answers "how have I actually been doing", which is a question
+   about a run of days rather than about any one of them — so the
+   marks are read as a texture first and only then as individual
+   days. A month where most days are solid is a good month, and
+   that should be legible from across the room.
+
+   The programme's own window is the extent. Days before it
+   started and after it ends are drawn faintly so the month keeps
+   its shape, but they are not part of the record and cannot be
+   opened. */
+
+/* MONTHS SIT SIDE BY SIDE. A ninety-day programme is three
+   months, and stacked full-width they are six screens of
+   scrolling to see a pattern that is the entire point of the
+   view. Two or three across, and the run of days reads at a
+   glance. */
+.cal-months {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.cal {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 22px 22px 24px;
+}
+
+/* Stacked, not spread. Side by side, "74% of the plan" was
+   wrapping onto two lines and pushing "August 2026" onto two
+   more, in a card three hundred pixels wide. */
+.cal-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+.cal-head h3 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cal-head .sub {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cal-dow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+/* A DAY IS A SQUARE, AND A SMALL ONE. At full column width the
+   cells came out 120px across and a month was two thousand
+   pixels tall — which turns a texture you are meant to read at a
+   glance into a wall you scroll past. Capped, so the grid stays
+   a calendar rather than becoming a control panel. */
+.cal-day {
+  aspect-ratio: 1;
+  max-width: 46px;
+  max-height: 46px;
+  width: 100%;
+  justify-self: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  cursor: default;
+}
+
+/* Outside the programme: there, so the month keeps its shape,
+   and plainly not part of the record. */
+.cal-day.out {
+  background: none;
+  color: var(--ink-3);
+  opacity: 0.45;
+}
+
+/* STILL TO COME. Without this, the rest of the month rendered in
+   the same grey as "nothing recorded" — so a client on day 11 of
+   90 opened the calendar and saw seventy-nine days of failure
+   they had not had the chance to fail yet. A day ahead of today
+   carries no fill at all. */
+.cal-day.ahead {
+  background: none;
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* HOW MUCH OF THE DAY WAS DONE, as fill rather than as a number.
+   Four steps, not a gradient: a client should be able to tell a
+   full day from a half day at a glance, and eleven shades of blue
+   cannot be told apart at 30px. */
+.cal-day.d0 {
+  background: var(--paper);
+}
+.cal-day.d1 {
+  background: #d6e9fb;
+  color: var(--ink);
+}
+.cal-day.d2 {
+  background: #9dcdf7;
+  color: var(--ink);
+}
+.cal-day.d3 {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Today is a ring, never a fill — the fill means something else
+   here, and a day half-lived should not read as a day half-done. */
+.cal-day.now {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.cal-day.now.d3 {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.cal-day .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+}
+.cal-day.d0 .dot,
+.cal-day.ahead .dot,
+.cal-day.out .dot {
+  display: none;
+}
+
+/* The key. Colour that means something always says what — so
+   this is not optional decoration, and it sits under the months
+   rather than inside one of them. */
+.cal-key {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.cal-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.cal-key i {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  /* The palest swatch is var(--paper) on var(--paper): without a
+     hairline it is a gap in the sentence rather than a colour. */
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+@media (max-width: 900px) {
+  .cal {
+    padding: 18px 14px 20px;
+  }
+  .cal-grid {
+    gap: 4px;
+  }
+  .cal-day {
+    font-size: 12px;
+    border-radius: 9px;
+    max-width: 44px;
+    max-height: 44px;
+  }
+}
+
+/* ---- how it is taken ------------------------------------------
+   The second line on a row: "keep two hours from tea or milk",
+   "sip water through the meal, not after".
+
+   ITS OWN LINE, not a parenthesis on the label. On a supplement
+   this is frequently the most important text on the screen — iron
+   taken with tea is a fraction of the iron — and a rule that
+   decides whether the tablet works cannot be set in the same
+   grey as a footnote. */
+.item .how {
+  display: block;
+  margin-top: 3px;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 52ch;
+}
+.item.checked .how {
+  color: var(--ink-3);
+}
+
+/* A row that carries a second line needs its tick aligned to the
+   first one, not floated to the middle of the block. */
+.item:has(.how) {
+  align-items: flex-start;
+}
+.item:has(.how) .box,
+.item:has(.how) .reps {
+  margin-top: 1px;
+}
+
+/* ---- a filler ---------------------------------------------------
+   Deliberately NOT a checkbox. A filler is conditional — eat it if
+   you are hungry — so a tick would put it in the day's count and
+   a client who simply was not hungry would read the result as a
+   miss. A dot says "this is available" without asking anything. */
+.item.filler {
+  cursor: default;
+}
+.dotmark {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+.dotmark::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+/* On a phone the right-hand column stops competing for width.
+   "Ferrous ascorbate 100 mg" wrapping to two lines so that the
+   word "Supplement" can sit beside it is the column winning an
+   argument it should not have been in. It goes underneath,
+   indented to the label. */
+@media (max-width: 560px) {
+  .item {
+    flex-wrap: wrap;
+  }
+  /* THE LABEL MUST BE ALLOWED TO SHRINK, or it takes its content
+     width, overflows the row, and wraps onto the line below —
+     leaving the tick sitting alone above the text it belongs to.
+     `min-width: 0` is the half that actually does it: without it a
+     flex item will not shrink below its content, whatever its
+     flex-basis says. */
+  .item .label {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .item .reps {
+    width: 100%;
+    margin-left: 37px; /* the tick plus its gap */
+    margin-top: 2px;
+    font-size: 12.5px;
+  }
+  .item .how {
+    font-size: 13px;
+  }
+}
+
+/* ---- the state strip ------------------------------------------
+   One line across the top, and only when there is something true
+   to say: offline, something ticked not yet sent, or a screen
+   drawn from the cache.
+
+   AMBER, NOT RED. None of these is an error. Being offline with a
+   tick in the queue is the app working exactly as designed, and
+   colouring it like a failure would teach a client to distrust
+   the tick that did in fact land. */
+.state-strip {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 9px 20px;
+  background: #fff8e6;
+  border-bottom: 1px solid #f0e2bd;
+  color: #7a5a12;
+  font-size: 13.5px;
+  line-height: 1.4;
+  text-align: center;
+}
+.state-strip[hidden] {
+  display: none;
+}
+
+/* ---- add to home screen ---------------------------------------
+   At the foot of Account rather than as a banner over the plan.
+   A prompt that covers what somebody opened the app to read is a
+   prompt they dismiss without reading, and then it is gone for
+   good. Down here it waits until they are looking for it. */
+.install-card {
+  margin-top: 26px;
+  padding: 22px 24px;
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+}
+.install-card[hidden] {
+  display: none;
+}
+.install-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.install-card p {
+  margin-top: 5px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  max-width: 46ch;
+}
+.install-card .btn {
+  margin-top: 16px;
+}
+
+.install-steps {
+  margin: 14px 0 0 20px;
+  padding: 0;
+  list-style: decimal;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+  max-width: 48ch;
+}
+.install-steps b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---- installed ------------------------------------------------
+   Running from the home screen, where there is no browser chrome
+   and no safe area handled for us. */
+@media (display-mode: standalone) {
+  /* The notch and the home indicator are ours to clear. */
+  .acc-main {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .acc-side {
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+  .state-strip {
+    padding-top: calc(9px + env(safe-area-inset-top));
+  }
+  /* Nothing to install any more. */
+  .install-card {
+    display: none;
+  }
+}
+
+/* ---- recording a weight ---------------------------------------
+   On Summary, because it is a weekly ritual done first thing and
+   the eye is already there. Three taps into an Account screen is
+   three taps nobody takes at seven in the morning.
+
+   The last reading sits beside the box. A weight with no previous
+   is a number rather than a measurement, and the whole point of
+   typing it is that it has changed — or has not. */
+.weigh {
+  margin-top: 20px;
+  padding: 20px 24px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.weigh label {
+  display: block;
+  cursor: pointer;
+}
+.weigh label b {
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.weigh label span {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+
+.weigh-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.weigh-row input {
+  width: 7.5rem;
+  padding: 11px 13px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font: inherit;
+  /* 16px or iOS zooms the page the moment it is focused, and the
+     layout somebody was reading jumps sideways. */
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.weigh-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+/* The spinners are a target nobody wants next to a number they
+   are typing with a thumb. */
+.weigh-row input::-webkit-outer-spin-button,
+.weigh-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.weigh-row input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.weigh-unit {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin-left: -4px;
+}
+
+.weigh-said {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #1d7a3f;
+}
+.weigh-said.bad {
+  color: var(--danger);
+}
+.weigh-said[hidden] {
+  display: none;
+}

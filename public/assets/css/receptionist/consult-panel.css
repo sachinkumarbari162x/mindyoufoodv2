@@ -1,0 +1,174 @@
+/* ============================================================
+   RECEPTIONIST · IN-PAGE CONSULT PANEL
+   The #consult section used to end in a hand-off link to the v1
+   form. It now ends in the desk itself: a panel that opens the
+   receptionist, with the practitioner's terms stated up front so
+   the visitor knows what they are walking into before they type.
+
+   This is the *entry point*, not a second chat — there is exactly
+   one conversation, in the floating window.
+   ============================================================ */
+
+.rcp-invite {
+  --rcp-invite-pad: clamp(22px, 4vw, 38px);
+
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(20px, 3vw, 34px);
+  padding: var(--rcp-invite-pad);
+  border: 1px solid var(--rcp-line);
+  border-radius: var(--rcp-r-lg);
+  background: linear-gradient(150deg, var(--rcp-cream-hi), var(--rcp-cream-2));
+  box-shadow: var(--rcp-shadow-sm);
+  color: var(--rcp-text);
+  font-family: var(--rcp-sans);
+}
+
+/* A single amber sweep across the top edge — the same accent the
+   launcher uses, so the two read as one system. */
+.rcp-invite::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rcp-amber), var(--rcp-rust), var(--rcp-sage));
+}
+
+.rcp-invite-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rcp-amber-deep);
+}
+
+.rcp-invite h3 {
+  margin: 0 0 10px;
+  max-width: 22ch;
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-3);
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.rcp-invite h3 em {
+  font-style: italic;
+  color: var(--rcp-rust);
+}
+
+.rcp-invite-lead {
+  margin: 0 0 20px;
+  max-width: 54ch;
+  font-size: var(--rcp-step-1);
+  line-height: 1.6;
+  color: var(--rcp-text-soft);
+}
+
+/* ---- what the desk can actually do ----
+   Set against the panel so expectations are calibrated before
+   the first message, not corrected after it. */
+.rcp-invite-list {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.rcp-invite-list li {
+  position: relative;
+  padding-left: 24px;
+  font-size: var(--rcp-step-0);
+  line-height: 1.5;
+}
+
+.rcp-invite-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.55em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rcp-sage);
+}
+
+/* The boundary items — what it will hand to a human instead. */
+.rcp-invite-list li[data-kind="limit"]::before {
+  background: var(--rcp-rust);
+}
+
+.rcp-invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  align-items: center;
+}
+
+.rcp-invite-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-1);
+  font-weight: 600;
+  color: var(--rcp-ink);
+  background: linear-gradient(180deg, var(--rcp-amber-hi), var(--rcp-amber));
+  box-shadow: var(--rcp-shadow-sm);
+  transition: transform 0.3s var(--rcp-ease-out), box-shadow 0.3s var(--rcp-ease);
+}
+
+.rcp-invite-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 46px -20px rgba(20, 16, 12, 0.6);
+}
+
+.rcp-invite-btn:focus-visible {
+  outline: 2px solid var(--rcp-ink);
+  outline-offset: 3px;
+}
+
+.rcp-invite-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hours line, in mono — it is a fact, and it is rendered from the
+   same schedule the server validates against, never hand-typed. */
+.rcp-invite-hours {
+  margin: 0;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  line-height: 1.5;
+  color: var(--rcp-text-soft);
+}
+
+/* Shown only if scripting is off: the desk is a JS surface, so
+   there has to be a way to reach a human without it. */
+.rcp-invite-fallback {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--rcp-line-soft);
+  font-size: var(--rcp-step--1);
+  color: var(--rcp-text-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rcp-invite-btn:hover {
+    transform: none;
+  }
+}

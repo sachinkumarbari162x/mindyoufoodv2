@@ -1,0 +1,211 @@
+/* ============================================================
+   WORKSPACE — the layout for pages that are WORKED IN
+   ------------------------------------------------------------
+   The CRM's own layout (function-section.css) puts a pinned
+   header in a 19rem column on the left and the work on the
+   right. That is right for a list: scroll anywhere and the
+   heading beside you names what you are looking at.
+
+   It is wrong for a page she sits inside for an hour. The
+   assessment and the consulting room are not lists with a
+   caption — they are workspaces, and a fifth of the width spent
+   on a title she read once is a fifth of the width taken from
+   the thing she is actually doing. Worse, the pinned column
+   made the sub-nav look like a sidebar, which is not what a
+   sub-nav is.
+
+   So this is a SEPARATE LAYOUT, deliberately not an override.
+   Nothing here fights function-section.css because these pages
+   never load it — see workspace.css, the entry that pulls the
+   CRM's tokens and components and this layout instead of that
+   one. Same look, different shape.
+
+   THE RULES:
+     · full width, minus a small gutter
+     · one horizontal sticky bar under the masthead
+     · everything below it gets the rest of the viewport
+   ============================================================ */
+
+/* Full width rather than the CRM's 1400px measure. A clinical
+   form with twelve sections and a video panel beside it wants the
+   monitor it is being shown on. */
+main {
+  max-width: none;
+  margin: 0;
+  padding: 0 clamp(.8rem, 2vw, 1.6rem) 3rem;
+}
+
+.work {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - var(--mast-h, 3.4rem));
+}
+
+/* ---- the sub-nav ---------------------------------------------
+   A BAR, NOT A COLUMN. Sticky under the masthead, full width,
+   and carrying only what is worth having while scrolling: where
+   you are, who it is about, and what you can do to it. */
+.work-bar {
+  position: sticky;
+  top: var(--mast-h, 3.4rem);
+  z-index: 18;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: .55rem 0;
+  background: color-mix(in srgb, var(--ground) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .work-bar { background: var(--ground); }
+}
+
+.work-bar h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* The eyebrow is a whisper here rather than a label — the page
+   title beside it already says what this is. */
+.work-bar .eyebrow {
+  margin: 0;
+  color: var(--amber);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Who this is about. Pushed right, truncated rather than wrapped —
+   a bar that grows to two lines stops being a bar. */
+.work-who {
+  margin: 0 0 0 auto;
+  min-width: 0;
+  color: var(--soft);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-who:empty { display: none; }
+
+.work-acts {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  flex-wrap: wrap;
+}
+
+.work-acts[hidden] { display: none; }
+
+/* ---- the body ------------------------------------------------ */
+
+.work-body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Two columns where a page wants a list beside the work. The list
+   is narrow because it is for choosing, not for reading. */
+.work-split {
+  display: grid;
+  grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+/* Sticks on its own, under the bar, and scrolls independently — so
+   a long client list never pushes the form down the page. */
+.work-aside {
+  position: sticky;
+  top: calc(var(--mast-h, 3.4rem) + var(--work-bar-h, 3rem) + .6rem);
+  max-height: calc(100dvh - var(--mast-h, 3.4rem) - var(--work-bar-h, 3rem) - 2rem);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--raise);
+  border: 1px solid var(--line);
+}
+
+.work-main { min-width: 0; }
+
+/* ---- narrow: the aside becomes something she opens ------------ */
+
+.work-veil { display: none; }
+.work-aside-btn { display: none; }
+
+@media (max-width: 900px) {
+  .work-split { grid-template-columns: 1fr; }
+
+  .work-aside-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .32rem .65rem;
+    border: 1px solid var(--line);
+    background: var(--raise);
+    color: var(--ink-2);
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+
+  .work-aside-btn:hover,
+  .work-aside-btn[aria-expanded="true"] {
+    border-color: var(--amber-bright);
+    color: var(--ink);
+  }
+
+  .work-veil {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(27, 22, 16, .28);
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+
+  .work-veil[data-open="true"] { opacity: 1; }
+  .work-veil[hidden] { display: none; }
+
+  /* From the LEFT, opposite the More panel. Two panels arriving
+     from the same edge read as the same panel. */
+  .work-aside {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 35;
+    width: min(17rem, 84vw);
+    max-height: none;
+    border: 0;
+    border-right: 1px solid var(--line);
+    box-shadow: 8px 0 32px rgba(27, 22, 16, .1);
+    transform: translateX(-100%);
+    transition: transform .32s cubic-bezier(.32, .72, 0, 1);
+  }
+
+  .work-aside[data-open="true"] { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-aside, .work-veil { transition-duration: .01ms; }
+}
+
+@media print {
+  .masthead, .work-bar, .work-aside, .work-acts { display: none !important; }
+  .work-split { display: block; }
+  main { padding: 0; }
+}

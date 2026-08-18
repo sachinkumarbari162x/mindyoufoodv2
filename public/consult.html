@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Front desk — Mind Your Food</title>
+  <meta name="description"
+    content="Request a consultation with Khadija, clinical dietitian and sports nutritionist. Tell the front desk what you'd like to work on and suggest a few times that suit you." />
+
+  <!-- A booking desk has nothing to offer a search engine, and the
+       conversation is private. Keep it out of the index. -->
+  <meta name="robots" content="noindex, follow" />
+
+
+  <!-- The desk renders in these immediately, so they are preloaded
+       here — and NOT on the main page, where nothing above the fold
+       uses them. Self-hosted: no Google Fonts round trip. -->
+  <link rel="preload" href="./assets/fonts/fraunces-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/hanken-grotesk-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/spline-sans-mono-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- desk.css, not main.css: this page needs none of the site's
+       nav, hero, sheet or footer rules. -->
+  <!-- The room, shared with checkout.html. Linked BEFORE desk.css
+       so the desk's own rules win any tie. -->
+  <link rel="stylesheet" href="./assets/css/atmosphere.css">
+  <link rel="stylesheet" href="./assets/css/desk.css">
+  <!-- The till opens inside the desk window, so its type and
+       spacing are needed here as well as on checkout.html. -->
+  <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+
+<body class="desk-body atmosphere">
+
+  <!-- The desk. Everything else — the ambient canvases, the chat
+       window, the review card — is mounted into #receptionist by
+       assets/js/receptionist.js. `data-mode="page"` is what makes it
+       open on load and drop the floating launcher. -->
+  <div class="rcp desk-shell" id="receptionist" data-mode="page" data-open="false">
+
+    <header class="desk-bar">
+      <a class="desk-back" href="./index.html#consult">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" />
+        </svg>
+        <span>Back to the site</span>
+      </a>
+
+      <a class="desk-brand" href="./index.html"><i>Mind</i> <b>Your Food</b></a>
+
+    </header>
+
+    <!-- Shown until the widget boots, and permanently without JS.
+         A booking page that renders blank when a script fails is a
+         lost client, so the fallback is a real, working route to a
+         human rather than a spinner. -->
+    <div class="desk-fallback" id="deskFallback">
+      <p class="desk-fallback-eyebrow">The front desk</p>
+      <h1>Request a consultation</h1>
+      <p>
+        The desk is starting up. If it doesn't appear, email
+        <a
+          href="mailto:khadija@mindyourfood.co.in?subject=Consultation%20request&amp;body=Name%3A%0AWhat%20I'd%20like%20help%20with%3A%0ATwo%20times%20that%20suit%20me%3A%0A">khadija@mindyourfood.co.in</a>
+        with your name, what you'd like help with, and two times that suit you —
+        she'll reply personally, usually within one working day.
+      </p>
+      <p class="desk-fallback-hours">Mon–Fri 10:00–19:00 · Sat 10:00–17:00 · Sun closed (IST)</p>
+    </div>
+
+  </div>
+
+  <!-- ambient-canvas.js is no longer loaded. It painted two
+       full-screen canvases and crossfaded them, continuously, for
+       the whole time this page was open — the largest running cost
+       in the site, behind a chat window nobody was looking past.
+       The background is now painted once by atmosphere.css.
+
+       The file is kept: it is the scene system, and the day
+       something wants an ambient stage it is still there. -->
+  <!-- The country picker, loaded before the desk so the booking
+       form can mount one the moment it is drawn. -->
+  <!-- Holds the room while the browser fetches the checkout. -->
+  <script src="./assets/js/handover.js" defer></script>
+  <script src="./assets/js/country-picker.js" defer></script>
+  <!-- Razorpay, and the till card the desk mounts. -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  <script src="./assets/js/checkout.js" defer></script>
+  <script src="./assets/js/receptionist.js" defer></script>
+  <script src="./assets/js/desk.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+/* ============================================================
+   RECEPTIONIST · DESIGN TOKENS
+   INK · CREAM · AMBER · SAGE · RUST
+   Fraunces (display) · Hanken Grotesk (UI) · Spline Sans Mono (data)
+
+   Scoped to `.rcp`, not `:root`. The surrounding site keeps its
+   own espresso/rose system; the receptionist is a distinct
+   surface that sits *over* the page, so it carries its own
+   palette rather than inheriting a half-matching one.
+
+   Roles, so the colours stay meaningful rather than decorative:
+     INK   — type and the deep ground the glass floats on
+     CREAM — the light ground; the paper the conversation is on
+     AMBER — the practitioner's voice, and the single primary CTA
+     SAGE  — confirmed / valid / available state
+     RUST  — needs-attention, validation failure, cancellation
+   ============================================================ */
+
+/* `.chat-fab` is in the list because the front-desk icon on the
+   marketing page lives outside the .rcp tree but must use the same
+   AMBER — otherwise the icon and the desk it opens drift apart. */
+.rcp,
+.chat-fab,
+/* The country picker is placed by whoever needs it — the desk
+   today, the booking form and the CRM next — so it carries the
+   tokens rather than depending on where it was dropped. Same
+   reason .chat-fab is here. */
+.cpick {
+  /* ---- INK ---- */
+  --rcp-ink: #14100c;
+  --rcp-ink-2: #241d16;
+  --rcp-ink-3: #3b3128;
+  --rcp-ink-soft: #6b5c4d;
+
+  /* ---- CREAM ---- */
+  --rcp-cream: #fbfaf8;
+  --rcp-cream-2: #f3f1ed;
+  --rcp-cream-3: #e6e3dd;
+  --rcp-cream-hi: #ffffff;
+
+  /* ---- AMBER ---- */
+  --rcp-amber: #c88a24;
+  --rcp-amber-hi: #e0a63f;
+  --rcp-amber-deep: #9a6712;
+  --rcp-amber-wash: rgba(200, 138, 36, 0.14);
+
+  /* ---- SAGE ---- */
+  --rcp-sage: #7d9070;
+  --rcp-sage-hi: #9aac8c;
+  --rcp-sage-deep: #5c6e50;
+  --rcp-sage-wash: rgba(125, 144, 112, 0.16);
+
+  /* ---- RUST ---- */
+  --rcp-rust: #a8492a;
+  --rcp-rust-hi: #c4623f;
+  --rcp-rust-deep: #7f3319;
+  --rcp-rust-wash: rgba(168, 73, 42, 0.14);
+
+  /* ---- frosted glass ----
+     Two tints: the window body, and the raised strips (header,
+     composer) that need to read as *on top of* the body. The
+     blur is on the pane itself; the ambient canvas behind it is
+     never blurred, so the scenes stay crisp at the edges. */
+  --rcp-glass: rgba(251, 250, 248, 0.72);
+  --rcp-glass-hi: rgba(255, 255, 255, 0.82);
+  --rcp-glass-low: rgba(251, 250, 248, 0.46);
+  --rcp-glass-edge: rgba(255, 255, 255, 0.72);
+  --rcp-glass-rim: rgba(20, 16, 12, 0.14);
+  --rcp-blur: 22px;
+  --rcp-blur-strong: 34px;
+
+  --rcp-text: var(--rcp-ink);
+  --rcp-text-soft: var(--rcp-ink-soft);
+  --rcp-line: rgba(20, 16, 12, 0.12);
+  --rcp-line-soft: rgba(20, 16, 12, 0.06);
+
+  /* ---- text that sits DIRECTLY on the ambient canvas ----
+     Deliberately absent from the dark-theme block below, and it must
+     stay that way. The scenes are dark and saturated in both themes,
+     so anything drawn over them has to be light in both. Using
+     --rcp-cream here looks right in light mode and then flips to
+     near-black in dark mode, which is exactly how the top bar and
+     the scene caption became unreadable the first time. */
+  --rcp-on-stage: #f8f2e6;
+  --rcp-on-stage-dim: rgba(248, 242, 230, 0.66);
+
+  /* ---- type ----
+     opsz is why Fraunces is here: the display axis tightens at
+     large sizes and opens up at small ones, so one family covers
+     the header and the fine print without looking like two. */
+  --rcp-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --rcp-sans: "Hanken Grotesk", "Jost", system-ui, -apple-system, sans-serif;
+  --rcp-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --rcp-step--1: clamp(0.74rem, 0.72rem + 0.1vw, 0.79rem);
+  --rcp-step-0: clamp(0.88rem, 0.85rem + 0.14vw, 0.95rem);
+  --rcp-step-1: clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
+  --rcp-step-2: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --rcp-step-3: clamp(1.6rem, 1.4rem + 1vw, 2.1rem);
+
+  /* ---- shape & motion ---- */
+  --rcp-r-lg: 26px;
+  --rcp-r-md: 16px;
+  --rcp-r-sm: 11px;
+  --rcp-shadow: 0 34px 90px -32px rgba(20, 16, 12, 0.62),
+    0 4px 18px -8px rgba(20, 16, 12, 0.28);
+  --rcp-shadow-sm: 0 12px 34px -16px rgba(20, 16, 12, 0.5);
+  --rcp-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --rcp-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Stacking: the launcher must clear the site nav, and the
+     window must clear the launcher. Declared once, here, so
+     nothing further down invents its own z-index. */
+  --rcp-z-stage: 1;
+  --rcp-z-window: 960;
+  --rcp-z-launcher: 950;
+}
+
+/* Dark: the ambient scenes go night-side and the glass inverts
+   to a smoked pane. AMBER/SAGE/RUST lift a step to hold contrast
+   against INK rather than sinking into it. */

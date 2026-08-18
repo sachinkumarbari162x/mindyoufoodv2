@@ -1,0 +1,223 @@
+/* ============================================================
+   FOCUS AREAS — pinned title, cards that arrive with the scroll
+
+   The same treatment as #method (see method-scroll.css), with one
+   difference the brief asked for: these stay as BOXES. The steps
+   dissolved into the page; the focus areas keep their card edges.
+
+   One structural change had to come first. `.focus-grid` drew its
+   dividers with a 1px gap over a --line-soft background — an
+   elegant trick, but it means a card is not really a box: it is a
+   hole in a tinted sheet. Fade such a card toward zero and what
+   surfaces is a solid grey rectangle where the card used to be.
+
+   So each card is given a real border and the grid's tinted
+   backing is dropped. Visually near-identical at rest, and now a
+   card can fade without anything appearing underneath it.
+   ============================================================ */
+
+/* ---- 1 · real boxes, not holes in a sheet ------------------ */
+#focus .focus-grid {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  /* Was `hidden` to clip the hairline grid to its rounded corners.
+     With that grid gone the clip does nothing useful and would crop
+     the cards' scroll transforms. */
+  overflow: visible;
+  gap: clamp(.9rem, 1.6vw, 1.4rem);
+}
+
+#focus .focus-card {
+  border: 1px solid var(--line-soft);
+  border-radius: 18px;
+  background: var(--bg);
+  transition: background .45s var(--ease), border-color .45s var(--ease),
+    transform .45s var(--ease);
+}
+
+#focus .focus-card:hover {
+  background: var(--paper);
+  border-color: var(--line);
+}
+
+/* ---- 2 · layout: title beside the cards -------------------- */
+@media (min-width: 900px) {
+  #focus {
+    display: grid;
+    grid-template-columns: minmax(15rem, 21rem) 1fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  #focus .sec-head {
+    position: sticky;
+    top: clamp(6rem, 14vh, 8.5rem);
+    margin-bottom: 0;
+  }
+
+  /* Two across, not the original auto-fit six-in-a-row. Six cards
+     in two columns is three rows of scroll travel — enough for the
+     section to arrive in passes, without the runaway length one
+     column of six would produce. */
+  #focus .focus-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding-bottom: clamp(1.5rem, 6vh, 4rem);
+  }
+
+  #focus .focus-card {
+    padding: 2.2rem 1.8rem;
+  }
+}
+
+/* Narrow: the title pins to the top of the viewport, so it needs a
+   ground of its own — the cards pass behind it. */
+@media (max-width: 899px) {
+  /* One column, so the cards stack. They keep their box — the bottom
+     edge is simply given the rose accent, which both separates them
+     and matches the rule the method steps get at this width.
+
+     ALIGNMENT: a card sat flush with the page gutter, then inset its
+     own copy by another 1.9rem of padding. So on a phone the card text
+     started ~30px right of the section heading above it and of every
+     other section on the page — the whole block read as nudged out of
+     true. Pulling the grid out by exactly the card's horizontal
+     padding puts the COPY back on the page margin, which is the edge
+     that actually matters; the box keeps a small visible margin of its
+     own because the gutter is wider than the padding. */
+  #focus .focus-grid {
+    grid-template-columns: 1fr;
+    margin-inline: calc(-1.15rem - 1px);
+  }
+
+  #focus .focus-card {
+    /* Horizontal padding must equal the pull-out above, or the copy
+       stops lining up. Vertical padding is reduced separately — 2.4rem
+       top and bottom is generous on a phone and was pushing each card
+       past a comfortable single-thumb scroll. */
+    padding: 1.7rem 1.15rem;
+    border-bottom: 2px solid var(--rose);
+  }
+
+  /* Not sticky here. A pinned heading needs an opaque ground so the
+     content can pass behind it, and on a tablet that ground is a
+     full-width slab sitting across the page — which is exactly the
+     wrong impression: it reads as a box that is part of the section
+     rather than as a heading. The pin earns its place in the
+     two-column desktop layout, where the title has a column of its
+     own and never covers anything. Between 561px and 899px — every
+     iPad, portrait or landscape — the heading simply scrolls with
+     its section, as headings normally do. */
+  #focus .sec-head {
+    position: static;
+    background: none;
+    box-shadow: none;
+    margin-bottom: 1.6rem;
+  }
+}
+
+/* Below 560px `.wrap` narrows its gutter from 1.5rem to 1rem, so the
+   pull-out has to narrow with it — at the wider value the card would
+   hang 2px off the left edge of the screen and force a sideways
+   scroll. Same rule as above: pull-out and padding stay equal. */
+@media (max-width: 560px) {
+  #focus .focus-grid {
+    margin-inline: calc(-0.9rem - 1px);
+  }
+
+  #focus .focus-card {
+    padding: 1.5rem 0.9rem;
+  }
+}
+
+/* ---- 3 · scroll-driven reveal ------------------------------ */
+@supports (animation-timeline: view()) {
+  /* The observer's one-shot transition is stood down here; the
+     scroll timeline owns opacity and transform from this point.
+     Leaving both live makes the first reveal fight itself. */
+  #focus .focus-card.reveal,
+  #focus .focus-card.reveal.in {
+    transition: background .45s var(--ease), border-color .45s var(--ease);
+  }
+
+  #focus .focus-card {
+    animation: focus-card-in linear both;
+    animation-timeline: view();
+    animation-range: entry 6% cover 36%;
+  }
+
+  /* The second card of each row trails its neighbour very slightly,
+     so a row resolves left-to-right instead of snapping in as a
+     block. Small enough to feel like sequence, not like lag. */
+  @media (min-width: 900px) {
+    #focus .focus-card:nth-child(even) {
+      animation-range: entry 11% cover 42%;
+    }
+  }
+
+  /* The icon leads its card — same idea as "Step 01" leading its
+     step in the method section. */
+  #focus .focus-card .ic {
+    animation: focus-icon-in linear both;
+    animation-timeline: view();
+    animation-range: entry 2% cover 24%;
+  }
+}
+
+@keyframes focus-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+    border-color: transparent;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    border-color: var(--line-soft);
+  }
+}
+
+@keyframes focus-icon-in {
+  from {
+    opacity: 0;
+    transform: translateY(.7rem) scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- motion ------------------------------------------------
+   Scroll-linked motion is still motion. Under reduced-motion
+   everything is simply present, and the title does not travel.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  #focus .focus-card,
+  #focus .focus-card .ic {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    border-color: var(--line-soft);
+  }
+
+  #focus .sec-head {
+    position: static;
+  }
+}
+
+/* Phones only: the pin comes back, because on a 390px screen a sticky
+   section header is a familiar pattern rather than an odd slab. The
+   heavy shadow is replaced by a hairline so it reads as a rule under
+   the title, not as a raised panel. */
+@media (max-width: 560px) {
+  #focus .sec-head {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding-block: .85rem;
+    margin-bottom: 1.2rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line-soft);
+  }
+}

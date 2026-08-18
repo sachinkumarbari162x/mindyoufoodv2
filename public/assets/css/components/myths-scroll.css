@@ -1,0 +1,141 @@
+/* ============================================================
+   MYTHS — pinned title, cards that arrive with the scroll
+
+   The direct analogue of #focus: a heading and a short list of
+   boxes. Same three mechanisms, same responsive rules.
+
+     ≥900px   title sticky in its own column, no ground needed
+     561–899  title static — a pinned heading needs an opaque slab,
+              and on a tablet that slab reads as a box across the page
+     ≤560px   title sticky again with a hairline, which is ordinary
+              sticky-header behaviour at phone width
+
+   The myth cards keep their boxes. Only three of them, so they get
+   a wider spacing than the six focus cards — three items in two
+   columns would leave a hole.
+   ============================================================ */
+
+/* ---- 1 · layout: title beside the cards -------------------- */
+@media (min-width: 900px) {
+  #myths {
+    display: grid;
+    grid-template-columns: minmax(15rem, 21rem) 1fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  #myths .sec-head {
+    position: sticky;
+    top: clamp(6rem, 14vh, 8.5rem);
+    margin-bottom: 0;
+  }
+
+  /* One column, not two. Three cards across two columns leaves an
+     empty cell, and a myth is a paragraph — it wants measure, not
+     a narrow box. Stacked also gives the scroll something to travel
+     through, which is the whole point of the treatment. */
+  #myths .myth-list {
+    gap: clamp(1.4rem, 3vh, 2.2rem);
+    padding-bottom: clamp(1.5rem, 6vh, 4rem);
+  }
+}
+
+/* Tablet: heading scrolls with its section, no slab. */
+@media (max-width: 899px) {
+  #myths .sec-head {
+    position: static;
+    background: none;
+    box-shadow: none;
+    margin-bottom: 1.6rem;
+  }
+
+  /* Same alignment fix as #focus: a card flush with the page gutter
+     and then padded inwards puts its copy ~30px right of the heading
+     above it. Pulling the list out by the card's own padding (plus
+     its border) puts the COPY back on the page margin. */
+  #myths .myth-list {
+    margin-inline: calc(-1.15rem - 1px);
+  }
+
+  #myths .myth {
+    padding: 1.5rem 1.15rem;
+    border-bottom: 2px solid var(--rose);
+  }
+}
+
+@media (max-width: 560px) {
+  #myths .sec-head {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    padding-block: .85rem;
+    margin-bottom: 1.2rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  #myths .myth-list {
+    margin-inline: calc(-0.9rem - 1px);
+  }
+
+  #myths .myth {
+    padding: 1.35rem 0.9rem;
+  }
+}
+
+/* ---- 2 · scroll-driven reveal ------------------------------ */
+@supports (animation-timeline: view()) {
+  #myths .myth.reveal,
+  #myths .myth.reveal.in {
+    transition: none;
+  }
+
+  #myths .myth {
+    animation: myth-in linear both;
+    animation-timeline: view();
+    animation-range: entry 6% cover 36%;
+  }
+
+  /* The "Myth" tag lands a beat before the claim it labels — the
+     same idea as "Step 01" leading its step. */
+  #myths .myth-tag {
+    animation: myth-tag-in linear both;
+    animation-timeline: view();
+    animation-range: entry 2% cover 24%;
+  }
+}
+
+@keyframes myth-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes myth-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(.6rem) scale(.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #myths .myth,
+  #myths .myth-tag {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  #myths .sec-head {
+    position: static;
+  }
+}

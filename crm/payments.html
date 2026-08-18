@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Payments · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <!--
+      THE THREE FIGURES FIRST, then the lines behind them.
+
+      She is not reconciling a ledger; she is answering one of three
+      questions — how much came in, is anything still hanging, and
+      did anything go back. Those are the three tiles. Everything
+      below is the evidence for them, newest first, because the
+      thing she is most likely to be checking is the one that just
+      happened.
+    -->
+    <section class="fn" id="payments">
+      <div class="fn-head">
+        <p class="eyebrow">The money</p>
+        <h2>Payments</h2>
+        <p class="fn-note">
+          What clients have paid to book an hour. Every line is a real
+          payment the bank has told us about — nothing here is a guess.
+        </p>
+      </div>
+
+      <div class="fn-body">
+        <div class="pay-tiles" data-tiles>
+          <div class="pay-tile">
+            <span class="pay-tile-label">Came in this month</span>
+            <b class="pay-tile-figure" data-tile="month">—</b>
+            <span class="pay-tile-note" data-tile-note="month"></span>
+          </div>
+
+          <!-- Only shown when there is something to show. A permanent
+               "Outstanding: ₹0" is a worry that does not exist. -->
+          <div class="pay-tile" data-tile-card="outstanding" hidden>
+            <span class="pay-tile-label">Not settled yet</span>
+            <b class="pay-tile-figure" data-tile="outstanding">—</b>
+            <span class="pay-tile-note" data-tile-note="outstanding"></span>
+          </div>
+
+          <div class="pay-tile" data-tile-card="refunded" hidden>
+            <span class="pay-tile-label">Went back</span>
+            <b class="pay-tile-figure" data-tile="refunded">—</b>
+            <span class="pay-tile-note" data-tile-note="refunded"></span>
+          </div>
+        </div>
+
+        <div class="pay-list" data-list="payments">
+          <p class="empty">Nothing yet. The first time somebody pays to book an hour, it lands here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/payments.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Assessment · Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, not crm.css. Same CRM, different shape —
+       see assets/workspace.css. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <div class="work">
+
+      <!-- ONE BAR, full width, sticky under the masthead. Everything
+           she needs while scrolling and nothing she does not: where
+           she is, whose record it is, and what she can do to it. -->
+      <div class="work-bar">
+        <button class="work-aside-btn" type="button" data-aside-btn
+                aria-expanded="false" aria-controls="nsf-clients">
+          <span class="more-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          Clients
+        </button>
+
+        <h2>Assessment</h2>
+
+        <p class="work-who" data-bar-who></p>
+
+        <div class="work-acts" data-acts hidden>
+          <span class="saved" data-saved>Saved</span>
+          <button class="btn" type="button" data-export>Export CSV</button>
+          <button class="btn" type="button" data-print>Print</button>
+          <button class="btn warn" type="button" data-final>Mark final</button>
+        </div>
+      </div>
+
+      <div class="work-veil" data-aside-veil hidden></div>
+
+      <div class="work-body work-split">
+
+        <!-- Who it is about. Narrow because it is for choosing, not
+             for reading, and it scrolls on its own so a long client
+             list never pushes the form down the page. -->
+        <aside class="work-aside" id="nsf-clients" data-aside>
+          <label class="find">
+            <input type="search" placeholder="Find a client…" data-find />
+          </label>
+          <div class="list" data-list>
+            <p class="empty">Loading…</p>
+          </div>
+        </aside>
+
+        <div class="work-main">
+
+          <div class="nsf-sheet" data-sheet hidden>
+            <span hidden data-who></span>
+
+            <p class="sheet-line">
+              <span data-kind>—</span>
+              <span class="sheet-line-meta" data-meta></span>
+            </p>
+
+            <div class="versions" data-versions hidden></div>
+            <p class="superseded" data-superseded hidden></p>
+
+            <div class="sections" data-sections></div>
+
+            <div class="notes">
+              <label for="free">Consultation notes</label>
+              <textarea id="free" rows="6" data-free
+                placeholder="Anything the sections above did not have a place for."></textarea>
+            </div>
+          </div>
+
+          <div class="nsf-sheet blank" data-blank>
+            <div>
+              <h3>Nothing open</h3>
+              <p>Pick a client to see their record, or start a new assessment.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/assessment.js"></script>
+</body>
+
+</html>

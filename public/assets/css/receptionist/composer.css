@@ -1,0 +1,156 @@
+/* ============================================================
+   RECEPTIONIST · COMPOSER
+   The bottom strip. Auto-growing textarea (Enter sends,
+   Shift+Enter breaks the line) plus the send control.
+   ============================================================ */
+
+/* Composer + fineprint travel together as the window's bottom
+   row, so the transcript is the only thing that scrolls. */
+.rcp-foot {
+  /* Row 4 of .rcp-window's grid — pinned rather than auto-placed,
+     because the status notice above it comes and goes. */
+  grid-row: 4;
+  border-top: 1px solid var(--rcp-line);
+  background: var(--rcp-glass-hi);
+  -webkit-backdrop-filter: blur(var(--rcp-blur-strong));
+  backdrop-filter: blur(var(--rcp-blur-strong));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.rcp-composer {
+  position: relative; /* anchors .rcp-count */
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 11px 12px;
+}
+
+.rcp-input {
+  flex: 1;
+  min-width: 0;
+  /* Grows with content up to ~5 lines, then scrolls. Height is
+     set inline by the widget; these are the bounds it respects. */
+  min-height: 42px;
+  max-height: 132px;
+  padding: 11px 14px;
+  border: 1px solid var(--rcp-line);
+  border-radius: 14px;
+  resize: none;
+
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-0);
+  line-height: 1.45;
+  color: var(--rcp-text);
+  background: var(--rcp-cream-hi);
+  transition: border-color 0.25s var(--rcp-ease), box-shadow 0.25s var(--rcp-ease);
+
+  /* No scrollbar. It still scrolls — this hides the bar, it does not
+     stop the overflow — but a chat composer is two lines most of the
+     time, and a grey channel appearing down the side of it the moment
+     somebody writes a third looks like a fault in the layout.
+
+     Three declarations because three engines: scrollbar-width is the
+     standard, ::-webkit-scrollbar covers Chrome and Safari, and
+     -ms-overflow-style is there for old Edge, which this site does
+     not court but does not need to break in either. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rcp-input::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.rcp-input::placeholder {
+  color: var(--rcp-text-soft);
+  opacity: 0.8;
+}
+
+.rcp-input:focus {
+  outline: none;
+  border-color: var(--rcp-amber);
+  box-shadow: 0 0 0 3px var(--rcp-amber-wash);
+}
+
+/* Locked while the turn is in flight, and while a booking is
+   awaiting an explicit confirm/edit choice — the visitor should
+   answer the review card, not talk past it. */
+.rcp-input[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.rcp-send {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--rcp-ink);
+  background: linear-gradient(180deg, var(--rcp-amber-hi), var(--rcp-amber));
+  box-shadow: var(--rcp-shadow-sm);
+  transition: transform 0.3s var(--rcp-ease-out), opacity 0.25s var(--rcp-ease);
+}
+
+.rcp-send:hover:not([disabled]) {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.rcp-send:focus-visible {
+  outline: 2px solid var(--rcp-ink);
+  outline-offset: 2px;
+}
+
+.rcp-send[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rcp-send svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Character counter — only surfaces near the cap, so it is a
+   warning rather than permanent noise. */
+.rcp-count {
+  position: absolute;
+  right: 66px;
+  bottom: 20px;
+  font-family: var(--rcp-mono);
+  font-size: 0.68rem;
+  color: var(--rcp-rust);
+  opacity: 0;
+  transition: opacity 0.25s var(--rcp-ease);
+  pointer-events: none;
+}
+
+.rcp-composer[data-near-limit="true"] .rcp-count {
+  opacity: 1;
+}
+
+/* The legal footnote under the composer. Consent for the booking
+   is captured in the conversation itself; this is the standing
+   notice that the desk is not a clinician. */
+.rcp-fineprint {
+  margin: 0;
+  padding: 0 16px 10px;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--rcp-text-soft);
+}
+
+.rcp-fineprint a {
+  color: inherit;
+}

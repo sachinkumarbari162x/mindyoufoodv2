@@ -1,0 +1,104 @@
+/* ============================================================
+   COUNTRY PICKER — choosing, not spelling
+   ------------------------------------------------------------
+   A combobox rather than a <select>. Seventy-four options in a
+   native select is a scroll on a desktop and a full-screen wheel
+   on a phone, and neither lets somebody type "uk" and be done.
+
+   The field deliberately borrows .rcp-input's surface rather than
+   inventing one. It is the same affordance in the same
+   conversation, and the first attempt here proved the point by
+   bordering itself with --rcp-glass-edge, which is a white
+   HIGHLIGHT for glass — invisible on cream, so the control read as
+   floating text with no box around it at all.
+   ============================================================ */
+
+.cpick {
+  position: relative;
+  display: block;
+}
+
+.cpick-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 11px 14px;
+  border: 1px solid var(--rcp-line);
+  border-radius: 14px;
+  background: var(--rcp-cream-hi);
+  color: var(--rcp-text);
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-0);
+  line-height: 1.45;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.25s var(--rcp-ease), box-shadow 0.25s var(--rcp-ease);
+}
+
+.cpick-input::placeholder {
+  color: var(--rcp-text-soft);
+  opacity: 0.8;
+}
+
+.cpick-input:focus {
+  outline: none;
+  border-color: var(--rcp-amber);
+  box-shadow: 0 0 0 3px var(--rcp-amber-wash);
+}
+
+/* ---- the list ----
+   Floated over the form rather than pushing it down: a panel that
+   grows and shrinks as you type moves the button you were about to
+   press. */
+.cpick-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 15rem;
+  overflow-y: auto;
+  border: 1px solid var(--rcp-line);
+  border-radius: 14px;
+  background: var(--rcp-cream-hi);
+  box-shadow: 0 8px 24px rgba(20, 16, 12, 0.14);
+}
+
+.cpick-list[hidden] {
+  display: none;
+}
+
+.cpick-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 9px 11px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step--1);
+  color: var(--rcp-text);
+}
+
+.cpick-list li:hover,
+.cpick-list li.is-active {
+  background: var(--rcp-amber-wash);
+}
+
+/* The dial code earns its place: it is the quickest way to confirm
+   you picked the right one of two similar names, and the phone
+   number is asked for a question or two later. */
+.cpick-dial {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85em;
+  color: var(--rcp-text-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cpick-list li {
+    transition: background 0.15s var(--rcp-ease);
+  }
+}

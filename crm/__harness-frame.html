@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>frame</title>
+<style>html,body{margin:0;background:#888}iframe{border:0;display:block;background:#fff}</style></head>
+<body>
+<iframe id="f" src="./__harness-room.html"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +(q.get("w") || 390), H = +(q.get("h") || 844);
+const f = document.getElementById("f");
+f.width = W; f.height = H;
+f.addEventListener("load", () => setTimeout(() => {
+  const d = f.contentDocument, w = f.contentWindow;
+  const r = (s) => { const e = d.querySelector(s); if (!e) return "none"; const b = e.getBoundingClientRect();
+    return Math.round(b.width)+"x"+Math.round(b.height)+"@"+Math.round(b.top); };
+  const wide = [];
+  for (const el of d.querySelectorAll("*")) {
+    const b = el.getBoundingClientRect();
+    if (b.width > w.innerWidth + 1) wide.push((el.tagName + "." + (el.className || "")).slice(0, 30) + "=" + Math.round(b.width));
+  }
+  w.scrollTo(0, d.documentElement.scrollHeight);
+  const tb = d.querySelector(".tile").getBoundingClientRect();
+  const bb = d.querySelector(".work-bar").getBoundingClientRect();
+  document.title = `vw=${w.innerWidth} grid=${r("[data-grid]")} stage=${r(".stage")} tile=${r(".tile")} panel=${r(".panel")}`
+    + ` docScroll=${d.documentElement.scrollHeight > w.innerHeight}`
+    + ` stagePos=${w.getComputedStyle(d.querySelector(".stage")).position}`
+    + ` tilePinned=${tb.top >= Math.round(bb.bottom) - 2 && tb.bottom > 0}`
+    + ` parts=${[".panel-head",".brief",".pad",".nsf-bar",".nsf-scroll"].map(sel=>{
+        const e=d.querySelector(sel); return sel.slice(1)+":"+(e?Math.round(e.getBoundingClientRect().height):"-");}).join(",")}`
+    + ` nsfVisible=${(() => { const e=d.querySelector(".nsf-scroll"); if(!e) return "none";
+        const b=e.getBoundingClientRect(); return Math.round(b.height); })()}`
+    + ` roomH=${w.getComputedStyle(d.documentElement).getPropertyValue("--room-h")}`
+    + ` scrollH=${d.documentElement.scrollHeight} innerH=${w.innerHeight}`
+    + ` foot=${Math.round(d.querySelector(".work .foot").getBoundingClientRect().height)}`
+    + ` workH=${Math.round(d.querySelector(".work").getBoundingClientRect().height)}`
+    + ` hOverflow=${d.documentElement.scrollWidth > w.innerWidth ? "YES " + wide.slice(0,5).join(" ") : "no"}`;
+}, 900));
+</script></body></html>

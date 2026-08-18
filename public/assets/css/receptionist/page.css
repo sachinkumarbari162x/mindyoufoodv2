@@ -1,0 +1,234 @@
+/* ============================================================
+   RECEPTIONIST · STANDALONE PAGE (consult.html)
+
+   Includes its own small reset, because this page does not load
+   the site's base layer — that is the whole reason it exists as a
+   separate route.
+
+   In page mode the window stops being a floating widget and
+   becomes the content: centred, taller, and with the ambient
+   scenes covering the whole viewport behind it.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body.desk-body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--rcp-sans, system-ui, sans-serif);
+  color: var(--rcp-text, #14100c);
+  /* BACKGROUND-COLOR, NOT THE SHORTHAND. `background:` resets
+     background-image to none, and this file loads after
+     atmosphere.css — so the shorthand silently wiped the shared
+     room's gradients and left a flat grey page. The colour is all
+     this rule ever wanted to set. */
+  background-color: #14100c;
+  overflow: hidden; /* the transcript scrolls, the page does not */
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--rcp-amber);
+  outline-offset: 2px;
+}
+
+/* ---- shell ---- */
+.desk-shell {
+  position: relative;
+  min-height: 100dvh;
+}
+
+/* No launcher on this page: the desk is already open, and a button
+   to open what you are looking at is noise. Removed from the a11y
+   tree too, not just hidden. */
+.desk-shell .rcp-launcher {
+  display: none;
+}
+
+/* ---- top bar ----
+   Sits above the ambient stage but below the window. Its own thin
+   glass strip so the back link stays legible over any scene. */
+.desk-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px clamp(14px, 3vw, 26px);
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(180deg, rgba(20, 16, 12, 0.55), transparent);
+  color: var(--rcp-on-stage);
+}
+
+.desk-back,
+.desk-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  text-shadow: 0 1px 12px rgba(20, 16, 12, 0.7);
+}
+
+.desk-back {
+  font-size: var(--rcp-step-0);
+  font-weight: 500;
+  opacity: 0.86;
+  transition: opacity 0.25s var(--rcp-ease);
+}
+
+.desk-back:hover {
+  opacity: 1;
+}
+
+.desk-back svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.desk-brand {
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-1);
+  font-variation-settings: "opsz" 24;
+  letter-spacing: -0.01em;
+}
+
+.desk-brand i {
+  font-style: italic;
+  font-weight: 400;
+  opacity: 0.82;
+}
+
+.desk-brand b {
+  font-weight: 600;
+}
+
+/* One icon at a time — sun in dark mode (what you'd switch TO),
+   moon in light. */
+/* ---- the window, as content rather than widget ---- */
+.desk-shell .rcp-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%) scale(0.985);
+  transform-origin: center;
+
+  width: min(560px, calc(100vw - 28px));
+  height: min(760px, calc(100dvh - 132px));
+  border-radius: var(--rcp-r-lg);
+}
+
+.desk-shell[data-open="true"] .rcp-window {
+  transform: translate(-50%, -50%);
+}
+
+/* The stage is the page background here, so it is always on —
+   there is no "closed" state to hide it for. */
+.desk-shell .rcp-stage {
+  opacity: 1;
+}
+
+/* ---- pre-boot / no-JS fallback ----
+   Visible by default and removed by desk.js once the widget is up.
+   That ordering matters: if the script never runs, this stays. */
+.desk-fallback {
+  position: relative;
+  z-index: 3;
+  max-width: 46ch;
+  margin: 0 auto;
+  padding: clamp(90px, 18vh, 180px) 24px 40px;
+  text-align: center;
+  color: var(--rcp-on-stage);
+  text-shadow: 0 1px 20px rgba(20, 16, 12, 0.85);
+}
+
+.desk-fallback-eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.desk-fallback h1 {
+  margin: 0 0 14px;
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-3);
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.desk-fallback p {
+  margin: 0 0 12px;
+  font-size: var(--rcp-step-1);
+  line-height: 1.6;
+  opacity: 0.88;
+}
+
+.desk-fallback a {
+  color: var(--rcp-amber-hi);
+}
+
+.desk-fallback-hours {
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  opacity: 0.6;
+}
+
+/* ---- phone ---- */
+@media (max-width: 780px) {
+  .desk-shell .rcp-window {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    /* Clears the top bar rather than sliding under it. */
+    height: calc(100dvh - 58px - env(safe-area-inset-top, 0px));
+    border-radius: var(--rcp-r-lg) var(--rcp-r-lg) 0 0;
+    border-bottom: 0;
+  }
+
+  .desk-shell[data-open="true"] .rcp-window {
+    transform: none;
+  }
+
+  .desk-bar {
+    background: linear-gradient(180deg, rgba(20, 16, 12, 0.72), transparent);
+  }
+
+  .desk-brand {
+    display: none; /* the back link and the desk itself say enough */
+  }
+}

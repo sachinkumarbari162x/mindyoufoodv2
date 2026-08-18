@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>harness</title></head><body>
+<div id="out"></div>
+<script type="module">
+import { sectionsHTML, paintCalcs, derive, fieldHTML } from "./assets/js/nsf-form.js";
+import { SECTIONS } from "./assets/js/form-spec.js";
+const values = { name: "Aisha Khan", email: "a@b.c", weight_kg: "65.2", height_cm: "162",
+                 dob: "1992-04-18", sex: "Female", waist_cm: "80", hip_cm: "97", activity_factor: "1.375 light" };
+const out = document.getElementById("out");
+out.innerHTML = sectionsHTML(values, new Set(["bp"]), ["intake","anthro"]);
+paintCalcs(out, values, { weight_kg: "66.5" });
+const calcs = [...out.querySelectorAll("[data-calc]")].map(e => e.dataset.calc + "=" + e.textContent);
+document.title = "SECTIONS=" + SECTIONS.length
+  + " secs=" + out.querySelectorAll("[data-sec]").length
+  + " fields=" + out.querySelectorAll("[data-field]").length
+  + " open=" + [...out.querySelectorAll('[data-sec][data-open="true"]')].map(s=>s.dataset.sec).join(",")
+  + " readonly=" + out.querySelectorAll("input[readonly]").length
+  + " | " + calcs.join(" ");
+</script></body></html>

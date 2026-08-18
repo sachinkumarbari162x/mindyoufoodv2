@@ -1,0 +1,210 @@
+/* ============================================================
+   RECEPTIONIST · MESSAGES
+   Two voices. The receptionist speaks from the left on cream;
+   the visitor answers from the right on ink. Amber is reserved
+   for the practitioner's own interjections, so it keeps meaning.
+   ============================================================ */
+
+.rcp-msg {
+  max-width: 86%;
+  padding: 10px 14px;
+  border-radius: var(--rcp-r-md);
+  font-size: var(--rcp-step-0);
+  line-height: 1.55;
+  animation: rcp-msg-in 0.42s var(--rcp-ease-out) both;
+}
+
+.rcp-msg p {
+  margin: 0 0 0.55em;
+}
+
+.rcp-msg p:last-child {
+  margin-bottom: 0;
+}
+
+.rcp-msg a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+@keyframes rcp-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+}
+
+/* ---- the receptionist ---- */
+.rcp-msg[data-from="bot"] {
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+  background: var(--rcp-glass-hi);
+  border: 1px solid var(--rcp-line-soft);
+  color: var(--rcp-text);
+}
+
+/* ---- the visitor ---- */
+.rcp-msg[data-from="user"] {
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+  background: var(--rcp-ink);
+  color: var(--rcp-cream);
+}
+
+/* ---- system notes ----
+   Rule outcomes the visitor needs to see but that nobody "said":
+   "that slot is outside consultation hours", "session expired". */
+.rcp-msg[data-from="system"] {
+  align-self: center;
+  max-width: 100%;
+  padding: 7px 12px;
+  border: 1px dashed var(--rcp-line);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  letter-spacing: 0.02em;
+  color: var(--rcp-text-soft);
+  text-align: center;
+}
+
+.rcp-msg[data-tone="warn"] {
+  border-color: var(--rcp-rust);
+  background: var(--rcp-rust-wash);
+  color: var(--rcp-rust-deep);
+}
+
+/* ---- typing indicator ---- */
+.rcp-typing {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 13px 15px;
+  border: 1px solid var(--rcp-line-soft);
+  border-radius: var(--rcp-r-md);
+  border-bottom-left-radius: 5px;
+  background: var(--rcp-glass-hi);
+}
+
+/* A reply that is taking a while says so, beside the dots rather than
+   as a message — the wait is over in a moment and nobody wants to
+   scroll back past a row of "one moment"s to re-read their answers.
+   Set by receptionist.js after SLOW_REPLY_MS; absent the rest of the
+   time, so the indicator keeps its usual size. */
+.rcp-typing[data-slow]::after {
+  content: attr(data-slow);
+  margin-left: 6px;
+  color: var(--rcp-text-soft);
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+.rcp-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rcp-text-soft);
+  animation: rcp-blink 1.3s var(--rcp-ease) infinite;
+}
+
+.rcp-typing span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.rcp-typing span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes rcp-blink {
+  0%,
+  60%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* ---- quick replies ----
+   Suggested answers the server offers for the current step. They
+   are a shortcut, never the only path — every one of them can be
+   typed out in prose instead. */
+.rcp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-self: flex-start;
+  max-width: 100%;
+  animation: rcp-msg-in 0.42s var(--rcp-ease-out) both;
+}
+
+.rcp-chip {
+  padding: 7px 13px;
+  border: 1px solid var(--rcp-amber);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step--1);
+  font-weight: 500;
+  color: var(--rcp-amber-deep);
+  transition: background 0.25s var(--rcp-ease), color 0.25s var(--rcp-ease),
+    transform 0.25s var(--rcp-ease-out);
+}
+
+.rcp-chip:hover {
+  background: var(--rcp-amber);
+  color: var(--rcp-ink);
+  transform: translateY(-1px);
+}
+
+.rcp-chip:focus-visible {
+  outline: 2px solid var(--rcp-amber);
+  outline-offset: 2px;
+}
+
+.rcp-chip[disabled] {
+  opacity: 0.42;
+  cursor: default;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rcp-msg,
+  .rcp-chips {
+    animation: none;
+  }
+  .rcp-typing span {
+    animation-duration: 2.4s;
+  }
+}
+
+/* ---- resuming ----
+   A hairline with a word on it, marking where an earlier visit
+   ended. Deliberately NOT a message bubble: anything in the log
+   that is not a .rcp-msg is not saved, and the first version of
+   this was a bubble that saved itself and multiplied on every
+   reload. */
+.rcp-resume {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 2px 10px;
+  font-family: var(--rcp-mono, var(--rcp-sans));
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: lowercase;
+  color: var(--rcp-text-soft);
+}
+
+.rcp-resume::before,
+.rcp-resume::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rcp-line);
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Hours · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="hours">
+      <div class="fn-head">
+        <p class="eyebrow">When you work</p>
+        <h2>Hours</h2>
+        <p class="fn-note">
+          Set the weekly pattern once and it repeats. Visitors are only ever
+          offered times inside it.
+        </p>
+        <div class="fn-acts">
+          <button class="btn" type="button" data-act="add-band">Add a band</button>
+          <button class="btn quiet" type="button" data-act="close-date">Close a date</button>
+        </div>
+      </div>
+
+      <div class="fn-body">
+        <!-- Both forms live here and stay hidden until asked for. This
+             page is mostly read; two open forms above the week would
+             make a glance cost a scroll. -->
+        <div data-editor></div>
+
+        <div class="week" data-week></div>
+
+        <!-- THE MONTH. The week above says what the pattern IS; this
+             says what it comes to — which Tuesdays are actually
+             open, which days she closed, and who is in the diary.
+             A pattern and its consequences are different questions
+             and she asks both. -->
+        <h3 class="sub">The month</h3>
+
+        <div class="cal" data-cal>
+          <div class="cal-head">
+            <button class="btn quiet" type="button" data-month="-1" aria-label="Previous month">‹</button>
+            <p class="cal-title" data-cal-title>—</p>
+            <button class="btn quiet" type="button" data-month="1" aria-label="Next month">›</button>
+            <span class="grow"></span>
+            <button class="btn quiet" type="button" data-month="0">This month</button>
+          </div>
+
+          <div class="cal-days" aria-hidden="true">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span>
+            <span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+
+          <div class="cal-grid" data-cal-grid>
+            <p class="empty">Reading the month…</p>
+          </div>
+
+          <p class="cal-key">
+            <span><i class="k-open"></i> open</span>
+            <span><i class="k-booked"></i> booked</span>
+            <span><i class="k-closed"></i> closed</span>
+            <span><i class="k-extra"></i> one-off opening</span>
+          </p>
+        </div>
+
+        <!-- One day, when she picks one. -->
+        <div class="cal-day" data-cal-day hidden></div>
+
+        <h3 class="sub">Exceptions</h3>
+        <div data-list="exceptions">
+          <p class="empty">No one-offs. Every day follows the pattern above.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/hours.js"></script>
+</body>
+
+</html>

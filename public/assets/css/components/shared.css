@@ -1,0 +1,118 @@
+/* ============================================================
+   3 · SHARED PIECES
+   ============================================================ */
+.wrap {
+  width: min(100% - 3rem, var(--maxw));
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  margin-bottom: 1rem;
+}
+
+h1,
+h2,
+h3,
+blockquote,
+.word {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -.01em;
+}
+
+h2 {
+  font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+}
+
+h2 em,
+h1 em,
+.attention span {
+  font-style: italic;
+  color: var(--rose-deep);
+}
+
+.sec-head {
+  max-width: 42rem;
+  margin-bottom: 3.5rem;
+}
+
+.sec-sub {
+  margin-top: 1.1rem;
+  color: var(--ink-soft);
+  font-size: 1.03rem;
+  max-width: 38rem;
+}
+
+/* --- buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  padding: .85rem 1.6rem;
+  border-radius: 100px;
+  font-size: .88rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  border: 1px solid transparent;
+  transition: transform .35s var(--ease), background-color .35s var(--ease),
+    color .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
+  will-change: transform;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-solid {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-solid:hover {
+  background: var(--rose-deep);
+  color: #fff;
+}
+
+.btn-line {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.btn-line:hover {
+  border-color: var(--rose-deep);
+  color: var(--rose-deep);
+}
+
+/* the glass button — used in the nav and over the video */
+.btn-glass {
+  background: var(--glass-tint);
+  border-color: var(--glass-edge);
+  color: var(--glass-text);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+}
+
+.btn-glass:hover {
+  background: var(--glass-tint-hi);
+}
+
+/* --- scroll reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}

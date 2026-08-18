@@ -1,0 +1,33 @@
+/* ============================================================
+   STATE — empty sections, and the footer that says what is real
+   ------------------------------------------------------------
+   An empty section says what WOULD be here and how it gets
+   here. "No results" tells her nothing; "anything a visitor
+   books lands here" tells her the section works and is simply
+   quiet.
+   ============================================================ */
+
+.empty {
+  padding: 1.4rem 1.1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--edge);
+  color: var(--faint);
+  font-size: 13.5px;
+}
+
+/* ---- the provenance line ----
+   A management screen must never leave you unsure whether the
+   numbers above it are real. Loud when they are not. */
+.foot {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.2rem clamp(1rem, 3vw, 2.2rem) 3rem;
+  border-top: 1px solid var(--line-soft);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.foot[data-live="false"] {
+  color: var(--rust);
+}

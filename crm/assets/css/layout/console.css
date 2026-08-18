@@ -1,0 +1,353 @@
+/* ============================================================
+   CONSOLE HOME — trial layout
+   ------------------------------------------------------------
+   BUILT FOR AN iPAD FIRST, because that is the device she uses.
+   That is a genuinely different target from either of the two we
+   have designed for so far:
+
+     · 768 wide in portrait, 1024 in landscape — enough room for
+       two or three columns, nowhere near enough for a rail as
+       well.
+     · Touch. Every row here is a link, and every link is at least
+       48px tall. Nothing is revealed on hover, because there is
+       no hover.
+     · Held, not sat in front of. Type is a step larger than the
+       rest of the CRM and the cards have more air between them.
+
+   CARDS, NOT A TABLE. Each card answers one question and links to
+   the page that owns it. The grid reflows by itself, so the same
+   markup is one column on a phone, two in portrait and three in
+   landscape without a breakpoint per device.
+   ============================================================ */
+
+.console {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* ---- the sentence at the top ----------------------------------
+   The largest type on the page, because it is the only thing she
+   is guaranteed to read. */
+
+.console-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: .4rem 0 1.1rem;
+  padding-bottom: .9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.console-day {
+  margin: 0 0 .15rem;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .06em;
+}
+
+.console-say {
+  margin: 0;
+  max-width: 32ch;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  font-weight: 500;
+  letter-spacing: -.015em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+/* Colour carries the difference, but so does the wording — the
+   sentence itself already says which state this is, so the tint is
+   confirmation rather than the only signal. */
+.console-say[data-tone="clear"] { color: var(--ink); }
+.console-say[data-tone="attention"] { color: var(--amber); }
+
+.console-cta { flex: none; min-height: 2.9rem; padding: 0 1.3rem; }
+.console-cta[hidden] { display: none; }
+
+/* ---- the grid --------------------------------------------------
+   auto-fit rather than a column count, so the same rule covers a
+   phone, an iPad in either orientation and a desktop. 22rem is the
+   narrowest a card can be and still hold a name, a time and a tag
+   on one line. */
+
+/* 19rem, not 22. At 22 an iPad in landscape fits exactly two
+   columns, which left the three middle cards as 2 + 1 and a hole
+   the size of a card next to the last one. At 19 the same screen
+   fits three and the row closes up — and a phone still gets one
+   column, because 19rem is wider than a phone. */
+.console-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: .9rem;
+  align-items: start;
+}
+
+/* Today and the numbers get the full run when there is room. Today
+   because it is worked from; the tiles because four of them in a
+   narrow column is a stack of unrelated digits. */
+@media (min-width: 60rem) {
+  .card-wide { grid-column: 1 / -1; }
+}
+
+/* ---- a card ---------------------------------------------------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  overflow: hidden;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .7rem .9rem;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--ground);
+}
+
+.card-head h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.card-head .grow { flex: 1; }
+
+/* A standing note about what a card IS, beside its heading. Only
+   the assistant has one, and what it says matters more than most
+   labels on this page: "reads your data, never sends anything" is
+   the sentence that makes a model on a clinical screen acceptable,
+   so it is on the card rather than in a tooltip or a help page.
+
+   Not upper-cased like the heading beside it — it is a sentence,
+   and a sentence in small caps is a sign. */
+.card-note {
+  color: var(--faint);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: right;
+}
+
+@media (max-width: 30rem) {
+  /* The heading and the count still fit; the sentence does not, and
+     a wrapped two-line card head pushes the work down the screen.
+     It is on the Bots page too, where there is room for it. */
+  .card-note { display: none; }
+}
+
+/* The count beside the heading, not a badge. A badge says "new";
+   this says "how many", which is a different fact. */
+.card-n {
+  min-width: 1.4rem;
+  padding: 0 .35rem;
+  border-radius: 999px;
+  background: var(--sink);
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.card-link {
+  color: var(--amber);
+  font-size: 12.5px;
+  text-decoration: none;
+  padding: .35rem .2rem;
+}
+
+.card-link:hover { text-decoration: underline; }
+
+.card-body { padding: .25rem 0; }
+
+/* THE ASSISTANT IS THE EXCEPTION, and the zero above is why.
+
+   Every other card holds .line rows, and a row is a full-width tap
+   target that brings its own inset — so the body must not add one
+   or the target stops reaching the card edge. The assistant holds
+   prose, a text field and buttons, none of which are rows, and
+   without this its sentence sits flush against the border. */
+[data-card="assistant"] .card-body { padding: .85rem .9rem 1rem; }
+
+/* ---- one line in a card ----------------------------------------
+   A LINK, WHOLE. Not a row with a link inside it: the entire line
+   is the target, because a 44px-wide "Open" inside a 300px row is
+   a target she will miss on a tablet held in one hand. */
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 3rem;
+  padding: .5rem .9rem;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.line:last-child { border-bottom: 0; }
+.line:hover { background: var(--sink); }
+
+.line:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: -2px;
+}
+
+/* The hour leads on Today, and lines up down the card. */
+.line-t {
+  flex: none;
+  min-width: 3.2rem;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.line-who {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.line-sub {
+  flex: 1;
+  min-width: 0;
+  color: var(--soft);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pushed right, quiet until the line is touched. It is a signpost,
+   not a button — the whole line is the button. */
+.line-go {
+  flex: none;
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.line:hover .line-go { color: var(--amber); }
+
+.line-n {
+  flex: none;
+  margin-left: auto;
+  min-width: 1.4rem;
+  padding: 0 .35rem;
+  border-radius: 999px;
+  background: var(--amber-wash);
+  color: var(--amber);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* A session that has already started. A left edge rather than a
+   fill: the row still has to be read, and a block of colour under
+   text is the fastest way to make it harder to read. */
+.line.is-now {
+  box-shadow: inset 3px 0 0 var(--amber-bright);
+  background: color-mix(in srgb, var(--amber-wash) 45%, transparent);
+}
+
+/* Small round marks, so the kind of thing a line is survives being
+   read at arm's length. */
+.line-mark {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.line-mark.is-wait { background: var(--amber-bright); }
+.line-mark.is-late { background: var(--rust); }
+.line-mark.is-ok { background: var(--sage); }
+
+/* ---- the numbers ----------------------------------------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: .1rem;
+  padding: 0;
+  background: var(--line-soft);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+  padding: .9rem;
+  background: var(--raise);
+}
+
+.tile-n {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-l {
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.tile-s { color: var(--faint); font-size: 11.5px; }
+
+/* ---- empty ------------------------------------------------------ */
+
+.card-body .empty {
+  margin: 0;
+  padding: 1rem .9rem;
+  color: var(--faint);
+  font-size: 13px;
+}
+
+/* The one empty state that is good news. Said in green because it
+   is an answer, not an absence. */
+.card-body .empty.is-clear { color: var(--sage); }
+
+/* ---- touch ------------------------------------------------------
+   Coarse pointers get taller rows and no hover tint — on a tablet
+   the hover state sticks after a tap and reads as a selection that
+   will not clear. */
+@media (hover: none) {
+  .line { min-height: 3.4rem; }
+  .line:hover { background: none; }
+  .line:hover .line-go { color: var(--faint); }
+  .line:active { background: var(--sink); }
+}
+
+/* ---- narrow ----------------------------------------------------- */
+
+@media (max-width: 540px) {
+  .console-head { align-items: flex-start; }
+  .console-cta { width: 100%; }
+  .line { flex-wrap: wrap; gap: .35rem .55rem; }
+  .line-sub { flex: 1 0 100%; }
+  .line .tag { order: 3; }
+}

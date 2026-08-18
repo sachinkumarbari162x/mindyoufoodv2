@@ -1,0 +1,22 @@
+# Secrets. Written on the server, never committed.
+.env
+.env.*
+!.env.example
+.env.prod
+deploy/caddy.env
+.session-secret
+*.pem
+*.key
+keys.txt
+
+# What the running system writes: client photographs, clinical
+# documents, database dumps, the budget counter.
+var/
+
+# Build output. The Go binary is built inside the image.
+services/go-data/godata
+services/go-data/*.exe
+node_modules/
+__pycache__/
+*.pyc
+.venv/

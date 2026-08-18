@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Front desk</title>
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <!-- The workspace entry, not crm.css. crm.css brings
+       function-section.css, which pins a 19rem header column down the
+       left of every page — the exact layout that made the assessment
+       page unusable and the reason workspace.css exists. A console
+       home wants the whole width. -->
+  <link rel="stylesheet" href="./assets/workspace.css" />
+  <link rel="stylesheet" href="./assets/css/layout/console.css" />
+  <!-- Linked here rather than added to workspace.css, which four
+       other pages also load. A stylesheet that ships rules for pages
+       it is not is how a small change to one page breaks another —
+       the same reason plan.css is linked from plan.html. -->
+  <link rel="stylesheet" href="./assets/css/components/assistant.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <div class="console">
+
+      <!-- THE ONE LINE THAT ANSWERS "IS EVERYTHING FINE?"
+           Every console has this and most dashboards do not. She
+           should be able to read one sentence from across the desk
+           and know whether to sit down. -->
+      <div class="console-head">
+        <div>
+          <p class="console-day" data-day>—</p>
+          <h2 class="console-say" data-say>Reading the practice…</h2>
+        </div>
+        <a class="btn go console-cta" href="./today.html" data-cta hidden>Go to Today</a>
+      </div>
+
+      <div class="console-grid">
+
+        <!-- ============================================================
+             HER ASSISTANT — first, because it is what she opens the
+             CRM to read.
+
+             Moved here from the retired Overview, which is the one
+             thing that layout did better than this one. The line
+             above answers "is everything fine" instantly from the
+             database; this is the considered reading, and it arrives
+             a second later because it goes to a model.
+
+             THE FACTS SIT UNDER THE SENTENCE and the panel works
+             without it. If the assistant cannot be reached it says
+             so and every card below is still live — which is why it
+             is mounted after this page has painted and never awaited
+             by it.
+             ============================================================ -->
+        <section class="card card-wide" data-card="assistant">
+          <div class="card-head">
+            <h3>Assistant</h3>
+            <span class="grow"></span>
+            <span class="card-note">Reads your data · never sends anything</span>
+          </div>
+          <div class="card-body" data-assistant></div>
+        </section>
+
+        <!-- TODAY, and it is the biggest thing on the screen because
+             it is the only card she works FROM rather than glances at. -->
+        <section class="card card-wide" data-card="today">
+          <div class="card-head">
+            <h3>Today</h3>
+            <span class="card-n" data-n-today>0</span>
+            <span class="grow"></span>
+            <a class="card-link" href="./today.html">Open</a>
+          </div>
+          <div class="card-body" data-list-today>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- WHAT NEEDS AN ANSWER. Three different kinds of unanswered
+             thing, gathered because they are one job: nothing here is
+             a number to admire, every line is something she has to
+             do something about. -->
+        <section class="card" data-card="needs">
+          <div class="card-head">
+            <h3>Needs you</h3>
+            <span class="card-n" data-n-needs>0</span>
+          </div>
+          <div class="card-body" data-list-needs>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- AHEAD. A glance, not a work surface — so it is a list of
+             days rather than a list of rows. -->
+        <section class="card" data-card="ahead">
+          <div class="card-head">
+            <h3>Ahead</h3>
+            <span class="card-n" data-n-ahead>0</span>
+            <span class="grow"></span>
+            <a class="card-link" href="./upcoming.html">Open</a>
+          </div>
+          <div class="card-body" data-list-ahead>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- THE MACHINERY, in one card. Whether the desk is answering,
+             whether messages are going out. She should never have to
+             go looking to find out that something has been broken
+             since Tuesday. -->
+        <section class="card" data-card="desk">
+          <div class="card-head">
+            <h3>The desk</h3>
+            <span class="grow"></span>
+            <a class="card-link" href="./messages.html">Messages</a>
+          </div>
+          <div class="card-body" data-list-desk>
+            <p class="empty">Reading…</p>
+          </div>
+        </section>
+
+        <!-- The numbers last, deliberately. They are the part that
+             reads as a dashboard, and the part she acts on least.
+
+             RENAMED FROM "The practice", which is now the name of a
+             whole page behind the More button. Two things with one
+             name a click apart is how you end up looking at the
+             wrong one — see programme.html for the last time that
+             happened here. -->
+        <section class="card card-wide" data-card="week">
+          <div class="card-head">
+            <h3>In total</h3>
+            <span class="grow"></span>
+            <a class="card-link" href="./practice.html">The practice</a>
+          </div>
+          <div class="card-body tiles" data-tiles></div>
+        </section>
+
+      </div>
+
+      <footer class="foot"><span data-source>—</span></footer>
+    </div>
+  </main>
+
+  <script type="module" src="./assets/js/pages/home.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>BMI calculator — Mind Your Food</title>
+  <meta name="description"
+    content="Work out your BMI, see which band it falls in, and hand the result straight to the front desk so a consultation starts from your actual numbers." />
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+
+<body>
+
+  <span id="top" aria-hidden="true"></span>
+
+  <nav class="nav is-scrolled" id="nav" aria-label="Primary">
+    <div class="nav-glass">
+      <div class="nav-inner">
+        <a href="./index.html" class="brand"><i>Mind</i> <b>Your Food</b></a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="./index.html#nutrients">Nutrients</a></li>
+          <li><a href="./index.html#focus">Focus</a></li>
+          <li><a href="./index.html#method">Method</a></li>
+          <li class="nav-pill" id="navPill" aria-hidden="true"></li>
+        </ul>
+        <div class="nav-actions">
+          <a href="./consult.html" class="btn btn-glass nav-cta">Book a consultation</a>
+          <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"
+            aria-controls="navLinks"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="sheet" id="sheet" style="margin-top:0;border-radius:0">
+    <section class="wrap band" id="bmi">
+      <div class="sec-head reveal">
+        <p class="eyebrow">A starting number</p>
+        <h2>What's your <em>BMI</em>?</h2>
+        <p class="sec-sub">One measurement, in ten seconds. It is a blunt instrument — but it is a
+          reasonable place to start a conversation, and the front desk can carry your figures
+          straight into a consultation request.</p>
+      </div>
+
+      <div class="bmi-shell">
+
+        <!-- ── inputs ── -->
+        <form class="bmi-form" id="bmiForm" novalidate>
+          <div class="bmi-units" role="group" aria-label="Units">
+            <button type="button" data-units="metric" aria-pressed="true">Metric</button>
+            <button type="button" data-units="imperial" aria-pressed="false">Imperial</button>
+          </div>
+
+          <div class="bmi-field">
+            <label for="bmiHeight">Height</label>
+            <div class="bmi-row">
+              <input class="bmi-input" id="bmiHeight" type="number" inputmode="decimal"
+                     step="0.1" min="0" placeholder="168" autocomplete="off">
+              <span class="bmi-suffix" data-suffix="height">cm</span>
+              <!-- Imperial height needs two boxes; hidden in metric. -->
+              <input class="bmi-input" id="bmiHeightIn" type="number" inputmode="decimal"
+                     step="1" min="0" placeholder="6" autocomplete="off" hidden
+                     aria-label="Height, inches">
+              <span class="bmi-suffix" data-suffix="heightIn" hidden>in</span>
+            </div>
+          </div>
+
+          <div class="bmi-field">
+            <label for="bmiWeight">Weight</label>
+            <div class="bmi-row">
+              <input class="bmi-input" id="bmiWeight" type="number" inputmode="decimal"
+                     step="0.1" min="0" placeholder="72" autocomplete="off">
+              <span class="bmi-suffix" data-suffix="weight">kg</span>
+            </div>
+          </div>
+
+          <div class="bmi-field">
+            <label for="bmiBasis">Reference range</label>
+            <div class="bmi-row">
+              <select class="bmi-input" id="bmiBasis">
+                <option value="asian" selected>Asian / South Asian</option>
+                <option value="who">WHO international</option>
+              </select>
+            </div>
+            <!-- Not a formality: the WHO's default cut-offs understate
+                 metabolic risk in South Asian populations, and this
+                 practice is in India. Which table was used is recorded
+                 with the result. -->
+            <p class="bmi-help">South Asian bodies carry risk at a lower BMI, so the thresholds are
+              lower. Ask your clinician which applies to you.</p>
+          </div>
+
+          <div class="bmi-field">
+            <label for="bmiGoal">What would you like to work on? <span style="text-transform:none;letter-spacing:0;color:var(--ink-soft)">(optional)</span></label>
+            <div class="bmi-row">
+              <input class="bmi-input" id="bmiGoal" type="text" maxlength="80"
+                     placeholder="PCOS, gut health, weight…" autocomplete="off">
+            </div>
+          </div>
+
+          <p class="bmi-help" id="bmiError" data-error="false" role="status" aria-live="polite"></p>
+        </form>
+
+        <!-- ── result ── -->
+        <div class="bmi-result" id="bmiResult" data-state="empty" aria-live="polite">
+          <p class="bmi-placeholder">Put your height and weight in and the number appears here.
+            Nothing is sent anywhere until you choose to take it further.</p>
+
+          <p class="bmi-value" id="bmiValue">—<small>Body mass index</small></p>
+          <span class="bmi-band" id="bmiBand" data-band="healthy">—</span>
+
+          <div class="bmi-scale">
+            <div class="bmi-track"><span class="bmi-marker" id="bmiMarker" style="left:50%"></span></div>
+            <div class="bmi-ticks" id="bmiTicks">
+              <span>15</span><span>18.5</span><span>23</span><span>25</span><span>30</span><span>40</span>
+            </div>
+          </div>
+
+          <div class="bmi-cta">
+            <p id="bmiCtaCopy">Take this to the front desk and it will start from your numbers —
+              you'll only need to fill in the rest.</p>
+            <a class="btn btn-solid" id="bmiGo" href="./consult.html">Continue to the front desk</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="bmi-caveat">
+        <p><strong>What BMI is not.</strong> It cannot tell muscle from fat, it says nothing about
+          where weight sits on your body, and it was devised to describe populations rather than
+          individuals. A muscular athlete and someone carrying visceral fat can share a number.</p>
+        <p>Treat it as one line in a longer conversation — alongside your labs, your history and how
+          you actually feel. That conversation is what a consultation is for.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-bottom">
+        <span>© <span id="yr"></span> Mind Your Food · Clinical Dietitian &amp; Sports Nutritionist</span>
+        <span class="made">made by <a href="#" class="odin">brownOdin</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <a class="chat-fab" href="./consult.html" aria-label="Open the front desk to book a consultation">
+    <span class="chat-fab-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12Z" />
+        <path d="M8.6 11.2h6.8M8.6 14h4.2" />
+      </svg>
+    </span>
+    <span class="chat-fab-label">Book a consultation</span>
+  </a>
+
+  <script src="./assets/js/site.js"></script>
+  <script src="./assets/js/bmi.js"></script>
+</body>
+
+</html>

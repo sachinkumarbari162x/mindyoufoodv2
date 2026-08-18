@@ -1,0 +1,227 @@
+/* ============================================================
+   RECEPTIONIST · BOOKING REVIEW CARD
+   The read-back before anything is sent. Nothing reaches the
+   practitioner until the visitor confirms what is on this card,
+   so it is deliberately the most solid object in the window —
+   opaque, not frosted, with the field values in mono so they
+   read as data rather than as more chat.
+   ============================================================ */
+
+.rcp-review {
+  align-self: stretch;
+  border: 1px solid var(--rcp-line);
+  border-radius: var(--rcp-r-md);
+  overflow: hidden;
+  background: var(--rcp-cream-hi);
+  box-shadow: var(--rcp-shadow-sm);
+  animation: rcp-msg-in 0.45s var(--rcp-ease-out) both;
+}
+
+.rcp-review-head {
+  padding: 13px 16px 11px;
+  border-bottom: 1px solid var(--rcp-line-soft);
+  background: var(--rcp-amber-wash);
+}
+
+.rcp-review-head h3 {
+  margin: 0;
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-1);
+  font-weight: 600;
+  font-variation-settings: "opsz" 22;
+  letter-spacing: -0.01em;
+  color: var(--rcp-text);
+}
+
+.rcp-review-head p {
+  margin: 3px 0 0;
+  font-size: var(--rcp-step--1);
+  color: var(--rcp-text-soft);
+}
+
+/* ---- fields ---- */
+.rcp-review-body {
+  margin: 0;
+  padding: 6px 16px 12px;
+}
+
+.rcp-field {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rcp-line-soft);
+}
+
+.rcp-field:last-child {
+  border-bottom: 0;
+}
+
+.rcp-field dt {
+  font-family: var(--rcp-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rcp-text-soft);
+}
+
+.rcp-field dd {
+  margin: 0;
+  font-size: var(--rcp-step-0);
+  line-height: 1.45;
+  color: var(--rcp-text);
+  overflow-wrap: anywhere;
+}
+
+/* Contact details and slots are transcribed data — a typo here
+   costs a real appointment, so they get the mono treatment that
+   makes character-level errors visible. */
+.rcp-field[data-kind="data"] dd {
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  letter-spacing: 0.01em;
+}
+
+/* A field the visitor never supplied. Shown rather than hidden,
+   so "you didn't ask me for a phone number" cannot happen. */
+.rcp-field[data-empty="true"] dd {
+  color: var(--rcp-text-soft);
+  font-style: italic;
+}
+
+.rcp-slotlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rcp-slotlist li {
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+}
+
+.rcp-slotlist li::before {
+  content: "▸ ";
+  color: var(--rcp-sage);
+}
+
+/* ---- actions ---- */
+.rcp-review-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--rcp-line-soft);
+  background: var(--rcp-cream-2);
+}
+
+.rcp-btn {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: var(--rcp-r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-0);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.25s var(--rcp-ease-out), background 0.25s var(--rcp-ease),
+    opacity 0.25s var(--rcp-ease);
+}
+
+.rcp-btn:focus-visible {
+  outline: 2px solid var(--rcp-amber);
+  outline-offset: 2px;
+}
+
+.rcp-btn:hover:not([disabled]) {
+  transform: translateY(-1px);
+}
+
+.rcp-btn[disabled] {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+.rcp-btn[data-act="confirm"] {
+  background: var(--rcp-sage);
+  color: var(--rcp-cream-hi);
+}
+
+.rcp-btn[data-act="confirm"]:hover:not([disabled]) {
+  background: var(--rcp-sage-deep);
+}
+
+.rcp-btn[data-act="edit"] {
+  background: transparent;
+  border-color: var(--rcp-line);
+  color: var(--rcp-text);
+}
+
+.rcp-btn[data-act="edit"]:hover:not([disabled]) {
+  background: rgba(20, 16, 12, 0.05);
+}
+
+.rcp-btn[data-act="cancel"] {
+  flex: 0 0 auto;
+  background: transparent;
+  color: var(--rcp-rust);
+  font-weight: 500;
+}
+
+/* ---- settled states ---- */
+.rcp-review[data-state="confirmed"] {
+  border-color: var(--rcp-sage);
+}
+
+.rcp-review[data-state="confirmed"] .rcp-review-head {
+  background: var(--rcp-sage-wash);
+}
+
+.rcp-review[data-state="cancelled"] {
+  border-color: var(--rcp-rust);
+  opacity: 0.75;
+}
+
+.rcp-review[data-state="cancelled"] .rcp-review-head {
+  background: var(--rcp-rust-wash);
+}
+
+/* Once submitted the card is a receipt, not a form. */
+.rcp-review[data-state="confirmed"] .rcp-review-actions,
+.rcp-review[data-state="cancelled"] .rcp-review-actions {
+  display: none;
+}
+
+/* The reference the visitor quotes if they email about it. */
+.rcp-ref {
+  display: block;
+  padding: 10px 16px 13px;
+  border-top: 1px solid var(--rcp-line-soft);
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  letter-spacing: 0.06em;
+  color: var(--rcp-sage-deep);
+  background: var(--rcp-sage-wash);
+}
+
+@media (max-width: 400px) {
+  .rcp-field {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .rcp-review-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rcp-review {
+    animation: none;
+  }
+}

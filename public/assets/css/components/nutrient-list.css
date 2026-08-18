@@ -1,0 +1,250 @@
+/* ------------------------------------------------------------
+   THE NUTRIENT COLUMN
+   No card: transparent, no border, no blur. The hero scrim does
+   the contrast work, helped by a soft text-shadow on the type.
+   ------------------------------------------------------------ */
+.nl {
+  position: relative;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, .5);
+}
+
+.nl-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .14);
+}
+
+.nl-title {
+  font-family: var(--serif);
+  font-size: clamp(.92rem, 1.2vw, 1.05rem);
+  font-style: italic;
+  color: rgba(251, 246, 238, .92);
+}
+
+.nl-count {
+  font-size: .66rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(251, 246, 238, .58);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.nl-count b {
+  font-weight: 500;
+  color: var(--rose);
+}
+
+/* one item per row, at every screen size */
+.nl-list {
+  list-style: none;
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.nl-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: .7rem;
+  flex-wrap: wrap;
+  padding: clamp(.5rem, 1.5vh, .8rem) 0 clamp(.5rem, 1.5vh, .8rem) .95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+
+  /* The entrance: a straight drift in from the right.
+     Opacity and transform are the only two properties a browser can
+     animate entirely on the compositor. There used to be a
+     filter: blur() in here too — that forces a full repaint of the
+     element on every frame and was exactly what made the reveal
+     judder mid-flight. Gone. */
+  opacity: 0;
+  transform: translate3d(20px, 0, 0);
+  /* Deliberately LONGER than the 333ms step in script.js, so rows are
+     in flight together and the six read as one wave arriving rather
+     than six separate events. */
+  transition:
+    opacity .5s var(--ease),
+    transform .5s var(--ease);
+  will-change: opacity, transform;
+
+  /* The row is a hover/tap target once the cascade is done. Suppress
+     the tap-highlight box and the text selection a long-press would
+     otherwise trigger on iOS and Android. */
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.nl-item:last-child {
+  border-bottom: 0;
+}
+
+/* The accent rule that marks the active row. Scales on a transform
+   rather than animating `height`, so this is composited too. */
+.nl-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 62%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--rose);
+  transform: translateY(-50%) scaleY(0);
+  transform-origin: center;
+  transition: transform .4s var(--ease);
+}
+
+/* Opacity ladder, deliberately capped below the left column so the
+   headline still wins the fold: hero h1 sits at 1, hero lead at .82,
+   the active nutrient at .92 and a resting nutrient at .72. */
+.nl-item.in {
+  opacity: .72;
+  transform: translate3d(0, 0, 0);
+}
+
+.nl-item.is-current {
+  opacity: .92;
+}
+
+.nl-item.is-current::before {
+  transform: translateY(-50%) scaleY(1);
+}
+
+.nl-tag {
+  order: 3;
+  flex-basis: 100%;
+  font-size: .54rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(251, 246, 238, .52);
+}
+
+.nl-item h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 2.1vw, 1.65rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: #FBF6EE;
+  margin: 0;
+  margin-right: auto;
+  transition: color .4s var(--ease);
+}
+
+.nl-item.is-current h3 {
+  color: var(--rose);
+}
+
+/* the single line of meta: daily intake as a share of body weight */
+.nl-num {
+  font-size: clamp(.72rem, 1vw, .82rem);
+  letter-spacing: .04em;
+  color: rgba(251, 246, 238, .9);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.nl-num i {
+  font-style: normal;
+  font-size: .86em;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(251, 246, 238, .58);
+}
+
+/* --- video progress line + footnote --- */
+.nl-progress {
+  position: relative;
+  height: 2px;
+  margin-top: clamp(.7rem, 2vh, 1.1rem);
+  border-radius: 100px;
+  background: rgba(255, 255, 255, .12);
+  overflow: hidden;
+}
+
+/* A pure CSS animation — no JavaScript touches this per frame, so it
+   runs on the compositor and cannot inherit a hitch from anything else
+   on the page. JS only sets the duration and pauses it off-screen. */
+.nl-progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(198, 139, 145, .4), var(--rose));
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+  /* Matches STEP × item count in script.js (0.333s × 6 ≈ 2s). JS re-sets
+     this from the real count on load; the value here just keeps the
+     first paint honest if the two ever drift.
+
+     Runs ONCE and holds full — it tracks the first-load cascade, and
+     that cascade never repeats. Looping it forever would animate a
+     progress bar for something that already finished. */
+  animation: nlCycle 2s linear 1 forwards;
+}
+
+@keyframes nlCycle {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.nl-foot {
+  margin-top: .6rem;
+  font-size: .62rem;
+  letter-spacing: .1em;
+  color: rgba(251, 246, 238, .52);
+}
+
+/* --- scroll hint --- */
+.scroll-hint {
+  position: absolute;
+  z-index: 3;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .66rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(251, 246, 238, .55);
+}
+
+.scroll-hint span {
+  display: block;
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(rgba(251, 246, 238, .05), rgba(251, 246, 238, .7));
+  animation: drop 2.4s var(--ease) infinite;
+}
+
+@keyframes drop {
+
+  0%,
+  100% {
+    transform: scaleY(.4);
+    transform-origin: top;
+    opacity: .35;
+  }
+
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+    opacity: 1;
+  }
+}

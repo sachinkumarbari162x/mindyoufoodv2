@@ -1,0 +1,97 @@
+/* ============================================================
+   RECEPTIONIST · AMBIENT STAGE
+   The canvas the chat window floats over. Two stacked canvases
+   crossfade between scenes (see assets/js/ambient-canvas.js) —
+   CSS owns the fade, JS owns the drawing, so a dropped frame in
+   the renderer can never make the transition stutter.
+
+   The stage only exists while the window is open, and it never
+   captures pointer events: it is scenery, not chrome.
+   ============================================================ */
+
+.rcp-stage {
+  position: fixed;
+  inset: 0;
+  z-index: var(--rcp-z-stage);
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.8s var(--rcp-ease);
+}
+
+.rcp[data-open="true"] .rcp-stage {
+  opacity: 1;
+}
+
+/* The two panes are identical; JS swaps which one is "live" and
+   flips this class to crossfade. Painting both at all times
+   would double the render cost for nothing, so the outgoing
+   pane freezes on its last frame while it fades. */
+.rcp-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity var(--rcp-crossfade, 2600ms) linear;
+}
+
+.rcp-stage canvas.is-live {
+  opacity: 1;
+}
+
+/* A grain + vignette wash over the scenes. Without it the large
+   flat gradients band visibly on 8-bit displays, and the glass
+   has nothing to catch light against at the edges. */
+.rcp-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(20, 16, 12, 0.5) 100%),
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+/* Scene caption — names what you are looking at, in mono, bottom
+   left. Deliberately quiet: it is a signature, not a label. */
+.rcp-scene-name {
+  position: fixed;
+  left: clamp(14px, 3vw, 34px);
+  bottom: clamp(14px, 3vw, 30px);
+  z-index: var(--rcp-z-stage);
+  margin: 0;
+  font-family: var(--rcp-mono);
+  font-size: var(--rcp-step--1);
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--rcp-on-stage);
+  text-shadow: 0 1px 14px rgba(20, 16, 12, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s var(--rcp-ease);
+}
+
+.rcp[data-open="true"] .rcp-scene-name {
+  opacity: 0.72;
+}
+
+@media (max-width: 780px) {
+  /* On a phone the window is full-bleed, so the caption would sit
+     underneath it — nothing to read, so nothing to render. */
+  .rcp-scene-name {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Scenes still crossfade — a slow opacity ramp is not vestibular
+     motion — but the in-scene drift is stopped by the renderer,
+     and the fade is shortened so it never reads as a lag. */
+  .rcp-stage canvas {
+    transition-duration: 400ms;
+  }
+}

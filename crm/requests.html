@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Requests · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="requests">
+      <div class="fn-head">
+        <p class="eyebrow">Needs you</p>
+        <h2>Requests</h2>
+        <p class="fn-note">
+          Slots a visitor has taken and is holding. Nothing is booked and
+          nothing reaches them until you accept.
+        </p>
+        <p class="fn-tally"><b data-count="waiting">·</b> to answer</p>
+        <div class="fn-acts">
+          <label class="toggle">
+            <input type="checkbox" data-auto-accept>
+            <span>Accept automatically</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="fn-body" data-list="waiting">
+        <p class="empty">Nothing waiting. Anything a visitor books lands here.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/requests.js"></script>
+</body>
+
+</html>

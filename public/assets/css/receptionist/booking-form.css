@@ -1,0 +1,269 @@
+/* ============================================================
+   THE BOOKING FORM — all of it at once
+   ------------------------------------------------------------
+   Sits inside the chat log as a card, so it reads as something
+   the desk handed over rather than a page that replaced the
+   conversation. Same glass, same amber, same radii as the review
+   card it leads to.
+
+   Deliberately one column at every width. Two columns would fit
+   on a desktop and would put "Email" beside "Date of birth",
+   which is exactly the pair people fill into the wrong box.
+   ============================================================ */
+
+.rcp-form {
+  margin: 10px 0 4px;
+  padding: 16px 18px 14px;
+  border: 1px solid var(--rcp-line);
+  border-radius: 18px;
+  background: var(--rcp-cream-hi);
+  box-shadow: 0 6px 20px rgba(20, 16, 12, 0.08);
+}
+
+.rcp-form-head {
+  position: relative;
+  padding-right: 28px;
+  margin-bottom: 12px;
+}
+
+.rcp-form-head h3 {
+  margin: 0;
+  font-family: var(--rcp-display);
+  font-size: var(--rcp-step-1);
+  font-weight: 600;
+  color: var(--rcp-ink);
+}
+
+.rcp-form-head p {
+  margin: 3px 0 0;
+  font-size: var(--rcp-step--1);
+  color: var(--rcp-text-soft);
+  line-height: 1.45;
+}
+
+.rcp-form-x {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rcp-text-soft);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rcp-form-x:hover {
+  background: var(--rcp-amber-wash);
+  color: var(--rcp-ink);
+}
+
+.rcp-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.rcp-fld {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rcp-fld label {
+  font-size: var(--rcp-step--1);
+  font-weight: 500;
+  color: var(--rcp-ink);
+}
+
+/* "optional" said on the label, not implied by its absence. The
+   alternative is a visitor counting asterisks to work out what they
+   are allowed to skip. */
+.rcp-fld-opt {
+  font-weight: 400;
+  color: var(--rcp-text-soft);
+  font-size: 0.9em;
+}
+
+.rcp-fld-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--rcp-line);
+  border-radius: 14px;
+  background: var(--rcp-cream-hi);
+  color: var(--rcp-text);
+  font-family: var(--rcp-sans);
+  font-size: var(--rcp-step-0);
+  line-height: 1.45;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.25s var(--rcp-ease), box-shadow 0.25s var(--rcp-ease);
+}
+
+textarea.rcp-fld-input {
+  min-height: 62px;
+  resize: vertical;
+}
+
+select.rcp-fld-input {
+  /* The native arrow is removed by appearance:none, so one is drawn
+     back in — a select with no affordance reads as a dead text box. */
+  background-image: linear-gradient(45deg, transparent 50%, var(--rcp-text-soft) 50%),
+    linear-gradient(135deg, var(--rcp-text-soft) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+
+.rcp-fld-input:focus {
+  outline: none;
+  border-color: var(--rcp-amber);
+  box-shadow: 0 0 0 3px var(--rcp-amber-wash);
+}
+
+.rcp-fld-hint {
+  margin: 0;
+  font-size: var(--rcp-step--2, 0.75rem);
+  color: var(--rcp-text-soft);
+  line-height: 1.4;
+}
+
+/* ---- when something is wrong ----
+   The field is outlined AND the reason is written underneath. A red
+   border on its own tells somebody they are wrong without telling
+   them how to be right. */
+.rcp-fld[data-invalid="true"] .rcp-fld-input,
+.rcp-fld[data-invalid="true"] .cpick-input {
+  border-color: var(--rcp-rust, #8d3a1e);
+}
+
+.rcp-fld-err {
+  margin: 0;
+  font-size: var(--rcp-step--2, 0.75rem);
+  color: var(--rcp-rust, #8d3a1e);
+  line-height: 1.4;
+}
+
+.rcp-form-status {
+  margin: 10px 0 0;
+  font-size: var(--rcp-step--1);
+  color: var(--rcp-ink);
+  line-height: 1.5;
+}
+
+.rcp-form-status[hidden] {
+  display: none;
+}
+
+.rcp-form-status .rcp-btn {
+  margin-left: 6px;
+}
+
+.rcp-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Submit carries the weight; "Check it over" is a quieter sibling,
+   because it is a rehearsal and not the decision. */
+.rcp-btn-go {
+  background: var(--rcp-amber);
+  border-color: var(--rcp-amber);
+  color: var(--rcp-ink);
+  font-weight: 600;
+}
+
+.rcp-btn-go:hover {
+  filter: brightness(1.05);
+}
+
+/* ---- what is happening to this form ----
+   Sending, sent, failed. Drawn as well as written, because the two
+   seconds after pressing Submit are the ones where "did that work?"
+   matters most, and a button that just goes quiet answers nothing. */
+.rcp-form-status[data-state] {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.rcp-form-mark {
+  display: inline-flex;
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.rcp-form-mark svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rcp-form-mark[data-state="sending"] svg { stroke: var(--rcp-text-soft); }
+.rcp-form-mark[data-state="sent"] svg { stroke: var(--rcp-sage, #4f6344); }
+.rcp-form-mark[data-state="failed"] svg { stroke: var(--rcp-rust, #8d3a1e); }
+
+.rcp-form-status[data-state="failed"] { color: var(--rcp-rust, #8d3a1e); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rcp-form-mark[data-state="sending"] svg {
+    animation: rcp-spin 900ms linear infinite;
+    transform-origin: 50% 50%;
+  }
+}
+
+@keyframes rcp-spin { to { transform: rotate(360deg); } }
+
+/* ---- phone: a code and a number ----------------------------
+   Two controls that are one field, so they sit on one line and
+   share the field's error state.
+
+   The code is given only as much room as it needs. It is the
+   part that is usually already right — pre-filled from their
+   country — and the number is the part being typed, so the
+   number gets the space. `minmax(0, 1fr)` rather than `1fr`
+   because a grid child will not shrink below its content width
+   otherwise, and a long number would push the code off. */
+.rcp-phone {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr);
+  gap: 0.4rem;
+}
+
+/* The select shows "+91 India" when open and needs to stay narrow
+   when closed; clipping the country name is the right trade —
+   the code is the part that matters once chosen. */
+.rcp-dial {
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 380px) {
+  .rcp-phone {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- the till -------------------------------------------------
+   Shown on the confirmation card when the visitor chose an hour
+   and is going to pay for it, instead of the "request sent" copy.
+
+   `.rcp-btn-go` is a <button>; this is an <a> to another page, so
+   it needs the pieces a button gets for free — block layout, no
+   underline, and room above the reference line. */
+.rcp-pay {
+  display: block;
+  margin-top: .875rem;
+  text-align: center;
+  text-decoration: none;
+}

@@ -1,0 +1,25 @@
+<!-- ============================================================
+     THE ACCOUNT APP'S ICON
+     ------------------------------------------------------------
+     A tick inside a ring, the same mark as the programme app's,
+     because it is the same practice and the same gesture — the
+     one thing a client does in here is tick off what they ate.
+
+     LIGHT, not the programme app's near-black. The two are
+     different apps and a client may have both on one home
+     screen; the palette is what tells them apart at a glance,
+     and this one matches the account panel it opens.
+
+     THE SAFE ZONE IS REAL. Android maskable icons are cropped to
+     a circle of about 80% of the width, so everything that must
+     survive sits inside a 154px circle on this 192px canvas. The
+     ring below is r=44 centred — comfortably inside it.
+     ============================================================ -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"
+     role="img" aria-label="Mind Your Food">
+  <rect width="192" height="192" rx="42" fill="#FFFFFF"/>
+  <rect width="192" height="192" rx="42" fill="none" stroke="#E6E6E9" stroke-width="2"/>
+  <circle cx="96" cy="96" r="46" fill="none" stroke="#0071E3" stroke-width="9"/>
+  <path d="M74 97l16 17 30-34" fill="none" stroke="#0071E3" stroke-width="11"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

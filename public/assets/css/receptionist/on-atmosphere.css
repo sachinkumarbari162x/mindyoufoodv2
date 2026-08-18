@@ -1,0 +1,167 @@
+/* ============================================================
+   THE DESK, ON THE SHARED ATMOSPHERE
+   ------------------------------------------------------------
+   consult.html used to paint its own room: a near-black stage
+   with two canvases crossfading over it, forever. The background
+   now comes from atmosphere.css and is painted once.
+
+   Three things assumed the dark stage and had to be told
+   otherwise. Kept in their own file rather than edited into the
+   components, so what changed for the shared background is one
+   place and can be read as a set.
+
+   The chat window itself needed nothing. --rcp-glass was already
+   rgba(251,250,248,.72) and --rcp-text was already the ink — the
+   window was light glass on a dark room, and it is light glass on
+   a light room. Only the room changed.
+   ============================================================ */
+
+/* 1. THE BODY. It painted #14100c as the floor behind the
+      canvases. There are no canvases, so that was simply a black
+      page with a chat window on it. */
+body.desk-body.atmosphere {
+  background-color: var(--room-ground, #1A1512);
+}
+
+/* 2. THE STAGE, AND ITS VIGNETTE.
+
+      The stage element itself is empty now — nothing mounts into
+      it — but ::after was still painting a wash over the whole
+      viewport:
+
+        radial-gradient(120% 90% at 50% 0%,
+          transparent 40%, rgba(20,16,12,.5) 100%)
+        + grain, mix-blend-mode: soft-light
+
+      A dark vignette reaching half-black at the edges. Exactly
+      right over a near-black scene, where it stopped large flat
+      gradients banding and gave the glass an edge to catch. Over
+      a warm room it desaturates everything away from the centre,
+      which is why the right-hand side of this page read grey
+      while the checkout — same background, no stage — read cream.
+
+      THE GRAIN IS KEPT AND THE VIGNETTE IS NOT. The banding
+      problem is real and the atmosphere has the same large flat
+      gradients; the darkening was only ever there to serve a dark
+      room. */
+.desk-shell .rcp-stage {
+  background: none;
+}
+
+.atmosphere .rcp-stage::after {
+  background:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+  opacity: .5;
+}
+
+/* 3. THE NO-JS FALLBACK. Cream text with a heavy dark shadow —
+      correct over a near-black stage, invisible over a warm one.
+      This is what somebody sees when the script fails, so it is
+      the one piece of the page that has to be legible without
+      anything working. */
+.atmosphere .desk-fallback {
+  color: var(--room-ink, #F6EFE4);
+  text-shadow: none;
+}
+.atmosphere .desk-fallback-eyebrow {
+  color: var(--room-ink-soft, #C9BAA8);
+  opacity: 1;
+}
+.atmosphere .desk-fallback-hours {
+  color: var(--room-ink-soft, #C9BAA8);
+}
+
+/* 4. THE TOP BAR. It painted a dark scrim —
+      linear-gradient(rgba(20,16,12,.55), transparent) — so that
+      cream text would read over the near-black stage. Over a warm
+      room it is a grey band across the top of the page and the
+      text on it is dark anyway.
+
+      No scrim at all: ink on the atmosphere is legible without
+      one, and the bar is two words and an arrow. */
+.atmosphere .desk-bar {
+  background: none;
+  color: var(--room-ink, #F6EFE4);
+}
+.atmosphere .desk-back {
+  color: var(--room-ink, #F6EFE4);
+}
+.atmosphere .desk-back svg {
+  stroke: currentColor;
+}
+
+/* ---- the window, as frosted glass --------------------------
+   The tint and the rim are the component's own. What is added
+   here is the blur, and a slightly deeper shadow so the window
+   reads as floating ON the room rather than cut out of it. */
+.desk-shell .rcp-window {
+  /* Same reasoning as .frost in atmosphere.css: --rcp-glass is
+     rgba(251,250,248,.72), which was right over the old dark
+     canvases because they were BUSY — there was something to see
+     through it. A still, deep room read straight through instead
+     and turned the window grey. */
+  background: rgba(253, 249, 242, .93);
+  -webkit-backdrop-filter: blur(22px) saturate(118%);
+  backdrop-filter: blur(22px) saturate(118%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, .5) inset,
+    0 44px 100px -34px rgba(0, 0, 0, .58);
+}
+
+/* Same rule as everywhere else: where the blur cannot happen,
+   the tint alone has to hold the text. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .desk-shell .rcp-window {
+    background: rgba(253, 249, 242, .985);
+  }
+}
+
+/* ---- the till, inside the chat window ----------------------
+   The checkout card's own type and spacing come from
+   checkout.css, which the desk now loads too. What is needed
+   here is only where it sits: filling the window where the
+   transcript and composer were, and scrolling if a small phone
+   cannot hold it. */
+.rcp-till {
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 5vw, 2.25rem) clamp(1.25rem, 4vw, 1.75rem);
+  display: grid;
+  align-content: center;
+}
+
+/* The card is the window here — it must not draw a second pane of
+   glass inside the one it is already sitting on. */
+.rcp-till .state { width: 100%; }
+
+/* When the till is open the window is the till. The transcript
+   and the composer are not hidden with the `hidden` attribute
+   because the UA rule behind it loses to any component rule with
+   a display of its own — .rcp-composer is display:flex, and it
+   stayed on screen over the card. */
+.rcp-window.has-till .rcp-log,
+.rcp-window.has-till .rcp-composer,
+.rcp-window.has-till [data-notice],
+.rcp-window.has-till .rcp-foot {
+  display: none !important;
+}
+
+/* The till then takes the room the transcript had. */
+.rcp-window.has-till {
+  grid-template-rows: auto 1fr;
+}
+.rcp-window.has-till .rcp-till {
+  min-height: 0;
+}
+
+/* The bar's text carried a drop-shadow so cream letters would hold
+   against whatever the ambient scene was doing behind them. Over a
+   still, pale room it is just a smudge under dark type. */
+.atmosphere .desk-bar,
+.atmosphere .desk-back,
+.atmosphere .desk-brand,
+.atmosphere .desk-brand i,
+.atmosphere .desk-brand b,
+.atmosphere .desk-brand span {
+  text-shadow: none;
+}

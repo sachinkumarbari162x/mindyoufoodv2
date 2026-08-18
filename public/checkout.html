@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirm your consultation · Mind Your Food</title>
+
+  <!-- A payment page has nothing to gain from being indexed, and a
+       booking reference has nothing to gain from leaving in a
+       referrer header. -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/atmosphere.css">
+  <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+<body class="atmosphere checkout-page">
+
+<!--
+  ONE PAGE, ONE JOB.
+
+  Everything a checkout usually carries — navigation, a footer,
+  related links, a newsletter box, an offer — is a way out of the
+  only action this page exists for. So there is none of it. What is
+  left is the hour, the price, and the button, in that order,
+  because that is the order the question is asked in: what am I
+  buying, what does it cost, yes.
+
+  The countdown is not decoration and not pressure. The hour is
+  genuinely held, and genuinely released — see ReleaseExpiredHolds
+  in store.go — so saying how long is left is simply telling the
+  truth about a thing that is already happening.
+-->
+
+<!--
+  A SHELL. The card's markup and behaviour are in
+  assets/js/checkout.js, because the front desk mounts the same
+  card into its own window without loading this page at all — and
+  two copies of a till is two tills that drift apart.
+
+  This page is the other entrance: somebody arriving from the
+  email link, later, on a different device.
+-->
+<main class="page" id="page">
+  <div class="card frost" data-checkout-root></div>
+</main>
+
+<!-- DEFERRED, BOTH OF THEM.
+
+     Razorpay's script is a third party, it is not small, and
+     without `defer` the browser stops parsing to fetch and run it
+     before the card is on screen. Measured: the worst frame on
+     this page was 1713ms against 7ms on the front desk, which
+     loads the same script deferred. Nothing here needs it until
+     somebody presses Pay. -->
+<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+<script src="./assets/js/checkout.js" defer></script>
+</body>
+</html>

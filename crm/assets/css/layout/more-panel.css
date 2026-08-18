@@ -1,0 +1,185 @@
+/* ============================================================
+   THE MORE PANEL
+   ------------------------------------------------------------
+   Four entries stay on the bar; the other nine live here. The
+   split is by how often she touches them, not by what they are
+   about — Hours matters enormously and changes once a month.
+
+   THE ANIMATION IS TRANSFORM AND OPACITY AND NOTHING ELSE. Both
+   are composited, so the panel moves on the GPU and stays smooth
+   while the page behind it is still laying out a long list.
+   Animating `width` or `right` would put a layout pass in every
+   frame, which is exactly what makes a panel feel like it is
+   dragging something heavy behind it.
+   ============================================================ */
+
+.more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  flex: none;
+  padding: .38rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--edge);
+  background: var(--raise);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+
+.more-btn:hover,
+.more-btn[aria-expanded="true"] {
+  border-color: var(--amber-bright);
+  color: var(--ink);
+}
+
+/* Three bars that become an X. The middle one fades rather than
+   moving, which is what stops the change reading as a jump. */
+.more-bars {
+  display: grid;
+  gap: 3px;
+  width: 14px;
+}
+
+.more-bars i {
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1), opacity .18s;
+}
+
+.more-btn[aria-expanded="true"] .more-bars i:nth-child(1) { transform: translateY(4.5px) rotate(45deg); }
+.more-btn[aria-expanded="true"] .more-bars i:nth-child(2) { opacity: 0; }
+.more-btn[aria-expanded="true"] .more-bars i:nth-child(3) { transform: translateY(-4.5px) rotate(-45deg); }
+
+/* ---- the sheet behind it ------------------------------------- */
+
+.more-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(27, 22, 16, .28);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.more-veil[data-open="true"] { opacity: 1; }
+.more-veil[hidden] { display: none; }
+
+/* ---- the panel ----------------------------------------------- */
+
+.more-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  width: min(19rem, 86vw);
+  padding: 1.1rem 1rem 2rem;
+  overflow-y: auto;
+  background: var(--raise);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px rgba(27, 22, 16, .1);
+
+  /* Off-screen, and slightly ahead of itself. The overshoot in the
+     easing is what makes it feel like it has weight rather than
+     being teleported — it settles rather than stopping dead. */
+  transform: translateX(100%);
+  transition: transform .34s cubic-bezier(.32, .72, 0, 1);
+}
+
+.more-panel[data-open="true"] { transform: translateX(0); }
+.more-panel[hidden] { display: none; }
+
+.more-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.more-head p {
+  margin: 0;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.more-shut {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.more-shut:hover { color: var(--ink); }
+
+.more-group { margin-bottom: 1.3rem; }
+
+.more-group-name {
+  margin: 0 0 .35rem;
+  padding-left: .6rem;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.more-panel a {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .6rem;
+  border-radius: var(--edge);
+  color: var(--ink-2);
+  font-size: 14px;
+  text-decoration: none;
+  /* Each entry drifts in behind the panel. Staggered below, because
+     nine things arriving at once reads as a flash rather than as a
+     panel opening. */
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity .3s ease, transform .3s cubic-bezier(.32, .72, 0, 1),
+              background .15s, color .15s;
+}
+
+.more-panel[data-open="true"] a { opacity: 1; transform: none; }
+
+.more-panel a:hover { background: var(--sink); color: var(--ink); }
+
+.more-panel a[aria-current="page"] {
+  background: var(--amber-wash);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* The stagger. Nine steps of 22ms is a tenth of a second across the
+   whole panel — felt rather than watched. */
+.more-panel[data-open="true"] .more-group:nth-child(2) a { transition-delay: .04s; }
+.more-panel[data-open="true"] .more-group:nth-child(3) a { transition-delay: .08s; }
+.more-panel[data-open="true"] .more-group:nth-child(4) a { transition-delay: .12s; }
+
+/* Nothing moves for somebody who asked for that. The panel still
+   works; it simply arrives rather than travelling. */
+@media (prefers-reduced-motion: reduce) {
+  .more-panel,
+  .more-veil,
+  .more-panel a,
+  .more-bars i {
+    transition-duration: .01ms;
+    transition-delay: 0s;
+  }
+}

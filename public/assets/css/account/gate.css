@@ -1,0 +1,160 @@
+/* ============================================================
+   ACCOUNT · THE DOOR
+   ------------------------------------------------------------
+   Two steps: an address, then six digits.
+
+   It is a full screen rather than a modal because it is not an
+   interruption — it is the page, until somebody is signed in.
+   Nothing behind it renders at all: the panel's markup carries
+   no data and no identifiers, so there is nothing to hide.
+   ============================================================ */
+
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--paper);
+}
+.gate[hidden] {
+  display: none;
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  padding: 38px 34px 32px;
+}
+
+.gate-brand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.gate-brand i {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.gate-card h1 {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 22px;
+  text-wrap: balance;
+}
+.gate-card p {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.gate-field {
+  display: block;
+  margin-top: 24px;
+}
+.gate-field span {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.gate-field input {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px; /* 16px or iOS zooms the page on focus */
+  padding: 13px 15px;
+}
+.gate-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* The code itself: spaced out and in tabular figures, so six
+   digits read as six digits rather than as a word. */
+.gate-field input.code {
+  letter-spacing: 0.42em;
+  font-size: 21px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding-left: 0.42em; /* the tracking on the last digit, put back */
+}
+
+.gate-card .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.gate-back {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+
+/* Said in the same place every time, whether it went well or
+   badly — a message that moves is a message that gets missed. */
+.gate-said {
+  margin-top: 16px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.gate-said.bad {
+  color: var(--danger);
+}
+.gate-said[hidden] {
+  display: none;
+}
+
+/* Local development only, and it says so on the tin. This is the
+   one place a working credential is ever printed, it only appears
+   when the server was started with CLIENT_CODE_ECHO=1, and it is
+   styled to look like debug output rather than like part of the
+   product. */
+.gate-dev {
+  margin-top: 18px;
+  padding: 10px 12px;
+  border: 1px dashed var(--ink-3);
+  border-radius: var(--r-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.gate-dev[hidden] {
+  display: none;
+}
+
+.gate-foot {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+.gate-foot a {
+  color: var(--accent);
+  text-decoration: none;
+}

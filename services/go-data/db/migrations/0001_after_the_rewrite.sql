@@ -1,0 +1,30 @@
+-- ============================================================
+--  The first migration after the rewrite — deliberately empty
+-- ------------------------------------------------------------
+--  schema.sql now describes the whole database and is applied on
+--  every boot, so there is nothing here to do. The file exists
+--  for two reasons, and both are real:
+--
+--  1. `//go:embed db/migrations/*.sql` in migrate.go will not
+--     compile if the pattern matches nothing. An empty directory
+--     is not a state this build can be in.
+--
+--  2. It puts a line in schema_migrations that says where the
+--     numbering starts. The thirty migrations before it are in
+--     db/olderDb/migrations/, and they describe a database that
+--     no longer exists anywhere — a laptop's history, not a
+--     description of the system. A database created after this
+--     point has never seen them and should not claim to.
+--
+--  ---- WHAT GOES IN 0002 --------------------------------------
+--  The first change that cannot simply be made in schema.sql:
+--  anything that has to transform data that is already there, or
+--  drop or rename something a running installation depends on.
+--  Adding a table or an index is not that — a CREATE … IF NOT
+--  EXISTS in schema.sql reaches every database on its next boot.
+--
+--  Once a migration is applied its checksum is recorded and the
+--  service refuses to start if the file later differs. That is
+--  the whole discipline: never edit an applied migration, add
+--  another one.
+-- ============================================================

@@ -1,0 +1,66 @@
+/* ============================================================
+   MIND YOUR FOOD · v2.0.0 — stylesheet manifest
+   Liquid-glass navigation · sticky video hero · pull-up sheet ·
+   frosted-glass receptionist over crossfading ambient scenes.
+
+   This file is ONLY @imports. Every rule lives in a component
+   file under this directory. The import order below reproduces
+   the cascade of the original monolithic style.css exactly —
+   reorder it and specificity ties start resolving differently.
+
+   The site theme (espresso / beige / rose, Cormorant + Jost) and
+   the receptionist theme (INK / CREAM / AMBER / SAGE / RUST,
+   Fraunces + Hanken Grotesk + Spline Sans Mono) are deliberately
+   separate token layers. The receptionist scopes its palette to
+   `.rcp` so the two never bleed into each other; promoting the
+   receptionist palette site-wide is a one-file change, not a
+   rewrite.
+
+   The front desk itself is NOT styled here — it is its own page
+   (consult.html) with its own manifest (desk.css), so this page
+   never downloads the chat UI. See desk.css.
+
+   Regenerate the split section files with:
+       node scripts/split-css.js --write
+   Bundle for production (one request instead of ~15) with:
+       node scripts/build-css.js
+   ============================================================ */
+
+/* ---- typefaces (self-hosted, no Google Fonts round trip) ---- */
+@import url("../fonts/fonts.css");
+
+/* ---- site foundations ---- */
+@import url("./base/tokens.css");
+@import url("./base/reset.css");
+
+/* ---- site pieces ---- */
+@import url("./components/shared.css");
+@import url("./layout/nav.css");
+@import url("./layout/hero.css");
+@import url("./layout/hero-split.css");
+@import url("./components/nutrient-list.css");
+@import url("./components/nutrition-plate.css");
+@import url("./components/newsletter-card.css");
+@import url("./components/chat-fab.css");
+@import url("./components/bmi.css");
+@import url("./layout/sheet.css");
+/* After sheet.css — these override .steps / .focus-grid / .sec-head
+   from there. Both give a section a pinned title and scroll-driven
+   reveals; method dissolves its steps, focus keeps its boxes. */
+@import url("./components/method-scroll.css");
+@import url("./components/focus-scroll.css");
+@import url("./components/myths-scroll.css");
+@import url("./components/nutrients-scroll.css");
+@import url("./layout/footer.css");
+
+/* ---- the front-desk INVITE only ----
+   The desk itself lives on consult.html and loads desk.css. This
+   page ships just the token layer and the invite panel that links
+   to it — no chat window, no composer, no ambient stage. That is
+   the load this page is not paying for. ---- */
+@import url("./receptionist/tokens.css");
+@import url("./receptionist/consult-panel.css");
+
+/* ---- last word: viewport + motion overrides ---- */
+@import url("./overrides/responsive.css");
+@import url("./overrides/reduced-motion.css");

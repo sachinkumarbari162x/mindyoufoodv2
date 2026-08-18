@@ -1,0 +1,129 @@
+/* ============================================================
+   MACROS & MICROS — content that arrives with the scroll
+
+   DELIBERATELY NOT the full #focus / #myths treatment, and the
+   difference is worth stating because it looks like an omission.
+
+   Those sections put the heading in a sticky left column. This one
+   cannot: its content is the plate — macros left, plate centre,
+   micros right — and that composition needs the full page width.
+   Measured at the widest the page ever goes (1200px), handing a
+   21rem column to the title leaves the macro and micro columns
+   174px each, about twenty-two characters a line. "0.8–1.2 g per
+   kg body weight" would wrap four times. The three-column plate IS
+   the section; a pinned title is not worth breaking it for.
+
+   So this section keeps its full-width heading and takes only the
+   second half of the treatment: the scroll-driven reveal. Nutrients
+   arrive one at a time as the plate comes up the page, in the
+   reading order the layout already implies.
+   ============================================================ */
+
+@supports (animation-timeline: view()) {
+  /* Stand down the observer's one-shot fade on the pieces the
+     timeline now owns, or the two systems fight over the first
+     frame. The section head keeps its ordinary .reveal. */
+  #nutrients .plate-grid.reveal,
+  #nutrients .plate-grid.reveal.in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* The plate is the subject — it resolves first and earliest, and
+     the annotations arrive around it. */
+  #nutrients .plate-figure {
+    animation: plate-in linear both;
+    animation-timeline: view();
+    animation-range: entry 4% cover 32%;
+  }
+
+  #nutrients .plate-col-title {
+    animation: nutrient-in linear both;
+    animation-timeline: view();
+    animation-range: entry 8% cover 30%;
+  }
+
+  /* Each nutrient row arrives on its own slightly later range, so
+     the column counts itself in rather than appearing as a block.
+     Six rows, six offsets — spelled out rather than generated,
+     because there are six and there will always be six. */
+  #nutrients .plate-list li {
+    animation: nutrient-in linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 34%;
+  }
+
+  #nutrients .plate-list li:nth-child(2) { animation-range: entry 13% cover 37%; }
+  #nutrients .plate-list li:nth-child(3) { animation-range: entry 16% cover 40%; }
+  #nutrients .plate-list li:nth-child(4) { animation-range: entry 19% cover 43%; }
+}
+
+@keyframes plate-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.6rem) scale(.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Rows slide in from the side they sit on, so the two columns lean
+   toward the plate as they arrive. Mirrored below for the micros. */
+@keyframes nutrient-in {
+  from {
+    opacity: 0;
+    transform: translateY(.9rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 901px) {
+  @supports (animation-timeline: view()) {
+    #nutrients .plate-col-macros .plate-list li,
+    #nutrients .plate-col-macros .plate-col-title {
+      animation-name: nutrient-in-left;
+    }
+    #nutrients .plate-col-micros .plate-list li,
+    #nutrients .plate-col-micros .plate-col-title {
+      animation-name: nutrient-in-right;
+    }
+  }
+}
+
+@keyframes nutrient-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-1.1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes nutrient-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(1.1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #nutrients .plate-figure,
+  #nutrients .plate-col-title,
+  #nutrients .plate-list li {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}

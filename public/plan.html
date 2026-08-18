@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Never indexed. Every one of these URLs is a named person's
+       nutrition plan, and a search engine holding one outlives the
+       link's own expiry. -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <!-- And no token in the Referer header if the page links out. -->
+  <meta name="referrer" content="no-referrer" />
+  <title>Your plan · Mind Your Food</title>
+
+  <!-- Root-relative, not "./". This one file is served from two
+       depths — /plan.html and /p/<token> — and a relative href
+       resolves to /p/assets/… from the second, which /p/ answers
+       with this same HTML. Learned the hard way on /c/. -->
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/plan.css" />
+</head>
+
+<body>
+
+  <main class="sheet">
+
+    <header class="mark">
+      <p class="brand">Mind Your Food</p>
+      <p class="by">Khadija</p>
+    </header>
+
+    <!-- Loading. Deliberately says almost nothing: until the token
+         resolves we do not know whether this person is entitled to
+         see anything at all. -->
+    <section class="card" data-view="loading">
+      <p class="quiet">One moment…</p>
+    </section>
+
+    <!-- ONE ANSWER FOR EVERY FAILURE. Unknown token, expired link,
+         plan withdrawn — the same words, because telling them apart
+         would confirm to a stranger that a link was once real. -->
+    <section class="card" data-view="gone" hidden>
+      <h1>This link doesn't work</h1>
+      <p>It may have expired, or it may never have been valid.</p>
+      <p class="quiet">
+        If Khadija sent you this, reply to her email or message and she
+        will send a new one.
+      </p>
+    </section>
+
+    <section class="plan" data-view="plan" hidden>
+
+      <div class="head">
+        <h1>Your plan<span data-who></span></h1>
+        <p class="when" data-when></p>
+      </div>
+
+      <!-- The figures the plan was written against. Shown because a
+           client who knows the target can tell whether a day went
+           well; not shown as a promise about weight. -->
+      <div class="targets" data-targets hidden></div>
+
+      <!-- THE PLAN. Rendered as text, never as markup — see plan.js.
+           Her private note is not on this page at all: it is not
+           hidden with CSS, it is not in the DOM, and the API this
+           page reads never selects the column. -->
+      <div class="body" data-body></div>
+
+      <div class="acts">
+        <button class="go" type="button" data-print>Print or save as PDF</button>
+      </div>
+
+      <!-- The line that has to be here whatever else is. -->
+      <p class="care">
+        This is nutrition guidance from Khadija, not medical treatment.
+        If you feel unwell, or your doctor has told you something
+        different, follow your doctor.
+      </p>
+
+      <p class="ref">Reference <span data-ref></span></p>
+    </section>
+
+  </main>
+
+  <script type="module" src="/assets/js/plan.js"></script>
+</body>
+
+</html>

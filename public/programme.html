@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="theme-color" content="#080c26" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Your programme · Mind Your Food</title>
+
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/programme.css" />
+
+  <!-- NO MANIFEST. There is one installable app now — the account
+       panel at /account.html — and two icons on one home screen is
+       a client wondering which of them is real.
+
+       This page is no longer routed: /me/<token> serves the
+       account panel. It is kept on disk for one release so there
+       is a way back, and programme-sw.js has been turned into a
+       worker that uninstalls itself from any phone that still has
+       the old app on its home screen. -->
+  <link rel="apple-touch-icon" href="/assets/img/programme-icon.svg" />
+</head>
+
+<body>
+
+  <!-- THE LENS. Liquid glass is not a blur — a blur is frosted
+       plastic. What makes it read as glass is that the background is
+       DISPLACED as well as blurred, so edges bend the way they do
+       through something with a thickness. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" class="lens">
+    <filter id="lensWarp" x="-20%" y="-20%" width="140%" height="140%">
+      <!-- scale 18, not the reference's 46. At full strength the warp
+           bent the card edges visibly and text near a corner swam.
+           Enough displacement to read as thickness, not enough to
+           notice as an effect. -->
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="12" result="n" />
+      <feGaussianBlur in="n" stdDeviation="1.4" result="nb" />
+      <feDisplacementMap in="SourceGraphic" in2="nb" scale="18" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <!-- The room the device sits in. Only ever seen on a big screen —
+       on a phone the device IS the screen and this is behind it. -->
+  <canvas id="wall" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
+
+  <div class="stage">
+    <div class="device">
+      <div class="screen">
+
+        <!-- The wallpaper the glass actually refracts. Inside the
+             screen rather than behind the page, so on a laptop the
+             cards bend THEIR OWN background and not the room. -->
+        <canvas id="screenWall" aria-hidden="true"></canvas>
+        <div class="screen-veil" aria-hidden="true"></div>
+
+        <!-- Drawn only on a big screen. On a real phone the hardware
+             already has both of these and a second set would be a
+             phone drawn inside a phone. -->
+        <div class="dyn" aria-hidden="true"></div>
+
+        <main class="app">
+
+          <!-- WHOSE APP THIS IS, ON THE FIRST LINE.
+
+               The name was a suffix on "Today, Aisha" three lines
+               down, which is decoration. Up here it does a job: this
+               link arrives in a message with no account and no
+               password behind it, so the first thing it has to
+               answer is "is this mine, or did I open somebody
+               else's". A name at the top settles that before the
+               first tap, and it is the same reassurance a bank app
+               gives for the same reason.
+
+               The practice name goes under it. She is one person and
+               they know who she is; they do not need her brand
+               larger than their own name every morning. -->
+          <header class="top">
+            <div class="top-id">
+              <p class="whose" data-whose>Your programme</p>
+              <p class="brand">Mind Your Food</p>
+            </div>
+            <span class="sync" data-sync hidden></span>
+          </header>
+
+          <section class="card glass" data-view="loading">
+            <p class="quiet">One moment…</p>
+          </section>
+
+          <section class="card glass" data-view="gone" hidden>
+            <h1>This link doesn't work</h1>
+            <p>It may have been stopped, or it may never have been valid.</p>
+            <p class="quiet">Reply to Khadija's message and she will send a new one.</p>
+          </section>
+
+          <!-- ============================================================
+               FOUR DESTINATIONS, ONE JOB EACH
+
+               This was a single scroll carrying six unrelated jobs:
+               tick today's rows, page through a month, write a note,
+               read her replies, record a weight, ask to be seen. All
+               of it always on screen, in an order nobody chose, with
+               no way to say where you were. It looked good and it was
+               genuinely hard to use — you had to scroll past three
+               things you did not want to reach the one you did.
+
+               A tab bar is the fix, and it is the fix every app on
+               this phone already uses, which is the point: the client
+               does not have to learn it.
+
+                 TODAY      the rows, and the day they belong to
+                 PROGRESS   the course so far — weights, adherence
+                 MESSAGES   the whole thread, not one day of it
+                 PLAN       what she prescribed, and asking to be seen
+
+               WHY THE THREAD MOVED. It used to live inside the note
+               box on whichever day was selected, so her reply to a
+               message sent on the 3rd was only findable by navigating
+               back to the 3rd. A reply you have to hunt for is a
+               reply you never see. It is one continuous conversation
+               and it now has one place.
+               ============================================================ -->
+          <div class="tabs" data-view="programme" hidden>
+
+            <!-- ================= TODAY ================= -->
+            <section class="tab-page" data-page="today">
+              <div class="scroll">
+
+                <div class="hero">
+                  <p class="hero-date" data-today></p>
+                  <p class="hero-n" data-hero-n></p>
+
+                  <!-- HOW FAR THROUGH THE DAY THEY ARE.
+
+                       The one question a daily app has to answer at a
+                       glance is "am I finished", and a count answers
+                       it without them reading nine rows to work it
+                       out. The bar is the same number for the eye. -->
+                  <p class="hero-done" data-done></p>
+                  <div class="hero-bar" data-bar-wrap hidden>
+                    <i data-bar></i>
+                  </div>
+                </div>
+
+                <!-- Only when they have wandered off today. A permanent
+                     "back to today" is a control that does nothing on
+                     the screen it is usually seen. -->
+                <button class="back-today" type="button" data-back-today hidden>
+                  Back to today
+                </button>
+
+                <!-- ============================================
+                     THE DATE PICKER.
+
+                     This was a strip of thirty chips. It worked, and it
+                     stopped working the moment a programme ran past a
+                     month: thirty is arbitrary, four fit on a phone, and
+                     finding the 3rd meant dragging sideways past
+                     twenty-six days you did not want.
+
+                     A month grid answers "what was the 3rd like" in one
+                     look, which is the actual question. It follows
+                     Apple's own two-stage date picker: COMPACT by
+                     default — a single tappable field showing the chosen
+                     date — expanding to the INLINE month calendar.
+                     Collapsed is right for the common case, because
+                     nine times in ten the app is opened to tick today
+                     and the calendar is in the way.
+                     ============================================ -->
+                <div class="cal" data-cal>
+                  <button class="cal-field" type="button" data-cal-toggle
+                          aria-expanded="false" aria-controls="cal-sheet">
+                    <span class="cal-field-v" data-cal-label>Today</span>
+                    <span class="cal-chev" aria-hidden="true"></span>
+                  </button>
+
+                  <div class="cal-sheet" id="cal-sheet" data-cal-sheet hidden>
+                    <div class="cal-head">
+                      <p class="cal-month" data-cal-month aria-live="polite"></p>
+                      <div class="cal-nav">
+                        <button type="button" data-cal-step="-1" aria-label="Previous month">
+                          <span class="cal-arrow cal-arrow-l" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" data-cal-step="1" aria-label="Next month">
+                          <span class="cal-arrow cal-arrow-r" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="cal-dow" data-cal-dow aria-hidden="true"></div>
+                    <div class="cal-grid" data-cal-grid role="grid" aria-label="Choose a day"></div>
+
+                    <!-- HOW FAR THROUGH THE PLAN, in words. A grid of
+                         dates cannot say "day 12 of 90", and that is the
+                         question somebody on a long programme asks. -->
+                    <p class="cal-span" data-span></p>
+                  </div>
+                </div>
+
+                <p class="shut" data-shut hidden>
+                  This day has gone. You can look, but only today can be filled in.
+                </p>
+
+                <div class="list" data-list></div>
+
+                <!-- ============================================
+                     ANYTHING ELSE.
+
+                     The rows answer questions she asked. This is the
+                     other direction — the thing that has no box:
+                     "stomach was off all day", "travelling next week,
+                     cannot cook". None of that is done/some/no, and all
+                     of it changes what she would do next.
+
+                     IT SAYS WHAT IT IS NOT. A text box on a health app
+                     reads as a chat window, and somebody typing chest
+                     pain into it at midnight expecting an answer has
+                     been misled by the control. So the line under the
+                     label is the honest one, and it is not small print.
+
+                     Send is explicit and there is no autosave. A note is
+                     a message; a message that leaves while you are still
+                     deciding whether to send it is not a message.
+
+                     THE THREAD IS NO LONGER UNDER IT. What was said is
+                     on Messages, all of it in one place, and the link
+                     below goes there. Writing and reading are two jobs
+                     and this card now only does the first.
+                     ============================================ -->
+                <section class="note glass" data-note-box>
+                  <label class="note-l" for="note">Anything else about today?</label>
+
+                  <textarea id="note" data-note rows="2" maxlength="1200"
+                            placeholder="Slept badly, ate out, feeling low — whatever she should know."></textarea>
+
+                  <div class="note-row">
+                    <p class="note-why">
+                      She reads these between sessions, not straight away.
+                      If something is wrong, call your doctor.
+                    </p>
+                    <button class="go" type="button" data-note-send disabled>Send</button>
+                  </div>
+
+                  <p class="note-said" data-note-said hidden aria-live="polite"></p>
+
+                  <button class="note-jump" type="button" data-goto="messages" hidden data-note-jump>
+                    <span data-note-jump-l></span>
+                    <span class="note-jump-c" aria-hidden="true"></span>
+                  </button>
+                </section>
+
+              </div>
+            </section>
+
+            <!-- ================= PROGRESS ================= -->
+            <!-- Everything on this screen is measured. There is no
+                 score, no streak and no grade: none of those are in
+                 the database, and a number nobody computed is a
+                 number that cannot be trusted the one time it
+                 matters. -->
+            <section class="tab-page" data-page="progress" hidden>
+              <div class="scroll">
+                <h1 class="page-t">Progress</h1>
+
+                <!-- HOW MUCH OF THE PLAN HAS BEEN ANSWERED, as a ring,
+                     because that is the shape everyone already reads on
+                     a phone. Answered — not "achieved". A day honestly
+                     marked No is a day she can act on, and it counts
+                     here exactly as much as a Done. An app that only
+                     fills the ring for green teaches people to tick
+                     green. -->
+                <div class="card glass ring-card">
+                  <div class="ring-host">
+                    <canvas data-ring width="168" height="168"
+                            style="width:168px;height:168px" aria-hidden="true"></canvas>
+                    <div class="ring-mid">
+                      <p class="ring-n" data-ring-n>—</p>
+                      <p class="ring-l" data-ring-l>answered</p>
+                    </div>
+                  </div>
+                  <p class="ring-why" data-ring-why></p>
+                </div>
+
+                <div class="card glass">
+                  <div class="card-h">
+                    <h2>Your weight</h2>
+                    <span class="tag" data-weight-move hidden></span>
+                  </div>
+
+                  <div class="weight-now" data-weight-now hidden>
+                    <p class="weight-kg" data-weight-kg></p>
+                    <p class="weight-when" data-weight-when></p>
+                  </div>
+
+                  <div class="chart-wrap" data-chart-wrap hidden>
+                    <canvas data-chart width="300" height="132"
+                            style="width:100%;height:132px" aria-hidden="true"></canvas>
+                  </div>
+                  <p class="chart-alt visually-hidden" data-chart-alt></p>
+
+                  <p class="quiet" data-weight-none hidden>
+                    Nothing weighed in yet. The box below is where it starts.
+                  </p>
+
+                  <!-- The box moved here from the bottom of the old
+                       scroll, next to the line it draws. Typing a
+                       number in one place and seeing it in another was
+                       most of why it felt like it went nowhere. -->
+                  <div class="weigh" data-weigh>
+                    <label class="weigh-l" for="kg">Weigh yourself</label>
+                    <div class="weigh-row">
+                      <input id="kg" data-kg type="number" inputmode="decimal" step="0.1"
+                             min="20" max="400" placeholder="kg" />
+                      <button class="go" type="button" data-weigh-save>Save</button>
+                    </div>
+                    <p class="weigh-said" data-weigh-said hidden></p>
+                    <p class="quiet weigh-why">Once a week is plenty. Same time of day, before breakfast.</p>
+                  </div>
+                </div>
+
+                <!-- THE COURSE AS A SHAPE. One square per day, the way
+                     a contribution graph reads: the question "have I
+                     been keeping this up" is answered by the pattern
+                     long before any number. Tapping one opens it on
+                     Today. -->
+                <div class="card glass">
+                  <div class="card-h">
+                    <h2>Day by day</h2>
+                    <span class="tag" data-span-tag></span>
+                  </div>
+                  <div class="grid-days" data-grid-days></div>
+                  <div class="key">
+                    <span class="key-one"><i data-fill="3"></i>All answered</span>
+                    <span class="key-one"><i data-fill="1"></i>Some</span>
+                    <span class="key-one"><i data-fill="0"></i>Nothing</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ================= MESSAGES ================= -->
+            <section class="tab-page" data-page="messages" hidden>
+              <div class="scroll">
+                <h1 class="page-t">Messages</h1>
+
+                <p class="quiet page-why">
+                  Everything you have written, and everything Khadija has
+                  written back. She reads these between sessions, not
+                  straight away — if something is wrong, call your doctor.
+                </p>
+
+                <div class="thread" data-thread></div>
+
+                <p class="quiet thread-none" data-thread-none hidden>
+                  Nothing yet. Write to her from Today, on the day it happened.
+                </p>
+
+                <button class="note-jump" type="button" data-goto="today" data-thread-jump>
+                  <span>Write about today</span>
+                  <span class="note-jump-c" aria-hidden="true"></span>
+                </button>
+              </div>
+            </section>
+
+            <!-- ================= PLAN ================= -->
+            <section class="tab-page" data-page="plan" hidden>
+              <div class="scroll">
+                <h1 class="page-t">Your plan</h1>
+
+                <p class="quiet page-why" data-plan-why></p>
+
+                <!-- The plan as she wrote it, grouped by what kind of
+                     thing each row is. Read-only on purpose: this
+                     screen answers "what am I meant to be doing",
+                     which is a different question from "what did I do
+                     today", and mixing the two is what made one long
+                     page confusing. -->
+                <div data-plan-groups></div>
+
+                <!-- ============================================
+                     ASKING TO BE SEEN AGAIN.
+
+                     The one thing on this screen that reaches into
+                     her working week rather than into their own
+                     record — so it says what will happen and does not
+                     pretend to book anything. She confirms every
+                     session herself; a button that said "Book a
+                     review" would be promising a diary the client
+                     cannot see.
+
+                     IT CHANGES INTO WHAT IT DID. Once asked, the card
+                     stops being a form and becomes the answer:
+                     "asked on Tuesday", then the date once she has
+                     given it one. A button that still says "Ask" after
+                     you have asked is how people ask three times.
+                     ============================================ -->
+                <section class="ask glass" data-ask>
+                  <div class="ask-said" data-ask-said hidden></div>
+
+                  <div data-ask-form>
+                    <p class="ask-l">Need to see Khadija again?</p>
+                    <p class="quiet ask-why">
+                      She will look at how the plan is going and come back to you
+                      with a time. Nothing is booked until she does.
+                    </p>
+
+                    <textarea data-ask-note rows="2" maxlength="600"
+                              placeholder="Anything you want to go over? (optional)"></textarea>
+
+                    <button class="go ask-go" type="button" data-ask-send>Ask for a review</button>
+                  </div>
+                </section>
+
+                <p class="care glass">
+                  This is nutrition guidance from Khadija, not medical treatment.
+                  If you feel unwell, or your doctor has told you something
+                  different, follow your doctor.
+                </p>
+
+                <p class="ref">Plan <span data-ref></span></p>
+              </div>
+            </section>
+
+            <!-- ============================================================
+                 THE TAB BAR
+
+                 Glass, like everything else, and it floats over the
+                 scroll rather than sitting under it — so the rows keep
+                 running behind it and there is always visibly more.
+
+                 THE INDICATOR SLIDES rather than appearing. Movement
+                 between two places is the one piece of information a
+                 tab bar has to convey that four static icons cannot,
+                 and it is why nobody gets lost in one.
+
+                 LABELS UNDER THE ICONS, always. An icon-only bar makes
+                 the client learn what a glyph means before they can use
+                 the app, and this app is opened by people who are ill,
+                 tired and in a hurry.
+                 ============================================================ -->
+            <nav class="tabbar glass" aria-label="Sections">
+              <span class="tab-ind" aria-hidden="true"></span>
+
+              <button class="tab" type="button" data-goto="today" aria-current="page">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v15H4z" /><path d="M4 10h16" />
+                  <path d="M8 3v4M16 3v4" /><path d="m9 15 2 2 4-4" />
+                </svg>
+                Today
+              </button>
+
+              <button class="tab" type="button" data-goto="progress">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 4v16h16" /><path d="m7 15 4-5 3 3 4-6" />
+                </svg>
+                Progress
+              </button>
+
+              <button class="tab" type="button" data-goto="messages">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v11H9l-5 4z" /><path d="M8 9h8M8 12.5h5" />
+                </svg>
+                Messages
+                <i class="tab-dot" data-unread hidden></i>
+              </button>
+
+              <button class="tab" type="button" data-goto="plan">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 3h9l4 4v14H6z" /><path d="M14 3v5h5" />
+                  <path d="M9 12h7M9 16h5" />
+                </svg>
+                Plan
+              </button>
+            </nav>
+          </div>
+
+        </main>
+
+        <div class="homebar" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/js/programme.js"></script>
+</body>
+
+</html>

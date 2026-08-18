@@ -1,0 +1,750 @@
+/* ============================================================
+   PROGRAMME MONITOR — a file browser for somebody's month
+   ------------------------------------------------------------
+   Built as the iPad's Files app, in the CRM's clothes. The
+   borrowing is not decoration: a month of check-ins is a folder
+   of days, each day is a folder of rows, and some of those rows
+   have a photograph attached. That IS a filesystem, so it is
+   shown as one — locations on the left, a path across the top,
+   tiles or a list in the middle, and what is selected explained
+   on the right.
+
+   WHAT SURVIVES FROM FILES, and why each one earns its place:
+     · locations sidebar    who, and which smart folder
+     · a breadcrumb path    she is two levels deep at most, but
+                            "where am I" must never be a guess
+     · grid / list toggle   photographs want tiles, ticks want
+                            columns; both are the same folder
+     · click to select,     the muscle memory is already there
+       double-click to open
+     · an info panel        one selected thing, fully explained
+
+   WHAT DOES NOT COME ACROSS: iOS's rounded cards, its blur, its
+   grey. --edge is 0 across this CRM and stays 0 here; the palette
+   is the same beige as every other page; the type is Noto. Set
+   this beside Today and nothing should look imported.
+
+   NO COLOUR IS DECLARED IN THIS FILE. Every one comes from
+   tokens.css, so the day the palette moves this moves with it.
+   ============================================================ */
+
+/* An icon button still has to say what it does out loud. Named in
+   this component's namespace rather than as a global `.sr-only`,
+   because the CRM does not have one and inventing a global utility
+   from inside one page's stylesheet is how two of them appear. */
+.pm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 17rem);
+  gap: 1rem;
+  align-items: start;
+  min-width: 0;
+}
+
+/* ---- the path bar -------------------------------------------
+   Where she is, and how to get back. Sticky under the work bar
+   so it survives a long scroll — the one thing worse than being
+   lost in a folder is not being able to see the way out. */
+
+.pm-path {
+  position: sticky;
+  top: calc(var(--mast-h, 3.4rem) + var(--work-bar-h, 3rem));
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  flex-wrap: wrap;
+  padding: .45rem 0;
+  margin-bottom: .6rem;
+  background: var(--ground);
+  border-bottom: 1px solid var(--line);
+}
+
+.pm-crumb {
+  padding: .18rem .4rem;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--soft);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.pm-crumb:hover { color: var(--ink); border-color: var(--line); }
+
+/* The last crumb is where she IS. Not a button — pressing it
+   would do nothing, and a control that does nothing is a lie. */
+.pm-crumb[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+  cursor: default;
+}
+
+.pm-crumb[aria-current="page"]:hover { border-color: transparent; }
+
+.pm-sep { color: var(--faint); font-size: 12px; user-select: none; }
+
+.pm-path-acts {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  margin-left: auto;
+}
+
+/* ---- the toolbar controls ------------------------------------ */
+
+.pm-find {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.pm-find input {
+  width: min(11rem, 34vw);
+  padding: .25rem .45rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.pm-find input:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: -1px;
+}
+
+.pm-sort {
+  padding: .25rem .35rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+/* Grid / list. Two buttons rather than a menu: it is a binary,
+   and a menu to choose between two things is a menu too many. */
+.pm-view {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+
+.pm-view button {
+  display: inline-flex;
+  align-items: center;
+  padding: .28rem .45rem;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.pm-view button + button { border-left: 1px solid var(--line); }
+.pm-view button:hover { color: var(--ink-2); }
+
+.pm-view button[aria-pressed="true"] {
+  background: var(--amber-wash);
+  color: var(--amber);
+}
+
+.pm-view svg { display: block; width: 14px; height: 14px; }
+
+/* ---- the sidebar ---------------------------------------------
+   Files calls these Locations and Tags. Here the locations are
+   people and the tags are the four ways of cutting one person's
+   month. Same idea, and the same shape on screen. */
+
+.pm-side-head {
+  padding: .5rem .6rem .2rem;
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.pm-side-list { display: flex; flex-direction: column; }
+
+.pm-side-item {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  width: 100%;
+  padding: .4rem .6rem;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pm-side-item:hover { background: var(--sink); }
+
+.pm-side-item[aria-current="true"] {
+  border-left-color: var(--amber-bright);
+  background: var(--amber-wash);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pm-side-item .pm-glyph { color: var(--faint); flex: 0 0 auto; }
+.pm-side-item[aria-current="true"] .pm-glyph { color: var(--amber); }
+
+.pm-side-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-side-n {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* NOT A TOTAL. Everywhere else in this sidebar the number is "how
+   many are in there"; on notes it is "how many you have not read",
+   which is the only version of the number that would make her open
+   it. Different shape as well as different colour, so the two are
+   not mistaken for each other at a glance. */
+.pm-side-hot {
+  margin-left: auto;
+  padding: .05rem .35rem;
+  background: var(--amber-wash);
+  color: var(--amber);
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* A programme that has been stopped is still readable — the record
+   does not disappear because the door was closed. It just stops
+   looking live. */
+.pm-side-item[data-status="revoked"] .pm-side-name,
+.pm-side-item[data-status="ended"] .pm-side-name { color: var(--soft); }
+
+.pm-side-sub {
+  padding: 0 .6rem .5rem;
+  color: var(--faint);
+  font-size: 11px;
+}
+
+/* ---- the grid ------------------------------------------------ */
+
+.pm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: .7rem;
+}
+
+.pm-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid transparent;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.pm-tile:focus-visible { outline: 2px solid var(--amber-bright); outline-offset: 2px; }
+
+/* The art. A photograph if the day has one, a drawn folder if not
+   — which is exactly how Files shows a folder of pictures. */
+.pm-art {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--sink);
+  border: 1px solid var(--line);
+  color: var(--faint);
+}
+
+.pm-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pm-tile:hover .pm-art { border-color: var(--amber-bright); }
+
+.pm-tile[aria-selected="true"] .pm-art {
+  border-color: var(--amber);
+  box-shadow: inset 0 0 0 2px var(--amber-wash);
+}
+
+/* HOW THE DAY WENT, ON THE EDGE OF THE TILE.
+   A stripe rather than a tinted tile: tinting the whole thing
+   makes a wall of green and a wall of red, and she has to read
+   forty of these at a glance. */
+.pm-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--line);
+}
+
+/* A day with a note and no ticks gets no stripe at all — there is
+   nothing to report, and a coloured edge would be a claim. */
+.pm-bar[data-how="none"] { background: transparent; }
+.pm-bar[data-how="done"] { background: var(--sage); }
+.pm-bar[data-how="part"] { background: var(--amber-bright); }
+.pm-bar[data-how="skip"] { background: var(--rust); }
+
+/* How many photographs, on the art itself — the way a folder
+   badge works, and it saves opening a day to find out. */
+.pm-badge {
+  position: absolute;
+  top: .3rem;
+  right: .3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .2rem;
+  padding: .1rem .3rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+  color: var(--soft);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pm-name {
+  margin: .35rem 0 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-tile[aria-selected="true"] .pm-name { font-weight: 600; }
+
+.pm-meta {
+  margin: .1rem 0 0;
+  color: var(--faint);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- the list ------------------------------------------------
+   The same folder, for when she is comparing rather than looking.
+   Real columns, tabular figures, one hairline between rows. */
+
+/* A FLOOR, SO IT SCROLLS RATHER THAN CRUSHES. Six columns squeezed
+   into a phone is a table where every cell is two characters and an
+   ellipsis — which is the other half of "difficult to read". Below
+   this width it slides sideways inside the pane instead, and the
+   page itself never scrolls horizontally. */
+.pm-list {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+/* ---- the header that would not stay put ------------------------
+   THIS WAS STICKY AGAINST THE VIEWPORT AND IT COULD NOT BE.
+
+   `position: sticky` resolves against the nearest SCROLLING
+   ancestor, not the window — and the table sits inside
+   .pm-scroll, which is `overflow-x: auto`. Any overflow value
+   other than `visible` makes a box a scroll container on BOTH
+   axes as far as sticky is concerned. So the header was sticking
+   to the top of a box that does not scroll vertically, then
+   riding up the page with it: stuck in the wrong place, over the
+   rows, and unreadable in a long folder. The viewport offset it
+   was computing — masthead plus work bar plus 2.1rem — never
+   applied to anything.
+
+   The fix is to make the container do what the header assumed:
+   .pm-scroll now scrolls VERTICALLY too, with a height, so the
+   table becomes a proper scrollable pane and `top: 0` means the
+   top of that pane. Which is also the better shape for the thing
+   it holds — a folder can be three hundred rows, and a table you
+   scroll inside its own box keeps the path bar and the panel
+   beside it on screen while you read it. */
+.pm-list th {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  padding: .3rem .5rem;
+  background: var(--ground);
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.pm-list th[data-sort] { cursor: pointer; user-select: none; }
+.pm-list th[data-sort]:hover { color: var(--ink-2); }
+.pm-list th[aria-sort] { color: var(--amber); }
+
+.pm-list td {
+  padding: .35rem .5rem;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink-2);
+  vertical-align: middle;
+}
+
+.pm-list td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.pm-list tbody tr { cursor: pointer; }
+.pm-list tbody tr:hover td { background: var(--sink); }
+
+.pm-list tbody tr[aria-selected="true"] td {
+  background: var(--amber-wash);
+  color: var(--ink);
+}
+
+.pm-list .pm-cell {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-width: 0;
+}
+
+.pm-list .pm-cell span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-list .pm-glyph { color: var(--faint); flex: 0 0 auto; }
+
+/* A thumbnail small enough to sit in a table row. */
+.pm-thumb {
+  width: 2rem;
+  height: 1.5rem;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  display: block;
+  flex: 0 0 auto;
+}
+
+/* ---- the state of one row ------------------------------------
+   Three words, and the colour is on the border rather than the
+   fill — a row of solid green pills reads as decoration. */
+
+.pm-state {
+  display: inline-block;
+  padding: .05rem .35rem;
+  border: 1px solid var(--line);
+  color: var(--soft);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.pm-state[data-state="done"] { border-color: var(--sage); color: var(--sage); }
+.pm-state[data-state="part"] { border-color: var(--amber-bright); color: var(--amber); }
+.pm-state[data-state="skip"] { border-color: var(--rust); color: var(--rust); }
+
+/* ---- the info panel ------------------------------------------
+   One selected thing, fully explained. Files puts this on the
+   right and so does this — and like Files it is empty until
+   something is chosen, rather than guessing at a default. */
+
+.pm-info {
+  position: sticky;
+  top: calc(var(--mast-h, 3.4rem) + var(--work-bar-h, 3rem) + .6rem);
+  max-height: calc(100dvh - var(--mast-h, 3.4rem) - var(--work-bar-h, 3rem) - 2rem);
+  overflow-y: auto;
+  padding: .7rem;
+  background: var(--raise);
+  border: 1px solid var(--line);
+}
+
+.pm-info h3 {
+  margin: 0 0 .1rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.pm-info-kind {
+  margin: 0 0 .6rem;
+  color: var(--faint);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.pm-info-shot {
+  width: 100%;
+  display: block;
+  margin-bottom: .6rem;
+  border: 1px solid var(--line);
+  background: var(--sink);
+}
+
+.pm-facts { margin: 0; font-size: 12.5px; }
+
+.pm-facts > div {
+  display: flex;
+  gap: .5rem;
+  padding: .28rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.pm-facts dt { color: var(--faint); flex: 0 0 6.5rem; }
+
+.pm-facts dd {
+  margin: 0;
+  color: var(--ink-2);
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* WHAT THEY WROTE, IN THEIR WORDS. Set apart from the facts above
+   because it is the only part of this panel a person typed. */
+.pm-note {
+  margin: .6rem 0 0;
+  padding: .45rem .55rem;
+  background: var(--sink);
+  border-left: 2px solid var(--amber-bright);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* A correction is worth saying out loud. */
+.pm-revised {
+  margin: .5rem 0 0;
+  color: var(--amber);
+  font-size: 11.5px;
+}
+
+.pm-empty {
+  margin: 0;
+  padding: 1.6rem .6rem;
+  color: var(--faint);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+/* ---- one day's conversation -----------------------------------
+   Both sides, oldest first. Answering a note without seeing what
+   was already said about that day is how she replies twice to the
+   same question. */
+
+.pm-thread {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  margin: .6rem 0 0;
+}
+
+.pm-said {
+  padding: .45rem .55rem;
+  background: var(--sink);
+  border-left: 2px solid var(--line);
+}
+
+.pm-said[data-from="them"] { border-left-color: var(--amber-bright); }
+
+/* Hers sits on the raised ground rather than the sunken one — the
+   same distinction the plan page draws between what she wrote and
+   what she was given. */
+.pm-said[data-from="her"] {
+  background: var(--raise);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--sage);
+}
+
+.pm-said-who {
+  margin: 0 0 .1rem;
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.pm-said-body {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---- answering ------------------------------------------------- */
+
+.pm-reply {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-top: .7rem;
+  padding-top: .6rem;
+  border-top: 1px solid var(--line);
+}
+
+.pm-reply-l { color: var(--ink-2); font-size: 12px; font-weight: 600; }
+
+.pm-reply textarea {
+  width: 100%;
+  padding: .45rem .55rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.pm-reply textarea:focus {
+  outline: none;
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-wash);
+}
+
+.pm-reply-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* IT CANNOT BE TAKEN BACK, and she is told before she sends rather
+   than after. Append-only is the rule on both sides of this thread;
+   a message somebody can quietly rewrite after it was read is not a
+   record of a conversation. */
+.pm-reply-why {
+  flex: 1;
+  min-width: 0;
+  color: var(--faint);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.pm-reply .btn[disabled] { opacity: .45; cursor: default; }
+
+.pm-reply-said { margin: 0; color: var(--sage); font-size: 11.5px; }
+.pm-reply-said[hidden] { display: none; }
+
+/* ---- a small summary above the folder ------------------------- */
+
+.pm-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  padding: 0 0 .7rem;
+  margin-bottom: .7rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.pm-figure { min-width: 0; }
+
+.pm-figure b {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.pm-figure span {
+  color: var(--faint);
+  font-size: 11px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+/* ---- narrow --------------------------------------------------
+   The info panel drops below the folder rather than squeezing it.
+   Everything else already reflows: the grid is auto-fill, the
+   table scrolls inside its own box. */
+
+/* A PANE, NOT JUST A SIDEWAYS SCROLLER.
+
+   It was `overflow-x: auto` alone, which was enough to break the
+   sticky header above and not enough to give it anywhere to
+   stick. Now it scrolls both ways with a real height, so the
+   header pins to the top of the table and the page keeps the path
+   bar, the sidebar and the info panel in view while she reads a
+   long folder.
+
+   The height is the viewport minus the chrome above it. Written
+   with fallbacks because --mast-h and --work-bar-h are published
+   by JavaScript after the first paint — a missing one must give a
+   slightly wrong height, never a collapsed pane. */
+.pm-scroll {
+  overflow: auto;
+  max-height: calc(100dvh - var(--mast-h, 3.4rem) - var(--work-bar-h, 3rem) - 9rem);
+  /* Below that there is more chrome than table and scrolling the
+     page is the kinder answer. */
+  min-height: 12rem;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 1100px) {
+  .pm { grid-template-columns: minmax(0, 1fr); }
+
+  .pm-info {
+    position: static;
+    max-height: none;
+    order: 2;
+  }
+
+  /* The panel is below the folder now rather than beside it, so the
+     chrome the pane is subtracting from is a different height. A
+     fraction of the viewport is the honest measure here, and it
+     keeps the pinned header — which is the point — without the
+     table taking the whole screen. */
+  .pm-scroll { max-height: 62dvh; }
+}
+
+@media (max-width: 560px) {
+  .pm-grid { grid-template-columns: repeat(auto-fill, minmax(6.6rem, 1fr)); }
+  .pm-find input { width: 100%; }
+  .pm-path-acts { width: 100%; margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-tile, .pm-art { transition: none; }
+}
+
+@media print {
+  .pm { grid-template-columns: 1fr; }
+  .pm-path-acts, .pm-view, .pm-find { display: none; }
+}

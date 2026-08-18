@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>CRM tables · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+
+  <main>
+    <section class="fn" id="crm-tables">
+      <div class="fn-head">
+        <p class="eyebrow">The crm schema</p>
+        <h2>CRM tables</h2>
+        <p class="fn-note">
+          Just the practitioner's own tables — people, their consultations,
+          the country list and payments. The desk's working tables are on the
+          full database page.
+        </p>
+        <p class="fn-tally"><b data-count="tables">·</b> tables</p>
+        <div class="fn-acts">
+          <a class="btn quiet" href="./database.html">All tables →</a>
+        </div>
+      </div>
+
+      <div class="fn-body">
+        <p class="pii">
+          Every person on file, with their email, date of birth and what they
+          came about. Read-only, but do not leave it open on a shared screen.
+        </p>
+
+        <div class="tables" data-tables></div>
+
+        <h3 class="sub" data-title>—</h3>
+        <div data-rows></div>
+        <div class="pager" data-pager></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/crm-tables.js"></script>
+</body>
+
+</html>

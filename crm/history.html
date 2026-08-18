@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>History · Front desk</title>
+
+
+  <link rel="stylesheet" href="./assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="./assets/crm.css" />
+</head>
+
+<body>
+  <header data-masthead></header>
+  <div data-history-nav></div>
+
+  <main>
+    <section class="fn" id="history">
+      <div class="fn-head">
+        <p class="eyebrow">Already answered for</p>
+        <h2>History</h2>
+        <p class="fn-note">
+          Every session you have said what became of. Today drops them
+          as soon as you record them, so it only ever shows what is
+          left — this is where they land.
+        </p>
+
+        <!-- The counts sit ABOVE the filter rather than inside it,
+             because they are the reason to open this page and the
+             filter is only how you read further into them. -->
+        <div class="tallies" data-tallies></div>
+      </div>
+
+      <div class="fn-body" data-list="history">
+        <p class="empty">Nothing recorded yet. Sessions appear here once you say how they went.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span data-source>—</span></footer>
+
+  <script type="module" src="./assets/js/pages/history.js"></script>
+</body>
+
+</html>
