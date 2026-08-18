@@ -212,6 +212,27 @@ async function resolveFile(pathname, req) {
 
   try {
     const stat = await fsp.stat(target);
+
+    /* A DIRECTORY ASKED FOR WITHOUT A TRAILING SLASH REDIRECTS TO ONE,
+       and this has to happen BEFORE the CRM gate below. The gate hands
+       back login.html in place of the page asked for -- deliberately,
+       so the visited path stays out of history -- and that page has
+       relative asset paths of its own. Served at /crm, its
+       ./assets/crm.css resolves against / and 404s; at /crm/ it
+       resolves against /crm/ and loads. So the first sign-in on the
+       box produced a completely unstyled login page and a wall of
+       404s naming the assets, which is not where the fault was.
+
+       Deciding this on the stat alone, before any auth, is also the
+       only place it can go: it is a fact about the URL, not about who
+       is asking. The query is carried across so a redirect cannot
+       silently drop one. */
+    if (stat.isDirectory() && !pathname.endsWith("/")) {
+      const url = req?.url || "";
+      const q = url.includes("?") ? url.slice(url.indexOf("?")) : "";
+      return { redirect: pathname + "/" + q };
+    }
+
     if (crm) {
       // Signed out: hand back the login page instead of the page asked
       // for. A redirect would work too and would put the visited path
@@ -258,11 +279,6 @@ async function resolveFile(pathname, req) {
 
          The query is carried across so a redirect never silently
          drops one. */
-      if (!pathname.endsWith("/")) {
-        const url = req?.url || "";
-        const q = url.includes("?") ? url.slice(url.indexOf("?")) : "";
-        return { redirect: pathname + "/" + q };
-      }
       const index = path.join(target, "index.html");
       const indexStat = await fsp.stat(index);
       return { file: index, size: indexStat.size };
